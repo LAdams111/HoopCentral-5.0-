@@ -233,11 +233,17 @@ async function seed() {
   }
 
   let existingCount = 0;
+  let statCount = 0;
   try {
     const [row] = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(schema.players);
     existingCount = row?.count ?? 0;
+
+    const [statRow] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.playerSeasonStats);
+    statCount = statRow?.count ?? 0;
   } catch (err) {
     console.error(
       "Players table not found. Run migrations first (npm run db:migrate).",
@@ -247,11 +253,23 @@ async function seed() {
     process.exit(1);
   }
 
-  if (existingCount > 0 && process.env.FORCE_SEED !== "true") {
-    console.log(`Database already has ${existingCount} players. Skipping seed.`);
+  if (
+    existingCount > 0 &&
+    statCount > 0 &&
+    process.env.FORCE_SEED !== "true"
+  ) {
+    console.log(
+      `Database already has ${existingCount} players and ${statCount} stat rows. Skipping seed.`,
+    );
     console.log("Set FORCE_SEED=true to wipe and re-seed.");
     await closeDatabaseConnection();
     return;
+  }
+
+  if (existingCount > 0 && statCount === 0) {
+    console.log(
+      `Database has ${existingCount} players but no season stats — re-seeding career data.`,
+    );
   }
 
   for (const table of [
