@@ -117,9 +117,14 @@ npm run db:seed
 
 ### Railway deploy
 
-Railway runs `npm run db:setup` on each deploy (see `railway.toml`):
-1. Applies migrations (`db:migrate`)
-2. Seeds if the database is empty (`db:seed`)
+`railway.toml` runs database setup before the API starts:
+
+| Phase | Command |
+|-------|---------|
+| Release | `npm run db:migrate && npm run db:seed` |
+| Start | `npm run db:migrate && npm run db:seed && npm run start` |
+
+Migrations read `process.env.DATABASE_URL` (injected when Postgres is linked to the service).
 
 Set `FORCE_SEED=true` to wipe and re-seed.
 

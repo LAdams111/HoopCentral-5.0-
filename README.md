@@ -74,7 +74,8 @@ In [Railway](https://railway.app), create a new project → **Deploy from GitHub
 
 Railway reads `railway.toml` automatically:
 - **Build:** `npm install && npm run build`
-- **Release:** `npm run db:setup` (runs migrations + seeds sample players on first deploy)
+- **Release:** `npm run db:migrate && npm run db:seed`
+- **Start:** `npm run db:migrate && npm run db:seed && npm run start` (tables exist before API)
 - **Start:** `npm run start`
 - **Health check:** `/api/health`
 
@@ -92,7 +93,7 @@ Railway injects `DATABASE_URL` automatically. No manual copy needed.
 
 Push to `main` on GitHub — Railway redeploys automatically.
 
-On first deploy, the release step runs `db:migrate` + `db:seed`. Re-deploys skip seeding if players already exist (safe).
+On each deploy, migrations and seed run before the API starts. Re-deploys skip seeding if players already exist (safe).
 
 ### 5. Verify
 

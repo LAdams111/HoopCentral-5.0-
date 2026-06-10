@@ -7,9 +7,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "db:generate": "drizzle-kit generate --config drizzle.config.cjs",
-    "db:migrate": "tsx ../scripts/migrate.ts",
+    "db:migrate": "tsx --tsconfig tsconfig.json ../scripts/migrate.ts",
     "db:push": "drizzle-kit push --config drizzle.config.cjs",
-    "db:seed": "tsx ../scripts/seed.ts",
+    "db:seed": "tsx --tsconfig tsconfig.json ../scripts/seed.ts",
     "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {

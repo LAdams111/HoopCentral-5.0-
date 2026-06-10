@@ -4,13 +4,6 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-import { sql } from "drizzle-orm";
-import {
-  closeDatabaseConnection,
-  db,
-  pool,
-} from "../server/src/db/index.js";
-import * as schema from "../server/src/db/schema/index.js";
 
 type SeedPlayer = {
   slug: string;
@@ -107,6 +100,12 @@ const SEED_PLAYERS: SeedPlayer[] = [
 ];
 
 async function seed() {
+  const { sql } = await import("drizzle-orm");
+  const { closeDatabaseConnection, db, pool } = await import(
+    "../server/src/db/index.js"
+  );
+  const schema = await import("../server/src/db/schema/index.js");
+
   console.log("Seeding Hoop Central database...");
 
   if (!process.env.DATABASE_URL) {
@@ -120,8 +119,11 @@ async function seed() {
       .select({ count: sql<number>`count(*)::int` })
       .from(schema.players);
     existingCount = row?.count ?? 0;
-  } catch {
-    console.log("Players table not found yet — run migrations first.");
+  } catch (err) {
+    console.error(
+      "Players table not found. Run migrations first (npm run db:migrate).",
+    );
+    console.error(err);
     await closeDatabaseConnection();
     process.exit(1);
   }
