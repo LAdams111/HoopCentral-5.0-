@@ -16,7 +16,8 @@
     "db:migrate": "npm run db:migrate -w server",
     "db:push": "npm run db:push -w server",
     "db:seed": "npm run db:seed -w server",
-    "db:setup": "npm run db:push && npm run db:seed"
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "db:studio": "npm run db:studio -w server"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

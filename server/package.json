@@ -6,15 +6,15 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:seed": "tsx ../scripts/seed.ts"
+    "db:generate": "drizzle-kit generate --config drizzle.config.cjs",
+    "db:migrate": "tsx ../scripts/migrate.ts",
+    "db:push": "drizzle-kit push --config drizzle.config.cjs",
+    "db:seed": "tsx ../scripts/seed.ts",
+    "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "drizzle-kit": "^0.30.4",
     "drizzle-orm": "^0.39.3",
     "express": "^4.21.2",
     "pg": "^8.13.3",
@@ -25,6 +25,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.10",
     "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.4",
     "typescript": "^5.8.2"
   }
 }

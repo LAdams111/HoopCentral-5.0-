@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { checkDatabaseConnection } from "./db/index.js";
 import { playersRouter, statsRouter } from "./routes/players.js";
 import { getFeaturedPlayers } from "./services/player.service.js";
 
@@ -20,8 +21,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
+app.get("/api/health", async (_req, res) => {
+  const dbCheck = await checkDatabaseConnection();
+
+  if (!dbCheck.connected) {
+    res.status(503).json({
+      status: "error",
+      database: "disconnected",
+      error: dbCheck.error,
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
+
+  res.json({
+    status: "ok",
+    database: "connected",
+    latencyMs: dbCheck.latencyMs,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.get("/api/featured-players", async (_req, res) => {

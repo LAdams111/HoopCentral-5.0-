@@ -5,12 +5,12 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 import { and, eq, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import {
+  closeDatabaseConnection,
+  db,
+  pool,
+} from "../server/src/db/index.js";
 import * as schema from "../server/src/db/schema/index.js";
-
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool, { schema });
 
 type SeasonStat = {
   season: string;
@@ -286,7 +286,7 @@ async function seed() {
   if (existingCount > 0 && process.env.FORCE_SEED !== "true") {
     console.log(`Database already has ${existingCount} players. Skipping seed.`);
     console.log("Set FORCE_SEED=true to wipe and re-seed.");
-    await pool.end();
+    await closeDatabaseConnection();
     return;
   }
 
@@ -434,7 +434,7 @@ async function seed() {
   }
 
   console.log(`Seeded ${SEED_PLAYERS.length} players, ${NBA_TEAMS.length} teams, ${seasonLabels.size} seasons.`);
-  await pool.end();
+  await closeDatabaseConnection();
 }
 
 seed().catch((err) => {

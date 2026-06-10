@@ -33,11 +33,17 @@ docker compose up -d
 cp .env.example .env
 ```
 
-### 4. Push schema and seed data
+### 4. Run migrations and seed data
 
 ```bash
-npm run db:push
+npm run db:migrate
 npm run db:seed
+```
+
+Or in one step:
+
+```bash
+npm run db:setup
 ```
 
 ### 5. Run dev servers
@@ -68,7 +74,7 @@ In [Railway](https://railway.app), create a new project → **Deploy from GitHub
 
 Railway reads `railway.toml` automatically:
 - **Build:** `npm install && npm run build`
-- **Release:** `npm run db:setup` (creates tables + seeds sample players on first deploy)
+- **Release:** `npm run db:setup` (runs migrations + seeds sample players on first deploy)
 - **Start:** `npm run start`
 - **Health check:** `/api/health`
 
@@ -86,7 +92,7 @@ Railway injects `DATABASE_URL` automatically. No manual copy needed.
 
 Push to `main` on GitHub — Railway redeploys automatically.
 
-On first deploy, the release step runs `db:push` + `db:seed`. Re-deploys skip seeding if players already exist (safe).
+On first deploy, the release step runs `db:migrate` + `db:seed`. Re-deploys skip seeding if players already exist (safe).
 
 ### 5. Verify
 
@@ -108,7 +114,7 @@ Visit your Railway URL:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/health` | Health check |
+| GET | `/api/health` | Health check (includes database connectivity) |
 | GET | `/api/players` | Search/list players (`?q=name`) |
 | GET | `/api/players/:id` | Player profile with stats |
 | GET | `/api/players/count` | Total player count |
@@ -117,11 +123,28 @@ Visit your Railway URL:
 | GET | `/api/seasons/count` | Total season count |
 | POST | `/api/players/:id/view` | Increment profile view count |
 
+## Database commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run db:generate` | Generate a migration from schema changes |
+| `npm run db:migrate` | Apply pending migrations |
+| `npm run db:push` | Push schema directly (local dev only) |
+| `npm run db:seed` | Load sample players, teams, leagues, seasons |
+| `npm run db:setup` | Migrate + seed (Railway release step) |
+| `npm run db:studio` | Open Drizzle Studio |
+
+See [docs/DATABASE.md](docs/DATABASE.md) for full schema and connection details.
+
 ## Project structure
 
 ```
 client/          # Vite React frontend
-server/          # Express API + Drizzle schema
-scripts/         # Database seed script
-docs/            # Architecture documentation
+server/          # Express API + Drizzle ORM
+  src/db/
+    connection.ts
+    schema/      # leagues, seasons, teams, players
+    migrations/  # versioned SQL migrations
+scripts/         # migrate.ts, seed.ts
+docs/            # Architecture + database documentation
 ```
