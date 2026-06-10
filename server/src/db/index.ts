@@ -4,5 +4,5 @@ export {
   db,
   pool,
 } from "./connection.js";
-export type { Database } from "./connection.js";
+export type { Database, DbClient } from "./connection.js";
 export * from "./schema/index.js";

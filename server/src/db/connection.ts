@@ -19,6 +19,9 @@ export const pool = new pg.Pool({
 export const db = drizzle(pool, { schema });
 
 export type Database = typeof db;
+export type DbClient =
+  | typeof db
+  | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export async function checkDatabaseConnection(): Promise<{
   connected: boolean;

@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import { checkDatabaseConnection } from "./db/index.js";
 import { leaguesRouter } from "./routes/leagues.js";
 import { devRouter } from "./routes/dev.js";
+import { ingestRouter } from "./routes/ingest.js";
 import { playersRouter, statsRouter } from "./routes/players.js";
 import { teamsRouter } from "./routes/teams.js";
 import { getFeaturedPlayers } from "./services/player.service.js";
@@ -49,6 +50,7 @@ app.get("/api/featured-players", async (_req, res) => {
 app.use("/api/leagues", leaguesRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/teams", teamsRouter);
+app.use("/api/ingest", ingestRouter);
 app.use("/api", statsRouter);
 
 if (!isProd) {

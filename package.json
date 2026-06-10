@@ -15,6 +15,7 @@
     "start:railway": "npm run db:migrate && npm run db:seed && npm run db:ensure-teams && npm run db:ensure-identities && npm run start",
     "db:ensure-teams": "npm run db:ensure-teams -w server",
     "db:ensure-identities": "npm run db:ensure-identities -w server",
+    "db:test-ingest": "npm run db:test-ingest -w server",
     "db:generate": "npm run db:generate -w server",
     "db:migrate": "npm run db:migrate -w server",
     "db:push": "npm run db:push -w server",

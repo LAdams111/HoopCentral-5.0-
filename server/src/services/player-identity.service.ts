@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "../db/index.js";
+import { db, type DbClient } from "../db/index.js";
 import { playerIdentities, players } from "../db/schema/index.js";
 import { nameToSlug } from "../utils/slug.js";
 
@@ -18,13 +18,16 @@ export interface PlayerIdentityResult {
   created: boolean;
 }
 
-async function generateUniquePlayerSlug(displayName: string): Promise<string> {
+async function generateUniquePlayerSlug(
+  displayName: string,
+  database: DbClient,
+): Promise<string> {
   const base = nameToSlug(displayName);
   let candidate = base || "player";
   let suffix = 2;
 
   while (true) {
-    const [existing] = await db
+    const [existing] = await database
       .select({ id: players.id })
       .from(players)
       .where(eq(players.slug, candidate))
@@ -38,11 +41,12 @@ async function generateUniquePlayerSlug(displayName: string): Promise<string> {
 
 export async function findOrCreatePlayerByIdentity(
   input: FindOrCreatePlayerByIdentityInput,
+  database: DbClient = db,
 ): Promise<PlayerIdentityResult> {
   const source = input.source.trim();
   const externalId = input.externalId.trim();
 
-  const [existingIdentity] = await db
+  const [existingIdentity] = await database
     .select()
     .from(playerIdentities)
     .where(
@@ -54,7 +58,7 @@ export async function findOrCreatePlayerByIdentity(
     .limit(1);
 
   if (existingIdentity) {
-    const [player] = await db
+    const [player] = await database
       .select()
       .from(players)
       .where(eq(players.id, existingIdentity.playerId))
@@ -69,9 +73,9 @@ export async function findOrCreatePlayerByIdentity(
     return { player, identity: existingIdentity, created: false };
   }
 
-  const slug = await generateUniquePlayerSlug(input.displayName);
+  const slug = await generateUniquePlayerSlug(input.displayName, database);
 
-  const [player] = await db
+  const [player] = await database
     .insert(players)
     .values({
       slug,
@@ -80,7 +84,7 @@ export async function findOrCreatePlayerByIdentity(
     })
     .returning();
 
-  const [identity] = await db
+  const [identity] = await database
     .insert(playerIdentities)
     .values({
       playerId: player.id,

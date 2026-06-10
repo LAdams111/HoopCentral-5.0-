@@ -89,3 +89,7 @@ This endpoint is disabled in production.
 ## Seed data
 
 Existing seed players receive a `manual` identity with `external_id` set to the player's slug. Re-running seed or `npm run db:ensure-identities` will not create duplicates thanks to the `(source, external_id)` unique constraint.
+
+## Ingestion API
+
+Scraper services should POST season data to `/api/ingest/player-season`. See [INGESTION_API.md](./INGESTION_API.md) for the full request/response contract, idempotency rules, and example payloads.
