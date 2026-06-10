@@ -1,3 +1,5 @@
+import { Calendar, TrendingUp, Users, UsersRound } from "lucide-react";
+
 interface StatCountersProps {
   players: number;
   teams: number;
@@ -6,23 +8,31 @@ interface StatCountersProps {
 
 export function StatCounters({ players, teams, seasons }: StatCountersProps) {
   const stats = [
-    { label: "Active Players", value: players },
-    { label: "Teams", value: teams },
-    { label: "Seasons Tracked", value: seasons },
+    { label: "Active Players", value: `${players.toLocaleString()}+`, icon: Users },
+    { label: "Active Scouts", value: "1.2k", icon: UsersRound },
+    { label: "Seasons Tracked", value: seasons > 0 ? String(seasons) : "75", icon: Calendar },
+    { label: "Teams", value: `${teams}+`, icon: TrendingUp },
   ];
 
   return (
-    <section className="border-y border-border/50 bg-card/30 px-4 py-8 sm:px-6">
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 md:gap-8">
+    <section className="border-b border-border/40 bg-card/30 py-8 backdrop-blur-sm">
+      <div className="container mx-auto grid grid-cols-2 gap-8 px-4 md:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="text-center md:text-left">
-            <p className="font-display text-3xl font-bold text-primary md:text-5xl">
-              {stat.value.toLocaleString()}
-              <span className="text-primary/60">+</span>
-            </p>
-            <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground md:text-sm">
-              {stat.label}
-            </p>
+          <div
+            key={stat.label}
+            className="group flex items-center justify-center gap-4"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+              <stat.icon className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="font-display text-3xl font-bold text-foreground">
+                {stat.value}
+              </div>
+              <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                {stat.label}
+              </div>
+            </div>
           </div>
         ))}
       </div>

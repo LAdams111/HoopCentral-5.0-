@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { FavoritesStrip } from "@/components/home/FavoritesStrip";
 import { Hero } from "@/components/home/Hero";
 import { PlayerGrid } from "@/components/home/PlayerGrid";
 import { StatCounters } from "@/components/home/StatCounters";
@@ -34,11 +35,11 @@ export function Home() {
     queryKey: ["season-count"],
     queryFn: getSeasonCount,
   });
-  const { data: featured = [] } = useQuery({
+  const { data: featured = [], isLoading: featuredLoading } = useQuery({
     queryKey: ["featured-players"],
     queryFn: getFeaturedPlayers,
   });
-  const { data: allPlayers = [] } = useQuery({
+  const { data: allPlayers = [], isLoading: playersLoading } = useQuery({
     queryKey: ["all-players-home"],
     queryFn: () => getPlayers(),
   });
@@ -54,25 +55,27 @@ export function Home() {
     <>
       <Hero />
       <StatCounters
-        players={playerCount?.count ?? 0}
+        players={playerCount?.count ?? allPlayers.length}
         teams={teamCount?.count ?? 0}
         seasons={seasonCount?.count ?? 0}
       />
+      <FavoritesStrip players={favorites} />
       <PlayerGrid
-        title="Most Viewed"
+        title="Most"
+        titleAccent="Viewed"
         subtitle="Trending athletes this week"
         players={mostViewed}
+        loading={playersLoading}
+        actionLabel="Explore Trends"
+        actionHref="/players"
       />
       <PlayerGrid
-        title="Featured Athletes"
+        title="Featured"
+        titleAccent="Athletes"
         subtitle="Top performers from the current season"
         players={featured}
-      />
-      <PlayerGrid
-        title="Your Favorites"
-        subtitle="Players you've saved locally"
-        players={favorites}
-        emptyMessage="No favorites yet. Visit a player profile and click the star to save them here."
+        loading={featuredLoading}
+        variant="muted"
       />
     </>
   );

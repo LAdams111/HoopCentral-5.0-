@@ -1,39 +1,29 @@
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { Activity } from "lucide-react";
+import { PlayerSearch } from "@/components/search/PlayerSearch";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 md:pb-24 md:pt-20">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-        }}
-      />
+    <section className="relative overflow-hidden border-b border-border pb-12 pt-16 md:pb-20 md:pt-24">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black_70%,transparent_100%)]" />
 
-      <div className="relative mx-auto max-w-7xl">
-        <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.2em] text-primary">
-          Real-Time Stats
-        </p>
-        <h1 className="font-display text-5xl font-bold leading-[0.85] tracking-tighter text-foreground md:text-8xl lg:text-9xl">
-          <span className="text-glow text-primary">HOOP</span>
-          <br />
-          CENTRAL
+      <div className="container relative z-10 px-4 text-center">
+        <div className="mb-6 inline-flex animate-fade-in-up items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-xs text-primary">
+          <Activity className="h-3 w-3" />
+          <span>REAL-TIME STATS</span>
+        </div>
+
+        <h1 className="mb-6 animate-fade-in-up font-display text-7xl font-bold tracking-tighter text-foreground delay-100 md:text-9xl">
+          <span className="hoop-outline">HOOP</span>
+          <span className="text-glow text-primary">CENTRAL</span>
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl">
+
+        <p className="mx-auto mb-10 max-w-2xl animate-fade-in-up font-body text-xl text-muted-foreground delay-200 md:text-2xl">
           The ultimate database for modern basketball stats. Track performance of
           the biggest stars and hottest prospects.
         </p>
-        <Link
-          to="/players"
-          className="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Browse Players
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+
+        <PlayerSearch />
       </div>
     </section>
   );
