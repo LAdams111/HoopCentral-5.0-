@@ -1,16 +1,7 @@
 import { desc, eq, ilike, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
-import {
-  leagues,
-  playerAwards,
-  playerBiographical,
-  playerSeasonStats,
-  playerStints,
-  players,
-  seasons,
-  teams,
-} from "../db/schema/index.js";
-import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
+import { players, seasons, teams } from "../db/schema/index.js";
+import { cmToFeetInches, kgToLbs } from "../utils/format.js";
 
 export interface PlayerCard {
   id: number;
@@ -62,59 +53,23 @@ export interface PlayerProfile extends PlayerCard {
   leaguesPlayed: string[];
 }
 
-async function toPlayerCard(
+function toPlayerCard(
   player: typeof players.$inferSelect,
-  bio: typeof playerBiographical.$inferSelect | undefined,
   teamName: string | null,
-): Promise<PlayerCard> {
+): PlayerCard {
   return {
     id: player.id,
     name: player.displayName,
-    position: bio?.position ?? "",
+    position: player.position ?? "",
     team: teamName ?? "",
-    height: cmToFeetInches(bio?.heightCm),
-    weight: kgToLbs(bio?.weightKg),
-    jerseyNumber: bio?.jerseyNumber ?? 0,
+    height: cmToFeetInches(player.heightCm),
+    weight: kgToLbs(player.weightKg),
+    jerseyNumber: 0,
     headshotUrl: player.headshotUrl ?? "",
-    bio: bio?.bio ?? null,
+    bio: null,
     profileViews: player.profileViews,
-    hometown: bio?.hometown ?? "",
-    birthDate: bio?.birthDate ?? null,
-  };
-}
-
-function toStatRow(
-  stat: typeof playerSeasonStats.$inferSelect,
-  seasonLabel: string,
-  teamName: string,
-  leagueName: string,
-): PlayerStatRow {
-  const pts = formatStat(stat.pointsPerGame);
-  const reb = formatStat(stat.reboundsPerGame);
-  const ast = formatStat(stat.assistsPerGame);
-  const stl = formatStat(stat.stealsPerGame);
-  const blk = formatStat(stat.blocksPerGame);
-  const fg = formatStat(stat.fgPct);
-
-  return {
-    id: stat.id,
-    season: seasonLabel,
-    team: teamName,
-    league: leagueName,
-    games_played: stat.gamesPlayed,
-    gamesPlayed: stat.gamesPlayed,
-    pts_per_g: pts,
-    pointsPerGame: pts,
-    trb_per_g: reb,
-    reboundsPerGame: reb,
-    ast_per_g: ast,
-    assistsPerGame: ast,
-    stl_per_g: stl,
-    stealsPerGame: stl,
-    blk_per_g: blk,
-    blocksPerGame: blk,
-    fg_pct: fg,
-    fieldGoalPct: fg,
+    hometown: player.hometown ?? "",
+    birthDate: player.birthDate ?? null,
   };
 }
 
@@ -130,20 +85,16 @@ export async function searchPlayers(params: {
   const rows = await db
     .select({
       player: players,
-      bio: playerBiographical,
       teamName: teams.name,
     })
     .from(players)
-    .leftJoin(playerBiographical, eq(players.id, playerBiographical.playerId))
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
     .where(params.q ? ilike(players.displayName, `%${params.q}%`) : undefined)
     .orderBy(desc(players.profileViews))
     .limit(limit)
     .offset(offset);
 
-  return Promise.all(
-    rows.map((r) => toPlayerCard(r.player, r.bio ?? undefined, r.teamName)),
-  );
+  return rows.map((r) => toPlayerCard(r.player, r.teamName));
 }
 
 export async function getPlayerCount(): Promise<number> {
@@ -160,18 +111,14 @@ export async function getFeaturedPlayers(limit = 5): Promise<PlayerCard[]> {
   const rows = await db
     .select({
       player: players,
-      bio: playerBiographical,
       teamName: teams.name,
     })
     .from(players)
-    .leftJoin(playerBiographical, eq(players.id, playerBiographical.playerId))
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
     .orderBy(desc(players.profileViews))
     .limit(limit);
 
-  return Promise.all(
-    rows.map((r) => toPlayerCard(r.player, r.bio ?? undefined, r.teamName)),
-  );
+  return rows.map((r) => toPlayerCard(r.player, r.teamName));
 }
 
 export async function getMostViewedPlayers(limit = 5): Promise<PlayerCard[]> {
@@ -182,100 +129,21 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
   const [row] = await db
     .select({
       player: players,
-      bio: playerBiographical,
       teamName: teams.name,
     })
     .from(players)
-    .leftJoin(playerBiographical, eq(players.id, playerBiographical.playerId))
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
     .where(eq(players.id, id))
     .limit(1);
 
   if (!row) return null;
 
-  const statRows = await db
-    .select({
-      stat: playerSeasonStats,
-      seasonLabel: seasons.label,
-      teamName: teams.name,
-      leagueName: leagues.name,
-    })
-    .from(playerSeasonStats)
-    .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
-    .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
-    .innerJoin(leagues, eq(playerSeasonStats.leagueId, leagues.id))
-    .where(eq(playerSeasonStats.playerId, id))
-    .orderBy(desc(seasons.label));
-
-  const awardRows = await db
-    .select({
-      award: playerAwards,
-      seasonLabel: seasons.label,
-      leagueName: leagues.name,
-    })
-    .from(playerAwards)
-    .leftJoin(seasons, eq(playerAwards.seasonId, seasons.id))
-    .leftJoin(leagues, eq(playerAwards.leagueId, leagues.id))
-    .where(eq(playerAwards.playerId, id));
-
-  const stintRows = await db
-    .select({
-      stint: playerStints,
-      teamName: teams.name,
-      leagueName: leagues.name,
-      seasonLabel: seasons.label,
-    })
-    .from(playerStints)
-    .innerJoin(teams, eq(playerStints.teamId, teams.id))
-    .innerJoin(leagues, eq(playerStints.leagueId, leagues.id))
-    .leftJoin(seasons, eq(playerStints.seasonId, seasons.id))
-    .where(eq(playerStints.playerId, id))
-    .orderBy(seasons.label);
-
-  const careerMap = new Map<string, CareerEntry & { seasons: string[] }>();
-  for (const s of stintRows) {
-    const key = `${s.teamName}-${s.leagueName}`;
-    const existing = careerMap.get(key);
-    const season = s.seasonLabel ?? "";
-    if (existing) {
-      if (season) existing.seasons.push(season);
-    } else {
-      careerMap.set(key, {
-        team: s.teamName,
-        league: s.leagueName,
-        fromSeason: season,
-        toSeason: season || null,
-        seasons: season ? [season] : [],
-      });
-    }
-  }
-
-  const career: CareerEntry[] = [...careerMap.values()].map((c) => {
-    const sorted = [...c.seasons].sort();
-    return {
-      team: c.team,
-      league: c.league,
-      fromSeason: sorted[0] ?? c.fromSeason,
-      toSeason: sorted.length > 0 ? sorted[sorted.length - 1] : c.toSeason,
-    };
-  });
-
-  const leaguesPlayed = [...new Set(statRows.map((s) => s.leagueName))];
-
-  const card = await toPlayerCard(row.player, row.bio ?? undefined, row.teamName);
-
   return {
-    ...card,
-    stats: statRows.map((s) =>
-      toStatRow(s.stat, s.seasonLabel, s.teamName, s.leagueName),
-    ),
-    awards: awardRows.map((a) => ({
-      awardName: a.award.awardName,
-      season: a.seasonLabel,
-      league: a.leagueName,
-    })),
-    career,
-    leaguesPlayed,
+    ...toPlayerCard(row.player, row.teamName),
+    stats: [],
+    awards: [],
+    career: [],
+    leaguesPlayed: [],
   };
 }
 

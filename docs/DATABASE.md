@@ -35,15 +35,14 @@ server/
     ├── index.ts                # Public exports
     ├── migrations/             # Versioned SQL migrations
     │   ├── 0000_initial_schema.sql
+    │   ├── 0001_production_player_schema.sql
     │   └── meta/
     │       └── _journal.json
     └── schema/
-        ├── enums.ts
-        ├── leagues.ts          # leagues table
-        ├── seasons.ts          # seasons table
-        ├── teams.ts            # teams table
-        ├── players.ts          # players table
-        ├── player-details.ts   # biographical, stints, stats, awards
+        ├── leagues.ts
+        ├── seasons.ts
+        ├── teams.ts
+        ├── players.ts
         └── index.ts
 scripts/
 └── seed.ts                     # Sample data loader
@@ -52,56 +51,47 @@ scripts/
 ## Core tables
 
 ### `leagues`
-Basketball leagues (NBA, WNBA, etc.).
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | serial | Primary key |
+| name | text | Display name (e.g. NBA, WNBA) |
 | slug | text | Unique URL identifier |
-| name | text | Display name |
-| country | text | Optional |
-| is_active | integer | 1 = active |
-
-### `seasons`
-Season labels per league (e.g. `2024-25`).
-
-| Column | Type | Notes |
-|--------|------|-------|
-| id | serial | Primary key |
-| league_id | integer | FK → leagues |
-| label | text | Unique per league |
-| start_date / end_date | date | Optional |
 
 ### `teams`
-Teams belonging to a league.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial | Primary key |
+| name | text | Full name |
+| abbreviation | text | e.g. LAL, IND |
+| league_id | integer | FK → leagues |
+
+### `seasons`
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | serial | Primary key |
 | league_id | integer | FK → leagues |
-| slug | text | URL identifier |
-| name | text | Full name |
-| abbreviation | text | e.g. LAL |
-| city | text | Optional |
+| season_label | text | Unique per league (e.g. `2024-25`) |
 
 ### `players`
-Canonical player records.
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | serial | Primary key |
 | slug | text | Unique URL identifier |
 | display_name | text | Full name |
-| current_team_id | integer | FK → teams |
-| status | enum | active / retired / deceased |
-| profile_views | integer | Homepage "Most Viewed" counter |
+| current_team_id | integer | FK → teams (current team) |
+| position | text | e.g. Point Guard |
+| height_cm | integer | Height in centimeters |
+| weight_kg | integer | Weight in kilograms |
+| birth_date | date | Date of birth |
+| hometown | text | Birthplace / hometown |
 | headshot_url | text | Image URL |
-
-### Supporting tables (Phase 1)
-- `player_biographical` — birth date, height, weight, position, jersey
-- `player_stints` — team/league/season career history
-- `player_season_stats` — per-season stat lines
-- `player_awards` — awards and honors
+| profile_views | integer | Profile view counter |
+| created_at | timestamptz | Row created |
+| updated_at | timestamptz | Last updated |
 
 ## Commands
 
@@ -112,7 +102,7 @@ Run from the **repository root**:
 | `npm run db:generate` | Generate a new migration from schema changes |
 | `npm run db:migrate` | Apply pending migrations to the database |
 | `npm run db:push` | Push schema directly (dev only — skips migration history) |
-| `npm run db:seed` | Load sample NBA players, teams, leagues, seasons |
+| `npm run db:seed` | Load 5 sample players, teams, leagues, seasons |
 | `npm run db:setup` | Migrate + seed (used by Railway release step) |
 | `npm run db:studio` | Open Drizzle Studio GUI |
 
@@ -171,10 +161,13 @@ Railway uses this endpoint as the deploy health check.
 ## Seed data
 
 `scripts/seed.ts` loads:
-- 1 NBA league
-- 12 NBA teams
-- Multiple seasons (derived from player stats)
-- 12 sample players with biographical info, career stints, season stats, and awards
+
+| Entity | Count | Details |
+|--------|-------|---------|
+| Leagues | 2 | NBA, WNBA |
+| Teams | 5 | LAL, GSW, DEN, SAS, IND |
+| Seasons | 2 | NBA 2024-25, WNBA 2024 |
+| Players | 5 | LeBron James, Stephen Curry, Nikola Jokic, Victor Wembanyama, Caitlin Clark |
 
 The seed is idempotent: it skips if players already exist unless `FORCE_SEED=true`.
 

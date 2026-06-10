@@ -4,12 +4,10 @@ const { defineConfig } = require("drizzle-kit");
 
 module.exports = defineConfig({
   schema: [
-    "./src/db/schema/enums.ts",
     "./src/db/schema/leagues.ts",
     "./src/db/schema/seasons.ts",
     "./src/db/schema/teams.ts",
     "./src/db/schema/players.ts",
-    "./src/db/schema/player-details.ts",
   ],
   out: "./src/db/migrations",
   dialect: "postgresql",
