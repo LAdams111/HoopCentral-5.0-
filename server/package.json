@@ -13,6 +13,8 @@
     "db:ensure-teams": "tsx --tsconfig tsconfig.json ../scripts/ensure-teams.ts",
     "db:ensure-identities": "tsx --tsconfig tsconfig.json ../scripts/ensure-identities.ts",
     "db:test-ingest": "tsx --tsconfig tsconfig.json ../scripts/test-ingest.ts",
+    "ingest:test-data": "tsx --tsconfig tsconfig.json ../scripts/ingest-test-data.ts",
+    "ingest:verify": "tsx --tsconfig tsconfig.json ../scripts/ingest-verify.ts",
     "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {

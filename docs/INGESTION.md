@@ -93,3 +93,5 @@ Existing seed players receive a `manual` identity with `external_id` set to the 
 ## Ingestion API
 
 Scraper services should POST season data to `/api/ingest/player-season`. See [INGESTION_API.md](./INGESTION_API.md) for the full request/response contract, idempotency rules, and example payloads.
+
+For local end-to-end testing with simulated scrapers, see [INGESTION_TESTING.md](./INGESTION_TESTING.md).
