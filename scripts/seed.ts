@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { NBA_TEAMS_WITH_SLUGS } from "../server/src/data/nba-teams.js";
+import { ensureLeagueTeams } from "./ensure-teams.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -36,11 +38,18 @@ const LEAGUES = [
 ] as const;
 
 const TEAMS = [
-  { abbrev: "LAL", name: "Los Angeles Lakers", leagueSlug: "nba" },
-  { abbrev: "GSW", name: "Golden State Warriors", leagueSlug: "nba" },
-  { abbrev: "DEN", name: "Denver Nuggets", leagueSlug: "nba" },
-  { abbrev: "SAS", name: "San Antonio Spurs", leagueSlug: "nba" },
-  { abbrev: "IND", name: "Indiana Fever", leagueSlug: "wnba" },
+  ...NBA_TEAMS_WITH_SLUGS.map((team) => ({
+    abbrev: team.abbrev,
+    name: team.name,
+    slug: team.slug,
+    leagueSlug: "nba" as const,
+  })),
+  {
+    abbrev: "IND",
+    name: "Indiana Fever",
+    slug: "indiana-fever",
+    leagueSlug: "wnba" as const,
+  },
 ] as const;
 
 const SEASON_LABELS = [
@@ -259,10 +268,11 @@ async function seed() {
     process.env.FORCE_SEED !== "true"
   ) {
     console.log(
-      `Database already has ${existingCount} players and ${statCount} stat rows. Skipping seed.`,
+      `Database already has ${existingCount} players and ${statCount} stat rows. Skipping player seed.`,
     );
     console.log("Set FORCE_SEED=true to wipe and re-seed.");
     await closeDatabaseConnection();
+    await ensureLeagueTeams();
     return;
   }
 
@@ -300,10 +310,11 @@ async function seed() {
       .values({
         name: team.name,
         abbreviation: team.abbrev,
+        slug: team.slug,
         leagueId: leagueMap.get(team.leagueSlug)!,
       })
       .returning();
-    teamMap.set(team.abbrev, row.id);
+    teamMap.set(`${team.leagueSlug}:${team.abbrev}`, row.id);
   }
 
   const seasonMap = new Map<string, number>();
@@ -321,7 +332,7 @@ async function seed() {
 
   for (const player of SEED_PLAYERS) {
     const leagueId = leagueMap.get(player.leagueSlug)!;
-    const teamId = teamMap.get(player.teamAbbrev)!;
+    const teamId = teamMap.get(`${player.leagueSlug}:${player.teamAbbrev}`)!;
 
     const [playerRow] = await db
       .insert(schema.players)
@@ -376,6 +387,7 @@ async function seed() {
     `Seeded ${SEED_PLAYERS.length} players with career stints and season stats (2 seasons each).`,
   );
   await closeDatabaseConnection();
+  await ensureLeagueTeams();
 }
 
 seed().catch((err) => {

@@ -1,31 +1,54 @@
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
-import { NBA_TEAM_IDS, nbaTeamLogoUrl, seasonLabelToUrlYear } from "@/lib/constants";
+import { nbaTeamLogoUrl } from "@/lib/constants";
+import { getLeague } from "@/lib/api";
 import { findLeague, LEAGUE_DISPLAY } from "@/lib/leagues";
 
-const NBA_TEAM_NAMES = Object.keys(NBA_TEAM_IDS);
-const DEFAULT_SEASON = "2025-26";
+function toApiLeagueSlug(slug: string | undefined): string | undefined {
+  if (!slug) return undefined;
+  const league = findLeague(slug);
+  if (league?.slug === "NBA") return "nba";
+  if (league?.slug === "WNBA") return "wnba";
+  return slug.trim().toLowerCase();
+}
 
 export function LeagueDetail() {
   const { league: leagueSlug } = useParams<{ league: string }>();
   const league = findLeague(leagueSlug);
   const meta = league ? LEAGUE_DISPLAY[league.slug] : undefined;
+  const apiSlug = toApiLeagueSlug(leagueSlug);
   const [query, setQuery] = useState("");
 
+  const { data: dbLeague, isLoading } = useQuery({
+    queryKey: ["league", apiSlug],
+    queryFn: () => getLeague(apiSlug!),
+    enabled: Boolean(apiSlug),
+    retry: false,
+  });
+
   const teams = useMemo(() => {
-    if (league?.slug !== "NBA") return [];
-    return NBA_TEAM_NAMES.filter((name) =>
-      name.toLowerCase().includes(query.trim().toLowerCase()),
-    ).map((name) => ({ name, season: DEFAULT_SEASON }));
-  }, [league?.slug, query]);
+    const source = dbLeague?.teams ?? [];
+    const trimmed = query.trim().toLowerCase();
+    if (!trimmed) return source;
+    return source.filter(
+      (team) =>
+        team.name.toLowerCase().includes(trimmed) ||
+        team.abbreviation.toLowerCase().includes(trimmed),
+    );
+  }, [dbLeague?.teams, query]);
 
   if (!league) {
     return (
       <div className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground">League not found.</p>
-        <BackButton fallback="/leagues" className="mt-4 text-primary hover:underline" label="Back to Leagues" />
+        <BackButton
+          fallback="/leagues"
+          className="mt-4 text-primary hover:underline"
+          label="Back to Leagues"
+        />
       </div>
     );
   }
@@ -34,6 +57,7 @@ export function LeagueDetail() {
   const tier = meta?.tier ?? league.tier;
   const description = meta?.description ?? league.description;
   const logoUrl = meta?.logoUrl ?? league.logoUrl;
+  const totalTeams = dbLeague?.teams.length ?? 0;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -74,9 +98,9 @@ export function LeagueDetail() {
             <h2 className="font-display text-3xl font-bold uppercase tracking-tight">
               Teams
             </h2>
-            {teams.length > 0 && (
+            {totalTeams > 0 && (
               <span className="font-mono text-sm text-muted-foreground">
-                {teams.length} of {NBA_TEAM_NAMES.length}
+                {teams.length} of {totalTeams}
               </span>
             )}
           </div>
@@ -92,12 +116,16 @@ export function LeagueDetail() {
           </div>
         </div>
 
-        {teams.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
+        ) : teams.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {teams.map((team) => (
               <Link
-                key={team.name}
-                to={`/roster/${encodeURIComponent(team.name)}/${seasonLabelToUrlYear(team.season)}`}
+                key={team.slug}
+                to={`/teams/${team.slug}`}
                 className="hover-elevate rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
               >
                 <div className="flex items-start gap-2">
@@ -108,7 +136,7 @@ export function LeagueDetail() {
                     <div className="truncate text-sm font-bold">{team.name}</div>
                     <div className="mt-2 flex items-center justify-between gap-1">
                       <span className="font-mono text-[9px] text-muted-foreground">
-                        {team.season}
+                        {team.abbreviation}
                       </span>
                       <ArrowRight className="h-3 w-3 text-muted-foreground" />
                     </div>
@@ -128,7 +156,7 @@ export function LeagueDetail() {
               No teams found in this league yet
             </p>
             <p className="font-mono text-sm uppercase tracking-widest text-muted-foreground">
-              Teams will appear here as players are added
+              Teams will appear here as they are added to the database
             </p>
           </div>
         )}

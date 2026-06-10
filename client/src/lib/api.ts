@@ -3,6 +3,7 @@ export interface PlayerCard {
   name: string;
   position: string;
   team: string;
+  teamSlug: string | null;
   height: string;
   weight: string;
   jerseyNumber: number;
@@ -17,7 +18,9 @@ export interface PlayerStat {
   id: number;
   season: string;
   team: string;
+  teamSlug: string;
   league: string;
+  leagueSlug: string;
   games_played: number | null;
   gamesPlayed: number | null;
   pts_per_g: string;
@@ -44,14 +47,53 @@ export interface CareerEntry {
 }
 
 export interface PlayerProfile extends PlayerCard {
+  league: string | null;
+  leagueSlug: string | null;
   stats: PlayerStat[];
   awards: { awardName: string; season: string | null; league: string | null }[];
   career: CareerEntry[];
   leaguesPlayed: string[];
 }
 
+export interface LeagueSummary {
+  id: number;
+  name: string;
+  slug: string;
+  teamCount: number;
+}
+
+export interface LeagueTeam {
+  id: number;
+  name: string;
+  abbreviation: string;
+  slug: string;
+}
+
+export interface LeagueDetail extends LeagueSummary {
+  teams: LeagueTeam[];
+}
+
+export interface TeamLeagueInfo {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface TeamSummary {
+  id: number;
+  name: string;
+  abbreviation: string;
+  slug: string;
+  league: TeamLeagueInfo;
+}
+
+export interface TeamDetail extends TeamSummary {
+  roster: PlayerCard[];
+  latestSeasonLabel: string | null;
+}
+
 export interface TeamRosterResponse {
-  team: { id: number; name: string; abbreviation: string };
+  team: { id: number; name: string; abbreviation: string; slug: string };
   seasonLabel: string;
   players: PlayerCard[];
 }
@@ -85,6 +127,25 @@ export function getPlayerCount(): Promise<{ count: number }> {
 
 export function getTeamCount(): Promise<{ count: number }> {
   return fetchJson("/api/teams/count");
+}
+
+export function getLeagues(): Promise<LeagueSummary[]> {
+  return fetchJson("/api/leagues");
+}
+
+export function getLeague(slug: string): Promise<LeagueDetail> {
+  return fetchJson(`/api/leagues/${encodeURIComponent(slug)}`);
+}
+
+export function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
+  const params = new URLSearchParams();
+  if (leagueSlug) params.set("league", leagueSlug);
+  const qs = params.toString();
+  return fetchJson(`/api/teams/all${qs ? `?${qs}` : ""}`);
+}
+
+export function getTeam(slug: string): Promise<TeamDetail> {
+  return fetchJson(`/api/teams/${encodeURIComponent(slug)}`);
 }
 
 export function getTeamRoster(

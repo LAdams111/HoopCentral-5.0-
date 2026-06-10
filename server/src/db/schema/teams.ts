@@ -5,6 +5,7 @@ export const teams = pgTable("teams", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   abbreviation: text("abbreviation").notNull(),
+  slug: text("slug").notNull().unique(),
   leagueId: integer("league_id")
     .notNull()
     .references(() => leagues.id),

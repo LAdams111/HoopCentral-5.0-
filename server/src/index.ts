@@ -4,6 +4,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { checkDatabaseConnection } from "./db/index.js";
+import { leaguesRouter } from "./routes/leagues.js";
 import { playersRouter, statsRouter } from "./routes/players.js";
 import { teamsRouter } from "./routes/teams.js";
 import { getFeaturedPlayers } from "./services/player.service.js";
@@ -53,6 +54,7 @@ app.get("/api/featured-players", async (_req, res) => {
   }
 });
 
+app.use("/api/leagues", leaguesRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api", statsRouter);

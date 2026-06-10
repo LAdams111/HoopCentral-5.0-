@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { PlayerStat } from "@/lib/api";
 
 export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
@@ -40,10 +41,20 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
               <tr key={stat.id} className="transition-colors hover:bg-muted/50">
                 <td className="px-6 py-4 font-mono font-medium">{stat.season}</td>
                 <td className="whitespace-nowrap px-6 py-4 font-mono text-muted-foreground">
-                  {stat.league}
+                  <Link
+                    to={`/leagues/${stat.leagueSlug}`}
+                    className="text-primary hover:underline"
+                  >
+                    {stat.league}
+                  </Link>
                 </td>
                 <td className="px-6 py-4 font-mono">
-                  <span className="whitespace-nowrap text-primary">{stat.team}</span>
+                  <Link
+                    to={`/teams/${stat.teamSlug}`}
+                    className="whitespace-nowrap text-primary hover:underline"
+                  >
+                    {stat.team}
+                  </Link>
                 </td>
                 <td className="px-6 py-4 text-base text-muted-foreground">
                   {stat.games_played ?? "—"}

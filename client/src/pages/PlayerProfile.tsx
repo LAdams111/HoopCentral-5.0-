@@ -164,9 +164,28 @@ export function PlayerProfile() {
             <div className="flex flex-1 flex-col items-center justify-end pb-4 pt-2 md:items-start md:pb-8 md:pt-0">
               <div className="mb-4 flex w-full flex-col items-center justify-between gap-4 md:mb-6 md:flex-row md:items-end">
                 <div className="text-center md:text-left">
-                  <h3 className="mb-1 font-mono text-sm uppercase tracking-widest text-primary md:text-lg">
-                    {player.team}
-                  </h3>
+                  <div className="mb-1 flex flex-wrap items-center justify-center gap-2 md:justify-start">
+                    {player.leagueSlug && player.league ? (
+                      <Link
+                        to={`/leagues/${player.leagueSlug}`}
+                        className="font-mono text-sm uppercase tracking-widest text-muted-foreground hover:text-primary hover:underline md:text-base"
+                      >
+                        {player.league}
+                      </Link>
+                    ) : null}
+                    {player.teamSlug && player.team ? (
+                      <Link
+                        to={`/teams/${player.teamSlug}`}
+                        className="font-mono text-sm uppercase tracking-widest text-primary hover:underline md:text-lg"
+                      >
+                        {player.team}
+                      </Link>
+                    ) : (
+                      <h3 className="font-mono text-sm uppercase tracking-widest text-primary md:text-lg">
+                        {player.team}
+                      </h3>
+                    )}
+                  </div>
                   <h1 className="font-display text-4xl font-bold leading-[0.85] tracking-tighter text-foreground md:text-8xl">
                     {player.name}
                   </h1>

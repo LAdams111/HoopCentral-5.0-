@@ -1,17 +1,35 @@
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "../db/index.js";
 import {
+  leagues,
   playerSeasonStats,
   players,
   seasons,
   teams,
 } from "../db/schema/index.js";
+import { normalizeSlugParam } from "../utils/slug.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
   id: number;
   name: string;
   abbreviation: string;
+  slug: string;
+}
+
+export interface TeamLeagueInfo {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface TeamSummary extends TeamInfo {
+  league: TeamLeagueInfo;
+}
+
+export interface TeamDetail extends TeamSummary {
+  roster: PlayerCard[];
+  latestSeasonLabel: string | null;
 }
 
 export interface TeamRoster {
@@ -22,12 +40,14 @@ export interface TeamRoster {
 
 async function findTeam(teamKey: string) {
   const decoded = decodeURIComponent(teamKey).trim();
+  const slugCandidate = normalizeSlugParam(decoded);
 
   const [row] = await db
     .select()
     .from(teams)
     .where(
       or(
+        eq(teams.slug, slugCandidate),
         ilike(teams.abbreviation, decoded),
         ilike(teams.name, decoded),
       ),
@@ -81,6 +101,106 @@ async function findLatestSeasonForTeam(teamId: number) {
   return row?.season ?? null;
 }
 
+function toTeamInfo(team: typeof teams.$inferSelect): TeamInfo {
+  return {
+    id: team.id,
+    name: team.name,
+    abbreviation: team.abbreviation,
+    slug: team.slug,
+  };
+}
+
+export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
+  const rows = await db
+    .select({
+      team: teams,
+      league: leagues,
+    })
+    .from(teams)
+    .innerJoin(leagues, eq(teams.leagueId, leagues.id))
+    .where(
+      leagueSlug
+        ? eq(leagues.slug, normalizeSlugParam(leagueSlug))
+        : undefined,
+    )
+    .orderBy(teams.name);
+
+  return rows.map((row) => ({
+    ...toTeamInfo(row.team),
+    league: {
+      id: row.league.id,
+      name: row.league.name,
+      slug: row.league.slug,
+    },
+  }));
+}
+
+export async function getTeamBySlug(slug: string): Promise<TeamDetail | null> {
+  const normalized = normalizeSlugParam(slug);
+
+  const [row] = await db
+    .select({
+      team: teams,
+      league: leagues,
+    })
+    .from(teams)
+    .innerJoin(leagues, eq(teams.leagueId, leagues.id))
+    .where(eq(teams.slug, normalized))
+    .limit(1);
+
+  if (!row) return null;
+
+  const latestSeason = await findLatestSeasonForTeam(row.team.id);
+  let roster: PlayerCard[] = [];
+
+  if (latestSeason) {
+    const statRows = await db
+      .select({
+        player: players,
+        teamName: teams.name,
+      })
+      .from(playerSeasonStats)
+      .innerJoin(players, eq(playerSeasonStats.playerId, players.id))
+      .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
+      .where(
+        and(
+          eq(playerSeasonStats.teamId, row.team.id),
+          eq(playerSeasonStats.seasonId, latestSeason.id),
+        ),
+      )
+      .orderBy(players.displayName);
+
+    roster = statRows.map((statRow) =>
+      toPlayerCard(statRow.player, statRow.teamName),
+    );
+  } else {
+    const currentRows = await db
+      .select({
+        player: players,
+        teamName: teams.name,
+      })
+      .from(players)
+      .innerJoin(teams, eq(players.currentTeamId, teams.id))
+      .where(eq(players.currentTeamId, row.team.id))
+      .orderBy(players.displayName);
+
+    roster = currentRows.map((currentRow) =>
+      toPlayerCard(currentRow.player, currentRow.teamName),
+    );
+  }
+
+  return {
+    ...toTeamInfo(row.team),
+    league: {
+      id: row.league.id,
+      name: row.league.name,
+      slug: row.league.slug,
+    },
+    roster,
+    latestSeasonLabel: latestSeason?.seasonLabel ?? null,
+  };
+}
+
 export async function getTeamRoster(
   teamKey: string,
   seasonKey: string,
@@ -94,11 +214,7 @@ export async function getTeamRoster(
 
   if (!season) {
     return {
-      team: {
-        id: team.id,
-        name: team.name,
-        abbreviation: team.abbreviation,
-      },
+      team: toTeamInfo(team),
       seasonLabel: decodeURIComponent(seasonKey).trim(),
       players: [],
     };
@@ -121,11 +237,7 @@ export async function getTeamRoster(
     .orderBy(players.displayName);
 
   return {
-    team: {
-      id: team.id,
-      name: team.name,
-      abbreviation: team.abbreviation,
-    },
+    team: toTeamInfo(team),
     seasonLabel: season.seasonLabel,
     players: rows.map((row) => toPlayerCard(row.player, row.teamName)),
   };

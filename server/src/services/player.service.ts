@@ -15,6 +15,7 @@ export interface PlayerCard {
   name: string;
   position: string;
   team: string;
+  teamSlug: string | null;
   height: string;
   weight: string;
   jerseyNumber: number;
@@ -29,7 +30,9 @@ export interface PlayerStatRow {
   id: number;
   season: string;
   team: string;
+  teamSlug: string;
   league: string;
+  leagueSlug: string;
   games_played: number | null;
   gamesPlayed: number | null;
   pts_per_g: string;
@@ -56,6 +59,8 @@ export interface CareerEntry {
 }
 
 export interface PlayerProfile extends PlayerCard {
+  league: string | null;
+  leagueSlug: string | null;
   stats: PlayerStatRow[];
   awards: { awardName: string; season: string | null; league: string | null }[];
   career: CareerEntry[];
@@ -65,12 +70,14 @@ export interface PlayerProfile extends PlayerCard {
 export function toPlayerCard(
   player: typeof players.$inferSelect,
   teamName: string | null,
+  teamSlug: string | null = null,
 ): PlayerCard {
   return {
     id: player.id,
     name: player.displayName,
     position: player.position ?? "",
     team: teamName ?? "",
+    teamSlug,
     height: cmToFeetInches(player.heightCm),
     weight: kgToLbs(player.weightKg),
     jerseyNumber: 0,
@@ -86,7 +93,9 @@ function toStatRow(
   stat: typeof playerSeasonStats.$inferSelect,
   seasonLabel: string,
   teamName: string,
+  teamSlug: string,
   leagueName: string,
+  leagueSlug: string,
 ): PlayerStatRow {
   const pts = formatStat(stat.pointsPerGame);
   const reb = formatStat(stat.reboundsPerGame);
@@ -96,7 +105,9 @@ function toStatRow(
     id: stat.id,
     season: seasonLabel,
     team: teamName,
+    teamSlug,
     league: leagueName,
+    leagueSlug,
     games_played: stat.gamesPlayed,
     gamesPlayed: stat.gamesPlayed,
     pts_per_g: pts,
@@ -127,6 +138,7 @@ export async function searchPlayers(params: {
     .select({
       player: players,
       teamName: teams.name,
+      teamSlug: teams.slug,
     })
     .from(players)
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
@@ -135,7 +147,7 @@ export async function searchPlayers(params: {
     .limit(limit)
     .offset(offset);
 
-  return rows.map((r) => toPlayerCard(r.player, r.teamName));
+  return rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug));
 }
 
 export async function getPlayerCount(): Promise<number> {
@@ -153,13 +165,14 @@ export async function getFeaturedPlayers(limit = 5): Promise<PlayerCard[]> {
     .select({
       player: players,
       teamName: teams.name,
+      teamSlug: teams.slug,
     })
     .from(players)
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
     .orderBy(desc(players.profileViews))
     .limit(limit);
 
-  return rows.map((r) => toPlayerCard(r.player, r.teamName));
+  return rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug));
 }
 
 export async function getMostViewedPlayers(limit = 5): Promise<PlayerCard[]> {
@@ -171,9 +184,13 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
     .select({
       player: players,
       teamName: teams.name,
+      teamSlug: teams.slug,
+      leagueName: leagues.name,
+      leagueSlug: leagues.slug,
     })
     .from(players)
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
+    .leftJoin(leagues, eq(teams.leagueId, leagues.id))
     .where(eq(players.id, id))
     .limit(1);
 
@@ -184,7 +201,9 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
       stat: playerSeasonStats,
       seasonLabel: seasons.seasonLabel,
       teamName: teams.name,
+      teamSlug: teams.slug,
       leagueName: leagues.name,
+      leagueSlug: leagues.slug,
     })
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
@@ -219,9 +238,18 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
   const leaguesPlayed = [...new Set(statRows.map((s) => s.leagueName))];
 
   return {
-    ...toPlayerCard(row.player, row.teamName),
+    ...toPlayerCard(row.player, row.teamName, row.teamSlug),
+    league: row.leagueName ?? null,
+    leagueSlug: row.leagueSlug ?? null,
     stats: statRows.map((s) =>
-      toStatRow(s.stat, s.seasonLabel, s.teamName, s.leagueName),
+      toStatRow(
+        s.stat,
+        s.seasonLabel,
+        s.teamName,
+        s.teamSlug,
+        s.leagueName,
+        s.leagueSlug,
+      ),
     ),
     awards: [],
     career,
