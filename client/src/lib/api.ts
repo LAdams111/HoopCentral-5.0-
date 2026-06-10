@@ -50,6 +50,12 @@ export interface PlayerProfile extends PlayerCard {
   leaguesPlayed: string[];
 }
 
+export interface TeamRosterResponse {
+  team: { id: number; name: string; abbreviation: string };
+  seasonLabel: string;
+  players: PlayerCard[];
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) {
@@ -79,6 +85,19 @@ export function getPlayerCount(): Promise<{ count: number }> {
 
 export function getTeamCount(): Promise<{ count: number }> {
   return fetchJson("/api/teams/count");
+}
+
+export function getTeamRoster(
+  team: string,
+  season: string,
+): Promise<TeamRosterResponse> {
+  return fetchJson(
+    `/api/teams/${encodeURIComponent(team)}/roster/${encodeURIComponent(season)}`,
+  );
+}
+
+export function getTeamSeasons(team: string): Promise<string[]> {
+  return fetchJson(`/api/teams/${encodeURIComponent(team)}/seasons`);
 }
 
 export function getSeasonCount(): Promise<{ count: number }> {

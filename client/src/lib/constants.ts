@@ -49,6 +49,10 @@ export function nbaTeamLogoUrl(teamName: string, variant: "global" | "primary" =
   return `https://cdn.nba.com/logos/nba/${id}/${path}/L/logo.svg`;
 }
 
+export function seasonLabelToUrlYear(seasonLabel: string): string {
+  return seasonLabel.split("-")[0] ?? seasonLabel;
+}
+
 export const NAV_ITEMS: {
   label: string;
   href: string;

@@ -7,6 +7,7 @@ import { Leagues } from "./pages/Leagues";
 import { PlayerProfile } from "./pages/PlayerProfile";
 import { Players } from "./pages/Players";
 import { Prospects } from "./pages/Prospects";
+import { Roster } from "./pages/Roster";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/players" element={<Players />} />
         <Route path="/players/:id" element={<PlayerProfile />} />
+        <Route path="/roster/:team/:season" element={<Roster />} />
         <Route path="/leagues" element={<Leagues />} />
         <Route path="/leagues/:league" element={<LeagueDetail />} />
         <Route path="/prospects" element={<Prospects />} />

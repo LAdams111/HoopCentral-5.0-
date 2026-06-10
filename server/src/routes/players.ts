@@ -3,7 +3,6 @@ import {
   getPlayerById,
   getPlayerCount,
   getSeasonCount,
-  getTeamCount,
   incrementProfileViews,
   searchPlayers,
 } from "../services/player.service.js";
@@ -70,16 +69,6 @@ playersRouter.post("/:id/view", async (req, res) => {
 });
 
 export const statsRouter = Router();
-
-statsRouter.get("/teams/count", async (_req, res) => {
-  try {
-    const count = await getTeamCount();
-    res.json({ count });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get team count" } });
-  }
-});
 
 statsRouter.get("/seasons/count", async (_req, res) => {
   try {

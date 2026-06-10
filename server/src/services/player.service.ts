@@ -62,7 +62,7 @@ export interface PlayerProfile extends PlayerCard {
   leaguesPlayed: string[];
 }
 
-function toPlayerCard(
+export function toPlayerCard(
   player: typeof players.$inferSelect,
   teamName: string | null,
 ): PlayerCard {

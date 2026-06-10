@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
-import { NBA_TEAM_IDS, nbaTeamLogoUrl } from "@/lib/constants";
+import { NBA_TEAM_IDS, nbaTeamLogoUrl, seasonLabelToUrlYear } from "@/lib/constants";
 import { findLeague, LEAGUE_DISPLAY } from "@/lib/leagues";
 
 const NBA_TEAM_NAMES = Object.keys(NBA_TEAM_IDS);
@@ -104,7 +104,7 @@ export function LeagueDetail() {
             {teams.map((team) => (
               <Link
                 key={team.name}
-                to={`/players?q=${encodeURIComponent(team.name)}`}
+                to={`/roster/${encodeURIComponent(team.name)}/${seasonLabelToUrlYear(team.season)}`}
                 className="hover-elevate rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
               >
                 <div className="flex items-start gap-2">
