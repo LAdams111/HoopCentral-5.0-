@@ -100,6 +100,8 @@ function toStatRow(
   const pts = formatStat(stat.pointsPerGame);
   const reb = formatStat(stat.reboundsPerGame);
   const ast = formatStat(stat.assistsPerGame);
+  const stl = formatStat(stat.stealsPerGame);
+  const blk = formatStat(stat.blocksPerGame);
 
   return {
     id: stat.id,
@@ -116,10 +118,10 @@ function toStatRow(
     reboundsPerGame: reb,
     ast_per_g: ast,
     assistsPerGame: ast,
-    stl_per_g: "—",
-    stealsPerGame: "—",
-    blk_per_g: "—",
-    blocksPerGame: "—",
+    stl_per_g: stl,
+    stealsPerGame: stl,
+    blk_per_g: blk,
+    blocksPerGame: blk,
     fg_pct: "—",
     fieldGoalPct: "—",
   };

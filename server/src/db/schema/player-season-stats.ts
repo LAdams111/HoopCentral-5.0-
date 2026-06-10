@@ -24,6 +24,8 @@ export const playerSeasonStats = pgTable(
     pointsPerGame: numeric("points_per_game", { precision: 5, scale: 1 }),
     reboundsPerGame: numeric("rebounds_per_game", { precision: 5, scale: 1 }),
     assistsPerGame: numeric("assists_per_game", { precision: 5, scale: 1 }),
+    stealsPerGame: numeric("steals_per_game", { precision: 5, scale: 1 }),
+    blocksPerGame: numeric("blocks_per_game", { precision: 5, scale: 1 }),
   },
   (t) => [unique().on(t.playerId, t.teamId, t.seasonId, t.leagueId)],
 );

@@ -40,6 +40,8 @@ export interface IngestPlayerSeasonInput {
     pointsPerGame: number;
     reboundsPerGame: number;
     assistsPerGame: number;
+    stealsPerGame?: number | null;
+    blocksPerGame?: number | null;
   };
 }
 
@@ -157,6 +159,8 @@ export function parseIngestPlayerSeasonBody(body: unknown): IngestPlayerSeasonIn
       pointsPerGame: requireNumber(statsObj.pointsPerGame, "stats.pointsPerGame"),
       reboundsPerGame: requireNumber(statsObj.reboundsPerGame, "stats.reboundsPerGame"),
       assistsPerGame: requireNumber(statsObj.assistsPerGame, "stats.assistsPerGame"),
+      stealsPerGame: optionalNumber(statsObj.stealsPerGame, "stats.stealsPerGame"),
+      blocksPerGame: optionalNumber(statsObj.blocksPerGame, "stats.blocksPerGame"),
     },
   };
 }
@@ -283,6 +287,8 @@ async function upsertSeasonStats(
     pointsPerGame: number;
     reboundsPerGame: number;
     assistsPerGame: number;
+    stealsPerGame?: number | null;
+    blocksPerGame?: number | null;
   },
 ): Promise<boolean> {
   const [existing] = await database
@@ -298,12 +304,26 @@ async function upsertSeasonStats(
     )
     .limit(1);
 
-  const values = {
+  const values: {
+    gamesPlayed: number;
+    pointsPerGame: string;
+    reboundsPerGame: string;
+    assistsPerGame: string;
+    stealsPerGame?: string;
+    blocksPerGame?: string;
+  } = {
     gamesPlayed: params.gamesPlayed,
     pointsPerGame: String(params.pointsPerGame),
     reboundsPerGame: String(params.reboundsPerGame),
     assistsPerGame: String(params.assistsPerGame),
   };
+
+  if (params.stealsPerGame != null) {
+    values.stealsPerGame = String(params.stealsPerGame);
+  }
+  if (params.blocksPerGame != null) {
+    values.blocksPerGame = String(params.blocksPerGame);
+  }
 
   if (existing) {
     await database
@@ -378,6 +398,8 @@ export async function ingestPlayerSeason(
       pointsPerGame: input.stats.pointsPerGame,
       reboundsPerGame: input.stats.reboundsPerGame,
       assistsPerGame: input.stats.assistsPerGame,
+      stealsPerGame: input.stats.stealsPerGame,
+      blocksPerGame: input.stats.blocksPerGame,
     });
 
     return {

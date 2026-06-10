@@ -53,7 +53,9 @@ If `INGEST_API_KEY` is not set, the endpoint is open (intended for local develop
     "gamesPlayed": 70,
     "pointsPerGame": 24.4,
     "reboundsPerGame": 7.8,
-    "assistsPerGame": 8.2
+    "assistsPerGame": 8.2,
+    "stealsPerGame": 1.0,
+    "blocksPerGame": 0.6
   }
 }
 ```
@@ -77,6 +79,8 @@ If `INGEST_API_KEY` is not set, the endpoint is open (intended for local develop
 | `stats.assistsPerGame` | number | Assists per game |
 
 Optional player fields: `birthDate`, `position`, `heightCm`, `weightKg`, `hometown`, `headshotUrl`.
+
+Optional stats fields: `stealsPerGame`, `blocksPerGame`. Older scraper payloads without these fields remain valid; existing steals/blocks values are left unchanged on update when omitted.
 
 ## Response
 
@@ -152,7 +156,9 @@ curl -X POST http://localhost:3001/api/ingest/player-season \
       "gamesPlayed": 70,
       "pointsPerGame": 24.4,
       "reboundsPerGame": 7.8,
-      "assistsPerGame": 8.2
+      "assistsPerGame": 8.2,
+      "stealsPerGame": 1.0,
+      "blocksPerGame": 0.6
     }
   }'
 ```
