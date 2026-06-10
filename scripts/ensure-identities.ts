@@ -5,9 +5,10 @@ import { fileURLToPath, pathToFileURL } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-export async function ensurePlayerIdentities() {
+export async function ensurePlayerIdentities(options?: { closeConnection?: boolean }) {
   const { closeDatabaseConnection, db } = await import("../server/src/db/index.js");
   const schema = await import("../server/src/db/schema/index.js");
+  const shouldClose = options?.closeConnection ?? true;
 
   if (!process.env.DATABASE_URL) {
     console.error("DATABASE_URL is not set. Skipping identity ensure.");
@@ -45,7 +46,9 @@ export async function ensurePlayerIdentities() {
     console.log(`Ensured player identities: added ${added} manual identity row(s).`);
   }
 
-  await closeDatabaseConnection();
+  if (shouldClose) {
+    await closeDatabaseConnection();
+  }
 }
 
 const isMain =

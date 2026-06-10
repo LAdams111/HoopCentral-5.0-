@@ -9,9 +9,10 @@ import { WNBA_TEAMS_WITH_SLUGS } from "../server/src/data/wnba-teams.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-export async function ensureLeagueTeams() {
+export async function ensureLeagueTeams(options?: { closeConnection?: boolean }) {
   const { closeDatabaseConnection, db } = await import("../server/src/db/index.js");
   const schema = await import("../server/src/db/schema/index.js");
+  const shouldClose = options?.closeConnection ?? true;
 
   if (!process.env.DATABASE_URL) {
     console.error("DATABASE_URL is not set. Skipping team ensure.");
@@ -75,7 +76,9 @@ export async function ensureLeagueTeams() {
     console.log(`Ensured league teams: added ${added} missing team(s).`);
   }
 
-  await closeDatabaseConnection();
+  if (shouldClose) {
+    await closeDatabaseConnection();
+  }
 }
 
 const isMain =

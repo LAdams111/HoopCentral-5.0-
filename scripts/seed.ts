@@ -271,9 +271,9 @@ async function seed() {
       `Database already has ${existingCount} players and ${statCount} stat rows. Skipping player seed.`,
     );
     console.log("Set FORCE_SEED=true to wipe and re-seed.");
+    await ensureLeagueTeams({ closeConnection: false });
+    await ensurePlayerIdentities({ closeConnection: false });
     await closeDatabaseConnection();
-    await ensureLeagueTeams();
-    await ensurePlayerIdentities();
     return;
   }
 
@@ -401,9 +401,9 @@ async function seed() {
   console.log(
     `Seeded ${SEED_PLAYERS.length} players with career stints and season stats (2 seasons each).`,
   );
+  await ensureLeagueTeams({ closeConnection: false });
+  await ensurePlayerIdentities({ closeConnection: false });
   await closeDatabaseConnection();
-  await ensureLeagueTeams();
-  await ensurePlayerIdentities();
 }
 
 seed().catch((err) => {
