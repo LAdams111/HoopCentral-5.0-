@@ -5,6 +5,7 @@ import { SEED_LEAGUES } from "../server/src/data/leagues.js";
 import { NBA_TEAMS_WITH_SLUGS } from "../server/src/data/nba-teams.js";
 import { WNBA_TEAMS_WITH_SLUGS } from "../server/src/data/wnba-teams.js";
 import { ensureLeagueTeams } from "./ensure-teams.js";
+import { ensurePlayerIdentities } from "./ensure-identities.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -272,6 +273,7 @@ async function seed() {
     console.log("Set FORCE_SEED=true to wipe and re-seed.");
     await closeDatabaseConnection();
     await ensureLeagueTeams();
+    await ensurePlayerIdentities();
     return;
   }
 
@@ -356,6 +358,20 @@ async function seed() {
       externalId: player.externalId,
     });
 
+    await db
+      .insert(schema.playerIdentities)
+      .values({
+        playerId: playerRow.id,
+        source: "manual",
+        externalId: player.slug,
+      })
+      .onConflictDoNothing({
+        target: [
+          schema.playerIdentities.source,
+          schema.playerIdentities.externalId,
+        ],
+      });
+
     for (const stat of player.stats) {
       const seasonKey = `${player.leagueSlug}:${stat.season}`;
       const seasonId = seasonMap.get(seasonKey)!;
@@ -387,6 +403,7 @@ async function seed() {
   );
   await closeDatabaseConnection();
   await ensureLeagueTeams();
+  await ensurePlayerIdentities();
 }
 
 seed().catch((err) => {

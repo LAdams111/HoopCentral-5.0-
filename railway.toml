@@ -3,7 +3,7 @@ builder = "nixpacks"
 buildCommand = "npm install && npm run build"
 
 [deploy]
-releaseCommand = "npm run db:migrate && npm run db:seed && npm run db:ensure-teams"
+releaseCommand = "npm run db:migrate && npm run db:seed && npm run db:ensure-teams && npm run db:ensure-identities"
 startCommand = "npm run start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 120

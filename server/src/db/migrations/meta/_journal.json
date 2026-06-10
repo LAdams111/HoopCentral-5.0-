@@ -36,6 +36,13 @@
       "when": 1749916800000,
       "tag": "0004_team_slugs",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1750003200000,
+      "tag": "0005_player_identity_timestamps",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { checkDatabaseConnection } from "./db/index.js";
 import { leaguesRouter } from "./routes/leagues.js";
+import { devRouter } from "./routes/dev.js";
 import { playersRouter, statsRouter } from "./routes/players.js";
 import { teamsRouter } from "./routes/teams.js";
 import { getFeaturedPlayers } from "./services/player.service.js";
@@ -49,6 +50,10 @@ app.use("/api/leagues", leaguesRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api", statsRouter);
+
+if (!isProd) {
+  app.use("/api/dev", devRouter);
+}
 
 if (isProd) {
   const clientDist = path.resolve(projectRoot, "client/dist");

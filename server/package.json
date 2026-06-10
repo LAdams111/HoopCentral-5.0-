@@ -11,6 +11,7 @@
     "db:push": "drizzle-kit push --config drizzle.config.cjs",
     "db:seed": "tsx --tsconfig tsconfig.json ../scripts/seed.ts",
     "db:ensure-teams": "tsx --tsconfig tsconfig.json ../scripts/ensure-teams.ts",
+    "db:ensure-identities": "tsx --tsconfig tsconfig.json ../scripts/ensure-identities.ts",
     "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {
