@@ -60,7 +60,7 @@ export function PlayerSearch() {
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search players or teams..."
-          className="w-full rounded-full border-2 border-foreground/10 bg-white py-7 pl-12 pr-14 text-lg text-foreground shadow-sm transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-full border-2 border-black bg-white/5 py-7 pl-12 pr-14 text-lg text-foreground transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         <Button
           type="submit"

@@ -14,6 +14,7 @@ interface PlayerGridProps {
   actionVariant?: "ghost" | "outline";
   variant?: "default" | "muted";
   emptyMessage?: string;
+  showMobileCta?: boolean;
 }
 
 export function PlayerGrid({
@@ -27,6 +28,7 @@ export function PlayerGrid({
   actionVariant = "outline",
   variant = "default",
   emptyMessage = "No players to display.",
+  showMobileCta = false,
 }: PlayerGridProps) {
   const sectionClass =
     variant === "muted"
@@ -70,6 +72,7 @@ export function PlayerGrid({
                 className="aspect-[3/4] animate-pulse rounded-xl border border-border bg-card/50"
               />
             ))}
+            <div className="aspect-[3/4] animate-pulse rounded-xl border border-border bg-card/50 md:hidden" />
           </div>
         ) : players.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center text-muted-foreground">
@@ -88,6 +91,14 @@ export function PlayerGrid({
               ))}
             </div>
           </>
+        )}
+
+        {showMobileCta && actionHref && (
+          <div className="mt-12 text-center md:hidden">
+            <ButtonLink to={actionHref} variant="outline" className="w-full">
+              View Directory
+            </ButtonLink>
+          </div>
         )}
       </div>
     </section>

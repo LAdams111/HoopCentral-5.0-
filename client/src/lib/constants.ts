@@ -43,9 +43,10 @@ export const NBA_TEAM_IDS: Record<string, string> = {
   "Washington Wizards": "1610612764",
 };
 
-export function nbaTeamLogoUrl(teamName: string) {
+export function nbaTeamLogoUrl(teamName: string, variant: "global" | "primary" = "global") {
   const id = NBA_TEAM_IDS[teamName] ?? "1610612737";
-  return `https://cdn.nba.com/logos/nba/${id}/global/L/logo.svg`;
+  const path = variant === "primary" ? "primary" : "global";
+  return `https://cdn.nba.com/logos/nba/${id}/${path}/L/logo.svg`;
 }
 
 export const NAV_ITEMS: {

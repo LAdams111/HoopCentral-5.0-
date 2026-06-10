@@ -1,16 +1,34 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { ArrowRight, Trophy, Users } from "lucide-react";
 import type { PlayerCard as PlayerCardType } from "@/lib/api";
 import { DEFAULT_HEADSHOT, nbaTeamLogoUrl } from "@/lib/constants";
 
 const FAVORITES_KEY = "hoopcentral-favorites";
+const PLAYER_FAVORITES_KEY = "player_favorites";
 const TEAM_FAVORITES_KEY = "team_favorites";
+
+interface StoredFavorite {
+  id: string;
+  name?: string;
+  headshotUrl?: string;
+}
 
 function getFavoriteIds(): number[] {
   try {
     const raw = localStorage.getItem(FAVORITES_KEY);
     return raw ? (JSON.parse(raw) as number[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function getStoredPlayerFavorites(): StoredFavorite[] {
+  try {
+    const raw = localStorage.getItem(PLAYER_FAVORITES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as StoredFavorite[];
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
@@ -26,10 +44,12 @@ function getTeamFavorites(): string[] {
 }
 
 export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
+  const [storedFavorites, setStoredFavorites] = useState<StoredFavorite[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const [teamFavorites, setTeamFavorites] = useState<string[]>([]);
 
   const refresh = useCallback(() => {
+    setStoredFavorites(getStoredPlayerFavorites());
     setFavoriteIds(getFavoriteIds());
     setTeamFavorites(getTeamFavorites());
   }, []);
@@ -38,7 +58,13 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
     refresh();
     const onFocus = () => refresh();
     const onStorage = (e: StorageEvent) => {
-      if (e.key === FAVORITES_KEY || e.key === TEAM_FAVORITES_KEY) refresh();
+      if (
+        e.key === FAVORITES_KEY ||
+        e.key === PLAYER_FAVORITES_KEY ||
+        e.key === TEAM_FAVORITES_KEY
+      ) {
+        refresh();
+      }
     };
     window.addEventListener("focus", onFocus);
     window.addEventListener("storage", onStorage);
@@ -48,7 +74,28 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
     };
   }, [refresh]);
 
-  const favoritePlayers = players.filter((p) => favoriteIds.includes(p.id));
+  const resolvedFromIds = players.filter((p) => favoriteIds.includes(p.id));
+  const favoritePlayers =
+    storedFavorites.length > 0
+      ? storedFavorites.map((fav) => {
+          const match = players.find((p) => String(p.id) === String(fav.id));
+          return match ?? {
+            id: Number(fav.id),
+            name: fav.name ?? "Player",
+            headshotUrl: fav.headshotUrl ?? "",
+            team: "",
+            position: "",
+            height: "",
+            weight: "",
+            jerseyNumber: 0,
+            bio: null,
+            profileViews: 0,
+            hometown: "",
+            birthDate: null,
+          };
+        })
+      : resolvedFromIds;
+
   const hasFavorites = favoritePlayers.length > 0 || teamFavorites.length > 0;
 
   return (
@@ -56,7 +103,7 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-6 overflow-x-auto pb-2 no-scrollbar">
           <div className="flex flex-shrink-0 items-center gap-2 border-r border-border pr-6">
-            <Star className="h-4 w-4 text-primary" />
+            <Trophy className="h-4 w-4 text-primary" />
             <span className="font-display text-sm font-bold uppercase tracking-tight md:text-xl">
               Your Favorites
             </span>
@@ -100,16 +147,25 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
                   <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-primary opacity-0 transition-opacity group-hover:opacity-100" />
                 </Link>
               ))
-            ) : teamFavorites.length === 0 ? (
+            ) : (
               <div className="flex items-center -space-x-4 opacity-40">
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="h-12 w-12 rounded-full border-2 border-dashed border-border bg-muted"
-                  />
+                    className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-border bg-muted/50"
+                  >
+                    <Users className="h-4 w-4" />
+                  </div>
                 ))}
               </div>
-            ) : null}
+            )}
+
+            <Link
+              to="/players"
+              className="group flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border-2 border-dashed border-border transition-all hover:border-primary hover:text-primary"
+            >
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </div>
         </div>
       </div>

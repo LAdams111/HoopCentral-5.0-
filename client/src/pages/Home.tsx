@@ -11,17 +11,6 @@ import {
   getTeamCount,
 } from "@/lib/api";
 
-const FAVORITES_KEY = "hoopcentral-favorites";
-
-function getFavoriteIds(): number[] {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    return raw ? (JSON.parse(raw) as number[]) : [];
-  } catch {
-    return [];
-  }
-}
-
 export function Home() {
   const { data: playerCount } = useQuery({
     queryKey: ["player-count"],
@@ -48,18 +37,14 @@ export function Home() {
     .sort((a, b) => b.profileViews - a.profileViews)
     .slice(0, 5);
 
-  const favoriteIds = getFavoriteIds();
-  const favorites = allPlayers.filter((p) => favoriteIds.includes(p.id));
-
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Hero />
       <StatCounters
         players={playerCount?.count ?? allPlayers.length}
         teams={teamCount?.count ?? 0}
         seasons={seasonCount?.count ?? 0}
       />
-      <FavoritesStrip players={favorites} />
       <PlayerGrid
         title="Most"
         titleAccent="Viewed"
@@ -77,8 +62,13 @@ export function Home() {
         subtitle="Top performers from the current season"
         players={featured}
         loading={featuredLoading}
+        actionLabel="View All Players"
+        actionHref="/players"
+        actionVariant="outline"
         variant="muted"
+        showMobileCta
       />
-    </>
+      <FavoritesStrip players={allPlayers} />
+    </div>
   );
 }
