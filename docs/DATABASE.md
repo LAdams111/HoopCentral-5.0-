@@ -116,27 +116,24 @@ Team/league/season career entries.
 | team_id | integer | FK → teams |
 | league_id | integer | FK → leagues |
 | season_id | integer | FK → seasons |
-| jersey_number | text | Optional |
+| start_date | date | Stint start |
+| end_date | date | Stint end |
 
 ### `player_season_stats`
 
-Per-season stat lines.
+Per-season stat lines (Elite Prospects style).
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | serial | Primary key |
 | player_id | integer | FK → players |
-| stint_id | integer | FK → player_stints |
-| season_id | integer | FK → seasons |
-| league_id | integer | FK → leagues |
 | team_id | integer | FK → teams |
+| league_id | integer | FK → leagues |
+| season_id | integer | FK → seasons |
 | games_played | integer | Games played |
 | points_per_game | numeric | PPG |
 | rebounds_per_game | numeric | RPG |
 | assists_per_game | numeric | APG |
-| steals_per_game | numeric | SPG |
-| blocks_per_game | numeric | BPG |
-| fg_pct | numeric | FG% |
 
 ## Commands
 

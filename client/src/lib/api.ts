@@ -35,10 +35,12 @@ export interface PlayerStat {
 }
 
 export interface CareerEntry {
+  id: number;
   team: string;
   league: string;
-  fromSeason: string;
-  toSeason: string | null;
+  season: string;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export interface PlayerProfile extends PlayerCard {

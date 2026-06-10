@@ -1,4 +1,4 @@
-import { integer, pgTable, serial, text, unique } from "drizzle-orm/pg-core";
+import { date, integer, pgTable, serial, unique } from "drizzle-orm/pg-core";
 import { leagues } from "./leagues.js";
 import { players } from "./players.js";
 import { seasons } from "./seasons.js";
@@ -18,7 +18,8 @@ export const playerStints = pgTable(
       .notNull()
       .references(() => leagues.id),
     seasonId: integer("season_id").references(() => seasons.id),
-    jerseyNumber: text("jersey_number"),
+    startDate: date("start_date"),
+    endDate: date("end_date"),
   },
   (t) => [unique().on(t.playerId, t.teamId, t.leagueId, t.seasonId)],
 );

@@ -5,10 +5,10 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
     return (
       <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
         <div className="border-b border-border p-6">
-          <h3 className="font-display text-2xl">Season History</h3>
+          <h3 className="font-display text-2xl">Season Statistics</h3>
         </div>
         <div className="p-6 text-center text-sm text-muted-foreground">
-          No season history available.
+          No season statistics available.
         </div>
       </section>
     );
@@ -17,7 +17,7 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
       <div className="border-b border-border p-6">
-        <h3 className="font-display text-2xl">Season History</h3>
+        <h3 className="font-display text-2xl">Season Statistics</h3>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
@@ -30,9 +30,6 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
               <th className="px-6 py-4 font-medium text-primary">PTS</th>
               <th className="px-6 py-4 font-medium">REB</th>
               <th className="px-6 py-4 font-medium text-accent">AST</th>
-              <th className="px-6 py-4 font-medium">BLK</th>
-              <th className="px-6 py-4 font-medium">STL</th>
-              <th className="px-6 py-4 font-medium text-yellow-600">FG%</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -56,15 +53,6 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
                 </td>
                 <td className="px-6 py-4 text-base text-muted-foreground">
                   {stat.ast_per_g}
-                </td>
-                <td className="px-6 py-4 text-base text-muted-foreground">
-                  {stat.blk_per_g}
-                </td>
-                <td className="px-6 py-4 text-base text-muted-foreground">
-                  {stat.stl_per_g}
-                </td>
-                <td className="px-6 py-4 font-mono text-base text-accent">
-                  {stat.fg_pct}
                 </td>
               </tr>
             ))}

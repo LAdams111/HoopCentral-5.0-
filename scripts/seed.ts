@@ -7,13 +7,12 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 type SeasonStat = {
   season: string;
+  startDate: string;
+  endDate: string;
   gp: number;
   ppg: number;
   rpg: number;
   apg: number;
-  spg: number;
-  bpg: number;
-  fg: number;
 };
 
 type SeedPlayer = {
@@ -22,7 +21,6 @@ type SeedPlayer = {
   leagueSlug: string;
   teamAbbrev: string;
   externalId: string;
-  jersey: string;
   position: string;
   birthDate: string;
   hometown: string;
@@ -59,7 +57,6 @@ const SEED_PLAYERS: SeedPlayer[] = [
     leagueSlug: "nba",
     teamAbbrev: "LAL",
     externalId: "2544",
-    jersey: "23",
     position: "Small Forward, Power Forward",
     birthDate: "1984-12-30",
     hometown: "Akron, Ohio",
@@ -67,8 +64,24 @@ const SEED_PLAYERS: SeedPlayer[] = [
     weightKg: 113,
     profileViews: 14029,
     stats: [
-      { season: "2024-25", gp: 70, ppg: 24.4, rpg: 7.8, apg: 8.2, spg: 1.0, bpg: 0.6, fg: 51.3 },
-      { season: "2023-24", gp: 71, ppg: 25.7, rpg: 7.3, apg: 8.3, spg: 1.3, bpg: 0.5, fg: 54.0 },
+      {
+        season: "2024-25",
+        startDate: "2024-10-01",
+        endDate: "2025-06-30",
+        gp: 70,
+        ppg: 24.4,
+        rpg: 7.8,
+        apg: 8.2,
+      },
+      {
+        season: "2023-24",
+        startDate: "2023-10-01",
+        endDate: "2024-06-30",
+        gp: 71,
+        ppg: 25.7,
+        rpg: 7.3,
+        apg: 8.3,
+      },
     ],
   },
   {
@@ -77,7 +90,6 @@ const SEED_PLAYERS: SeedPlayer[] = [
     leagueSlug: "nba",
     teamAbbrev: "GSW",
     externalId: "201939",
-    jersey: "30",
     position: "Point Guard",
     birthDate: "1988-03-14",
     hometown: "Akron, Ohio",
@@ -85,8 +97,24 @@ const SEED_PLAYERS: SeedPlayer[] = [
     weightKg: 83,
     profileViews: 15142,
     stats: [
-      { season: "2024-25", gp: 70, ppg: 24.5, rpg: 4.4, apg: 6.0, spg: 1.1, bpg: 0.4, fg: 45.0 },
-      { season: "2023-24", gp: 74, ppg: 26.4, rpg: 4.5, apg: 5.1, spg: 0.7, bpg: 0.4, fg: 45.0 },
+      {
+        season: "2024-25",
+        startDate: "2024-10-01",
+        endDate: "2025-06-30",
+        gp: 70,
+        ppg: 24.5,
+        rpg: 4.4,
+        apg: 6.0,
+      },
+      {
+        season: "2023-24",
+        startDate: "2023-10-01",
+        endDate: "2024-06-30",
+        gp: 74,
+        ppg: 26.4,
+        rpg: 4.5,
+        apg: 5.1,
+      },
     ],
   },
   {
@@ -95,7 +123,6 @@ const SEED_PLAYERS: SeedPlayer[] = [
     leagueSlug: "nba",
     teamAbbrev: "DEN",
     externalId: "203999",
-    jersey: "15",
     position: "Center",
     birthDate: "1995-02-19",
     hometown: "Sombor, Serbia",
@@ -103,8 +130,24 @@ const SEED_PLAYERS: SeedPlayer[] = [
     weightKg: 129,
     profileViews: 11200,
     stats: [
-      { season: "2024-25", gp: 70, ppg: 29.6, rpg: 12.7, apg: 10.2, spg: 1.8, bpg: 0.6, fg: 57.6 },
-      { season: "2023-24", gp: 79, ppg: 26.4, rpg: 12.4, apg: 9.0, spg: 1.4, bpg: 0.9, fg: 58.3 },
+      {
+        season: "2024-25",
+        startDate: "2024-10-01",
+        endDate: "2025-06-30",
+        gp: 70,
+        ppg: 29.6,
+        rpg: 12.7,
+        apg: 10.2,
+      },
+      {
+        season: "2023-24",
+        startDate: "2023-10-01",
+        endDate: "2024-06-30",
+        gp: 79,
+        ppg: 26.4,
+        rpg: 12.4,
+        apg: 9.0,
+      },
     ],
   },
   {
@@ -113,7 +156,6 @@ const SEED_PLAYERS: SeedPlayer[] = [
     leagueSlug: "nba",
     teamAbbrev: "SAS",
     externalId: "1641705",
-    jersey: "1",
     position: "Center, Power Forward",
     birthDate: "2004-01-04",
     hometown: "Le Chesnay, France",
@@ -121,8 +163,24 @@ const SEED_PLAYERS: SeedPlayer[] = [
     weightKg: 95,
     profileViews: 18500,
     stats: [
-      { season: "2024-25", gp: 46, ppg: 24.3, rpg: 11.0, apg: 3.7, spg: 1.1, bpg: 3.8, fg: 47.6 },
-      { season: "2023-24", gp: 71, ppg: 21.4, rpg: 10.6, apg: 3.9, spg: 1.2, bpg: 3.6, fg: 46.8 },
+      {
+        season: "2024-25",
+        startDate: "2024-10-01",
+        endDate: "2025-06-30",
+        gp: 46,
+        ppg: 24.3,
+        rpg: 11.0,
+        apg: 3.7,
+      },
+      {
+        season: "2023-24",
+        startDate: "2023-10-01",
+        endDate: "2024-06-30",
+        gp: 71,
+        ppg: 21.4,
+        rpg: 10.6,
+        apg: 3.9,
+      },
     ],
   },
   {
@@ -131,7 +189,6 @@ const SEED_PLAYERS: SeedPlayer[] = [
     leagueSlug: "wnba",
     teamAbbrev: "IND",
     externalId: "clark-ca01w",
-    jersey: "22",
     position: "Point Guard",
     birthDate: "2002-01-22",
     hometown: "West Des Moines, Iowa",
@@ -139,8 +196,24 @@ const SEED_PLAYERS: SeedPlayer[] = [
     weightKg: 77,
     profileViews: 16200,
     stats: [
-      { season: "2025", gp: 38, ppg: 18.5, rpg: 5.2, apg: 7.9, spg: 1.1, bpg: 0.4, fg: 42.1 },
-      { season: "2024", gp: 40, ppg: 19.2, rpg: 5.7, apg: 8.4, spg: 1.3, bpg: 0.5, fg: 41.7 },
+      {
+        season: "2025",
+        startDate: "2025-05-01",
+        endDate: "2025-10-31",
+        gp: 38,
+        ppg: 18.5,
+        rpg: 5.2,
+        apg: 7.9,
+      },
+      {
+        season: "2024",
+        startDate: "2024-05-01",
+        endDate: "2024-10-31",
+        gp: 40,
+        ppg: 19.2,
+        rpg: 5.7,
+        apg: 8.4,
+      },
     ],
   },
 ];
@@ -256,25 +329,20 @@ async function seed() {
     });
 
     for (const stat of player.stats) {
-      if (stat.gp === 0) continue;
-
       const seasonKey = `${player.leagueSlug}:${stat.season}`;
       const seasonId = seasonMap.get(seasonKey)!;
 
-      const [stint] = await db
-        .insert(schema.playerStints)
-        .values({
-          playerId: playerRow.id,
-          teamId,
-          leagueId,
-          seasonId,
-          jerseyNumber: player.jersey,
-        })
-        .returning();
+      await db.insert(schema.playerStints).values({
+        playerId: playerRow.id,
+        teamId,
+        leagueId,
+        seasonId,
+        startDate: stat.startDate,
+        endDate: stat.endDate,
+      });
 
       await db.insert(schema.playerSeasonStats).values({
         playerId: playerRow.id,
-        stintId: stint.id,
         seasonId,
         leagueId,
         teamId,
@@ -282,15 +350,12 @@ async function seed() {
         pointsPerGame: String(stat.ppg),
         reboundsPerGame: String(stat.rpg),
         assistsPerGame: String(stat.apg),
-        stealsPerGame: String(stat.spg),
-        blocksPerGame: String(stat.bpg),
-        fgPct: String(stat.fg),
       });
     }
   }
 
   console.log(
-    `Seeded ${SEED_PLAYERS.length} players with identities, stints, and season stats.`,
+    `Seeded ${SEED_PLAYERS.length} players with career stints and season stats (2 seasons each).`,
   );
   await closeDatabaseConnection();
 }

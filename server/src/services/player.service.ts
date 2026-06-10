@@ -47,10 +47,12 @@ export interface PlayerStatRow {
 }
 
 export interface CareerEntry {
+  id: number;
   team: string;
   league: string;
-  fromSeason: string;
-  toSeason: string | null;
+  season: string;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export interface PlayerProfile extends PlayerCard {
@@ -89,9 +91,6 @@ function toStatRow(
   const pts = formatStat(stat.pointsPerGame);
   const reb = formatStat(stat.reboundsPerGame);
   const ast = formatStat(stat.assistsPerGame);
-  const stl = formatStat(stat.stealsPerGame);
-  const blk = formatStat(stat.blocksPerGame);
-  const fg = formatStat(stat.fgPct);
 
   return {
     id: stat.id,
@@ -106,51 +105,13 @@ function toStatRow(
     reboundsPerGame: reb,
     ast_per_g: ast,
     assistsPerGame: ast,
-    stl_per_g: stl,
-    stealsPerGame: stl,
-    blk_per_g: blk,
-    blocksPerGame: blk,
-    fg_pct: fg,
-    fieldGoalPct: fg,
+    stl_per_g: "—",
+    stealsPerGame: "—",
+    blk_per_g: "—",
+    blocksPerGame: "—",
+    fg_pct: "—",
+    fieldGoalPct: "—",
   };
-}
-
-function buildCareerFromStints(
-  stintRows: {
-    teamName: string;
-    leagueName: string;
-    seasonLabel: string | null;
-  }[],
-): CareerEntry[] {
-  const careerMap = new Map<string, CareerEntry & { seasons: string[] }>();
-
-  for (const stint of stintRows) {
-    const key = `${stint.teamName}-${stint.leagueName}`;
-    const existing = careerMap.get(key);
-    const season = stint.seasonLabel ?? "";
-
-    if (existing) {
-      if (season) existing.seasons.push(season);
-    } else {
-      careerMap.set(key, {
-        team: stint.teamName,
-        league: stint.leagueName,
-        fromSeason: season,
-        toSeason: season || null,
-        seasons: season ? [season] : [],
-      });
-    }
-  }
-
-  return [...careerMap.values()].map((entry) => {
-    const sorted = [...entry.seasons].sort();
-    return {
-      team: entry.team,
-      league: entry.league,
-      fromSeason: sorted[0] ?? entry.fromSeason,
-      toSeason: sorted.length > 0 ? sorted[sorted.length - 1] : entry.toSeason,
-    };
-  });
 }
 
 export async function searchPlayers(params: {
@@ -234,6 +195,7 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
 
   const stintRows = await db
     .select({
+      stint: playerStints,
       teamName: teams.name,
       leagueName: leagues.name,
       seasonLabel: seasons.seasonLabel,
@@ -243,9 +205,17 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
     .innerJoin(leagues, eq(playerStints.leagueId, leagues.id))
     .leftJoin(seasons, eq(playerStints.seasonId, seasons.id))
     .where(eq(playerStints.playerId, id))
-    .orderBy(seasons.seasonLabel);
+    .orderBy(desc(seasons.seasonLabel));
 
-  const career = buildCareerFromStints(stintRows);
+  const career: CareerEntry[] = stintRows.map((s) => ({
+    id: s.stint.id,
+    team: s.teamName,
+    league: s.leagueName,
+    season: s.seasonLabel ?? "—",
+    startDate: s.stint.startDate ?? null,
+    endDate: s.stint.endDate ?? null,
+  }));
+
   const leaguesPlayed = [...new Set(statRows.map((s) => s.leagueName))];
 
   return {

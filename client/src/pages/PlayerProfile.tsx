@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Eye, Flag, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { CareerTimeline } from "@/components/player/CareerTimeline";
+import { CareerHistoryTable } from "@/components/player/CareerHistoryTable";
 import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
 import { getPlayer, incrementProfileView } from "@/lib/api";
@@ -263,7 +263,7 @@ export function PlayerProfile() {
 
           <RecentSeasonPanel stats={sortedStats} />
 
-          <CareerTimeline career={player.career} />
+          <CareerHistoryTable career={player.career} />
 
           <SeasonHistoryTable stats={sortedStats} />
 
