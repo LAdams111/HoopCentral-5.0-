@@ -1,20 +1,22 @@
-import { Activity } from "lucide-react";
+import { Zap } from "lucide-react";
 import { PlayerSearch } from "@/components/search/PlayerSearch";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border pb-12 pt-16 md:pb-20 md:pt-24">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black_70%,transparent_100%)]" />
+    <section className="relative z-20 flex h-[80vh] items-center justify-center overflow-visible border-b border-border/40">
+      <div className="absolute inset-0 z-0 bg-background">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black_70%,transparent_100%)]" />
+      </div>
 
       <div className="container relative z-10 px-4 text-center">
-        <div className="mb-6 inline-flex animate-fade-in-up items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-xs text-primary">
-          <Activity className="h-3 w-3" />
+        <div className="mb-6 inline-flex animate-fade-in-up items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-mono text-xs text-primary">
+          <Zap className="h-3 w-3" />
           <span>REAL-TIME STATS</span>
         </div>
 
         <h1 className="mb-6 animate-fade-in-up font-display text-7xl font-bold tracking-tighter text-foreground delay-100 md:text-9xl">
-          <span className="hoop-outline">HOOP</span>
+          <span className="hoop-title">HOOP</span>
           <span className="text-glow text-primary">CENTRAL</span>
         </h1>
 

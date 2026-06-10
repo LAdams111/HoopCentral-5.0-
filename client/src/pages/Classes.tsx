@@ -38,7 +38,7 @@ export function Classes() {
         </div>
 
         {years.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-white/10 bg-card/30 py-24 text-center text-muted-foreground">
+          <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
             No birth year data available yet.
           </div>
         ) : (

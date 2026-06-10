@@ -5,15 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getPlayers, type PlayerCard } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 
-interface PlayerSearchProps {
-  variant?: "hero" | "header";
-  placeholder?: string;
-}
-
-export function PlayerSearch({
-  variant = "hero",
-  placeholder = "Search players or teams...",
-}: PlayerSearchProps) {
+export function PlayerSearch() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [debounced, setDebounced] = useState("");
@@ -53,33 +45,13 @@ export function PlayerSearch({
     else if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
   };
 
-  if (variant === "header") {
-    return (
-      <div ref={ref} className="relative hidden w-56 lg:block">
-        <form onSubmit={onSubmit}>
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setOpen(true);
-            }}
-            onFocus={() => setOpen(true)}
-            placeholder="Search player name..."
-            className="w-full rounded-full border border-white/10 bg-white/5 py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-        </form>
-        {open && debounced.length >= 2 && results.length > 0 && (
-          <Dropdown results={results} onSelect={goToPlayer} />
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div ref={ref} className="relative z-[100] mx-auto max-w-md animate-fade-in-up delay-300">
+    <div
+      ref={ref}
+      className="relative z-[100] mx-auto max-w-md animate-fade-in-up delay-300"
+    >
       <form onSubmit={onSubmit} className="group relative">
-        <Search className="absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+        <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <input
           value={query}
           onChange={(e) => {
@@ -87,8 +59,8 @@ export function PlayerSearch({
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={placeholder}
-          className="w-full rounded-full border-2 border-black bg-white/5 py-7 pl-12 pr-14 text-lg text-foreground placeholder:text-muted-foreground/50 transition-all focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          placeholder="Search players or teams..."
+          className="w-full rounded-full border-2 border-foreground/10 bg-white py-7 pl-12 pr-14 text-lg text-foreground shadow-sm transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         <Button
           type="submit"
@@ -122,13 +94,13 @@ function Dropdown({
             key={player.id}
             type="button"
             onClick={() => onSelect(player)}
-            className="flex w-full items-center justify-between border-b border-border/50 px-4 py-3 text-left transition-colors last:border-0 hover:bg-muted/30"
+            className="flex w-full items-center justify-between border-b border-border/50 px-4 py-3 text-left transition-colors last:border-0 hover:bg-muted/50"
           >
             <div>
               <p className="font-medium text-foreground">{player.name}</p>
               <p className="text-xs text-muted-foreground">{player.team}</p>
             </div>
-            <ArrowRight className="h-4 w-4 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+            <ArrowRight className="h-4 w-4 text-primary" />
           </button>
         ))
       )}

@@ -1,4 +1,4 @@
-import { Calendar, TrendingUp, Users, UsersRound } from "lucide-react";
+import { Search, Trophy, Users } from "lucide-react";
 
 interface StatCountersProps {
   players: number;
@@ -9,9 +9,9 @@ interface StatCountersProps {
 export function StatCounters({ players, teams, seasons }: StatCountersProps) {
   const stats = [
     { label: "Active Players", value: `${players.toLocaleString()}+`, icon: Users },
-    { label: "Active Scouts", value: "1.2k", icon: UsersRound },
-    { label: "Seasons Tracked", value: seasons > 0 ? String(seasons) : "75", icon: Calendar },
-    { label: "Teams", value: `${teams}+`, icon: TrendingUp },
+    { label: "Active Scouts", value: "1.2k", icon: Search },
+    { label: "Seasons Tracked", value: seasons > 0 ? String(seasons) : "75", icon: Trophy },
+    { label: "Teams", value: `${teams}+`, icon: Users },
   ];
 
   return (
@@ -29,7 +29,7 @@ export function StatCounters({ players, teams, seasons }: StatCountersProps) {
               <div className="font-display text-3xl font-bold text-foreground">
                 {stat.value}
               </div>
-              <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
                 {stat.label}
               </div>
             </div>

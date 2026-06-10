@@ -68,6 +68,8 @@ export function Home() {
         loading={playersLoading}
         actionLabel="Explore Trends"
         actionHref="/players"
+        actionVariant="ghost"
+        variant="default"
       />
       <PlayerGrid
         title="Featured"

@@ -48,7 +48,7 @@ export function Prospects() {
             ))}
           </div>
         ) : prospects.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-white/10 bg-card/30 py-24 text-center">
+          <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center">
             <Sparkles className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 className="font-display text-2xl text-muted-foreground">No prospects found</h3>
           </div>

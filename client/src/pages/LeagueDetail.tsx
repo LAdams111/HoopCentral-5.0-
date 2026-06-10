@@ -17,7 +17,7 @@ export function LeagueDetail() {
         <h1 className="mb-4 font-display text-4xl text-foreground md:text-6xl">
           {(league ?? "").toUpperCase()}
         </h1>
-        <p className="rounded-2xl border border-dashed border-white/10 bg-card/30 p-12 text-center text-muted-foreground">
+        <p className="rounded-2xl border border-dashed border-border bg-muted/50 p-12 text-center text-muted-foreground">
           League rosters and seasons coming in the next phase. Data will be fed by league scrapers.
         </p>
       </div>

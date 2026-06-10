@@ -42,7 +42,7 @@ export function Players() {
             placeholder="Search player name..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground/50 transition-colors focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full rounded-full border border-border bg-white py-3 pl-12 pr-4 text-foreground shadow-sm placeholder:text-muted-foreground/50 transition-colors focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
@@ -56,7 +56,7 @@ export function Players() {
             ))}
           </div>
         ) : players.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-white/10 bg-card/30 py-24 text-center">
+          <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center">
             <p className="font-display text-2xl text-muted-foreground">No players found</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Try a different search term

@@ -11,6 +11,7 @@ interface PlayerGridProps {
   loading?: boolean;
   actionLabel?: string;
   actionHref?: string;
+  actionVariant?: "ghost" | "outline";
   variant?: "default" | "muted";
   emptyMessage?: string;
 }
@@ -23,13 +24,14 @@ export function PlayerGrid({
   loading,
   actionLabel = "View All Players",
   actionHref = "/players",
+  actionVariant = "outline",
   variant = "default",
   emptyMessage = "No players to display.",
 }: PlayerGridProps) {
   const sectionClass =
     variant === "muted"
       ? "relative overflow-hidden border-t border-border bg-muted py-24"
-      : "py-16 md:py-24";
+      : "relative overflow-hidden bg-background py-24";
 
   return (
     <section className={sectionClass}>
@@ -38,7 +40,11 @@ export function PlayerGrid({
           <div>
             <h2 className="mb-2 font-display text-4xl text-foreground md:text-5xl">
               {title}{" "}
-              <span className={variant === "default" ? "text-glow text-primary" : "text-primary"}>
+              <span
+                className={
+                  variant === "default" ? "text-glow text-primary" : "text-primary"
+                }
+              >
                 {titleAccent}
               </span>
             </h2>
@@ -47,7 +53,7 @@ export function PlayerGrid({
           {actionHref && (
             <ButtonLink
               to={actionHref}
-              variant="outline"
+              variant={actionVariant}
               className="hidden gap-2 md:inline-flex"
             >
               {actionLabel}
@@ -66,7 +72,7 @@ export function PlayerGrid({
             ))}
           </div>
         ) : players.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-white/10 bg-card/30 p-12 text-center text-muted-foreground">
+          <p className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center text-muted-foreground">
             {emptyMessage}
           </p>
         ) : (
