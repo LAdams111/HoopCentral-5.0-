@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPlayers, type PlayerCard } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
+import { getPlayers, type PlayerCard } from "@/lib/api";
+import { DEFAULT_HEADSHOT } from "@/lib/constants";
 
 export function PlayerSearch() {
   const [query, setQuery] = useState("");
@@ -45,12 +46,14 @@ export function PlayerSearch() {
     else if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
   };
 
+  const showDropdown = open && debounced.length >= 2;
+
   return (
     <div
       ref={ref}
-      className="relative z-[100] mx-auto max-w-md animate-fade-in-up delay-300"
+      className="group relative z-[100] mx-auto max-w-md animate-fade-in-up delay-300"
     >
-      <form onSubmit={onSubmit} className="group relative">
+      <form onSubmit={onSubmit} className="relative">
         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <input
           value={query}
@@ -60,18 +63,26 @@ export function PlayerSearch() {
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search players or teams..."
-          className="w-full rounded-full border-2 border-black bg-white/5 py-7 pl-12 pr-14 text-lg text-foreground transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-full border-2 border-black bg-white/5 py-7 pl-12 pr-14 text-lg transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         <Button
           type="submit"
           size="icon"
-          className="absolute right-2 top-2 rounded-full"
+          className="absolute right-2 top-2 h-10 w-10 rounded-full p-0"
         >
           <ArrowRight className="h-4 w-4" />
         </Button>
       </form>
-      {open && debounced.length >= 2 && (
-        <Dropdown results={results} onSelect={goToPlayer} />
+
+      {showDropdown && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
+          <Dropdown results={results} onSelect={goToPlayer} />
+        </>
       )}
     </div>
   );
@@ -86,24 +97,39 @@ function Dropdown({
 }) {
   return (
     <div className="absolute left-0 right-0 top-full z-[100] mt-2 overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
-      {results.length === 0 ? (
-        <p className="px-4 py-3 text-sm text-muted-foreground">No players found.</p>
-      ) : (
-        results.slice(0, 8).map((player) => (
-          <button
-            key={player.id}
-            type="button"
-            onClick={() => onSelect(player)}
-            className="flex w-full items-center justify-between border-b border-border/50 px-4 py-3 text-left transition-colors last:border-0 hover:bg-muted/50"
-          >
-            <div>
-              <p className="font-medium text-foreground">{player.name}</p>
-              <p className="text-xs text-muted-foreground">{player.team}</p>
-            </div>
-            <ArrowRight className="h-4 w-4 text-primary" />
-          </button>
-        ))
-      )}
+      <div className="py-2">
+        {results.length === 0 ? (
+          <p className="px-4 py-3 text-sm text-muted-foreground">No players found.</p>
+        ) : (
+          results.slice(0, 8).map((player) => (
+            <button
+              key={player.id}
+              type="button"
+              onClick={() => onSelect(player)}
+              className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover-elevate"
+            >
+              <div className="h-8 w-8 overflow-hidden rounded-full border border-border">
+                <img
+                  src={player.headshotUrl || DEFAULT_HEADSHOT}
+                  alt={player.name}
+                  className="h-full w-full object-cover object-top"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = DEFAULT_HEADSHOT;
+                  }}
+                />
+              </div>
+              <div className="flex-1">
+                <p className="font-display font-bold text-foreground transition-colors group-hover:text-primary">
+                  {player.name}
+                </p>
+                <p className="font-mono text-xs uppercase text-muted-foreground">
+                  {player.team} • #{player.jerseyNumber}
+                </p>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
     </div>
   );
 }

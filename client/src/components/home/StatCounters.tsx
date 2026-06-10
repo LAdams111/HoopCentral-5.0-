@@ -26,7 +26,7 @@ export function StatCounters({ players, teams, seasons }: StatCountersProps) {
               <stat.icon className="h-6 w-6" />
             </div>
             <div>
-              <div className="font-display text-3xl font-bold text-foreground">
+              <div className="font-display text-3xl font-bold">
                 {stat.value}
               </div>
               <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">

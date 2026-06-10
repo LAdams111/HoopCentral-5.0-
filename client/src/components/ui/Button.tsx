@@ -4,18 +4,21 @@ import { Link } from "react-router-dom";
 type Variant = "default" | "outline" | "ghost";
 type Size = "default" | "sm" | "icon";
 
+const base =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2";
+
 const variants: Record<Variant, string> = {
   default:
-    "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary",
+    "border border-[var(--primary-border)] bg-primary text-primary-foreground shadow-xs",
   outline:
-    "border border-border bg-transparent hover:bg-muted/50 text-foreground",
-  ghost: "hover:bg-muted/50 text-foreground",
+    "border border-[var(--button-outline)] bg-transparent text-foreground shadow-xs active:shadow-none",
+  ghost: "border border-transparent bg-transparent text-foreground",
 };
 
 const sizes: Record<Size, string> = {
-  default: "px-4 py-2 text-sm",
-  sm: "px-3 py-1.5 text-xs",
-  icon: "h-10 w-10 p-0 inline-flex items-center justify-center",
+  default: "min-h-9 px-4 py-2",
+  sm: "min-h-8 rounded-md px-3 text-xs",
+  icon: "h-9 w-9 p-0",
 };
 
 export function Button({
@@ -30,7 +33,7 @@ export function Button({
 }) {
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-md font-medium transition-colors ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}
@@ -54,7 +57,7 @@ export function ButtonLink({
   return (
     <Link
       to={to}
-      className={`inline-flex items-center justify-center rounded-md font-medium transition-colors ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}
     </Link>

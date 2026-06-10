@@ -40,7 +40,7 @@ export function PlayerGrid({
       <div className="container mx-auto px-4">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="mb-2 font-display text-4xl text-foreground md:text-5xl">
+            <h2 className="mb-2 text-4xl text-foreground md:text-5xl">
               {title}{" "}
               <span
                 className={

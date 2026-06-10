@@ -6,7 +6,7 @@ export function LeagueCard({ league }: { league: LeagueInfo }) {
   return (
     <Link
       to={`/leagues/${league.slug}`}
-      className="block overflow-hidden rounded-xl border border-border transition-all hover:border-primary/50"
+      className="hover-elevate block overflow-hidden rounded-xl border border-border transition-all hover:border-primary/50"
     >
       <div className="flex flex-row items-center gap-3 p-3 md:gap-6 md:p-6">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center md:h-20 md:w-20">

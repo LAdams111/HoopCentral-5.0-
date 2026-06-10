@@ -14,12 +14,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col bg-background pb-14 md:pb-0">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="group flex cursor-pointer items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary transition-transform duration-300 group-hover:rotate-12">
+          <Link
+            to="/"
+            className="brand-link flex cursor-pointer items-center gap-2"
+          >
+            <div className="brand-trophy flex h-8 w-8 transform items-center justify-center rounded bg-primary">
               <Trophy className="h-4 w-4 text-white" />
             </div>
-            <span className="font-display text-2xl font-bold tracking-widest text-foreground transition-colors group-hover:text-primary">
-              HOOP<span className="text-primary">CENTRAL</span>
+            <span className="font-display text-2xl font-bold tracking-widest">
+              <span className="brand-hoop text-foreground">HOOP</span>
+              <span className="text-primary">CENTRAL</span>
             </span>
           </Link>
 
@@ -47,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/players">
               <button
                 type="button"
-                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary"
                 aria-label="Search players"
               >
                 <Search className="h-5 w-5" />
@@ -72,7 +76,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 <item.icon className="h-5 w-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium tracking-wide">
+                  {item.label}
+                </span>
               </Link>
             );
           })}
