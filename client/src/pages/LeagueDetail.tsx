@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
 import { NBA_TEAM_IDS, nbaTeamLogoUrl, seasonLabelToUrlYear } from "@/lib/constants";
 import { findLeague, LEAGUE_DISPLAY } from "@/lib/leagues";
 
@@ -24,9 +25,7 @@ export function LeagueDetail() {
     return (
       <div className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground">League not found.</p>
-        <Link to="/leagues" className="mt-4 inline-block text-primary hover:underline">
-          Back to Leagues
-        </Link>
+        <BackButton fallback="/leagues" className="mt-4 text-primary hover:underline" label="Back to Leagues" />
       </div>
     );
   }
@@ -40,13 +39,7 @@ export function LeagueDetail() {
     <div className="min-h-screen bg-background pb-24">
       <div className="border-b border-border bg-muted/30 py-8">
         <div className="container mx-auto px-4">
-          <Link
-            to="/leagues"
-            className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Link>
+          <BackButton fallback="/leagues" />
 
           <div className="flex flex-col items-center gap-6 md:flex-row">
             <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center">

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { BackButton } from "@/components/ui/BackButton";
 import { DEFAULT_HEADSHOT, nbaTeamLogoUrl, seasonLabelToUrlYear } from "@/lib/constants";
 import { getTeamRoster, getTeamSeasons } from "@/lib/api";
 
@@ -46,12 +46,7 @@ export function Roster() {
         <p className="mt-2 text-muted-foreground">
           This team or season is not in the database yet.
         </p>
-        <Link
-          to="/leagues/NBA"
-          className="mt-6 inline-block rounded-lg bg-primary px-6 py-2 text-primary-foreground hover:bg-primary/90"
-        >
-          Back to Leagues
-        </Link>
+        <BackButton fallback="/leagues/NBA" className="mt-6 rounded-lg bg-primary px-6 py-2 text-primary-foreground hover:bg-primary/90" label="Back" />
       </div>
     );
   }
@@ -60,13 +55,7 @@ export function Roster() {
     <div className="min-h-screen bg-background pb-24">
       <div className="border-b border-border bg-muted/30 py-8">
         <div className="container mx-auto px-4">
-          <Link
-            to="/leagues/NBA"
-            className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Link>
+          <BackButton fallback="/leagues/NBA" />
 
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="flex items-center gap-6">
