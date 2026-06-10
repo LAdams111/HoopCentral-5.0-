@@ -4,7 +4,7 @@ buildCommand = "npm install && npm run build"
 
 [deploy]
 releaseCommand = "npm run db:migrate && npm run db:seed && npm run db:ensure-teams"
-startCommand = "npm run db:migrate && npm run db:seed && npm run db:ensure-teams && npm run start"
+startCommand = "npm run start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"

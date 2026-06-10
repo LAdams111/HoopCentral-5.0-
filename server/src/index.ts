@@ -26,20 +26,11 @@ app.use(express.json());
 app.get("/api/health", async (_req, res) => {
   const dbCheck = await checkDatabaseConnection();
 
-  if (!dbCheck.connected) {
-    res.status(503).json({
-      status: "error",
-      database: "disconnected",
-      error: dbCheck.error,
-      timestamp: new Date().toISOString(),
-    });
-    return;
-  }
-
   res.json({
-    status: "ok",
-    database: "connected",
+    status: dbCheck.connected ? "ok" : "degraded",
+    database: dbCheck.connected ? "connected" : "disconnected",
     latencyMs: dbCheck.latencyMs,
+    error: dbCheck.error,
     timestamp: new Date().toISOString(),
   });
 });
