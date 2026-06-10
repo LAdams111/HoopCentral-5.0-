@@ -93,6 +93,51 @@ scripts/
 | created_at | timestamptz | Row created |
 | updated_at | timestamptz | Last updated |
 
+### `player_identities`
+
+Maps a canonical player to external IDs per league/source (for future scrapers).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial | Primary key |
+| player_id | integer | FK → players |
+| league_id | integer | FK → leagues |
+| source | text | Data source (e.g. `seed`, `nba_api`) |
+| external_id | text | ID in that source |
+
+### `player_stints`
+
+Team/league/season career entries.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial | Primary key |
+| player_id | integer | FK → players |
+| team_id | integer | FK → teams |
+| league_id | integer | FK → leagues |
+| season_id | integer | FK → seasons |
+| jersey_number | text | Optional |
+
+### `player_season_stats`
+
+Per-season stat lines.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial | Primary key |
+| player_id | integer | FK → players |
+| stint_id | integer | FK → player_stints |
+| season_id | integer | FK → seasons |
+| league_id | integer | FK → leagues |
+| team_id | integer | FK → teams |
+| games_played | integer | Games played |
+| points_per_game | numeric | PPG |
+| rebounds_per_game | numeric | RPG |
+| assists_per_game | numeric | APG |
+| steals_per_game | numeric | SPG |
+| blocks_per_game | numeric | BPG |
+| fg_pct | numeric | FG% |
+
 ## Commands
 
 Run from the **repository root**:
@@ -173,6 +218,11 @@ Railway uses this endpoint as the deploy health check.
 | Teams | 5 | LAL, GSW, DEN, SAS, IND |
 | Seasons | 2 | NBA 2024-25, WNBA 2024 |
 | Players | 5 | LeBron James, Stephen Curry, Nikola Jokic, Victor Wembanyama, Caitlin Clark |
+
+Each seeded player includes:
+- One `player_identities` row (source `seed`)
+- Two `player_stints` rows (one per season)
+- Two `player_season_stats` rows with full stat lines
 
 The seed is idempotent: it skips if players already exist unless `FORCE_SEED=true`.
 

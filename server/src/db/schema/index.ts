@@ -2,3 +2,6 @@ export * from "./leagues.js";
 export * from "./seasons.js";
 export * from "./teams.js";
 export * from "./players.js";
+export * from "./player-identities.js";
+export * from "./player-stints.js";
+export * from "./player-season-stats.js";

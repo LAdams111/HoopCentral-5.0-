@@ -5,17 +5,31 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
+type SeasonStat = {
+  season: string;
+  gp: number;
+  ppg: number;
+  rpg: number;
+  apg: number;
+  spg: number;
+  bpg: number;
+  fg: number;
+};
+
 type SeedPlayer = {
   slug: string;
   name: string;
   leagueSlug: string;
   teamAbbrev: string;
+  externalId: string;
+  jersey: string;
   position: string;
   birthDate: string;
   hometown: string;
   heightCm: number;
   weightKg: number;
   profileViews: number;
+  stats: SeasonStat[];
 };
 
 const LEAGUES = [
@@ -32,8 +46,10 @@ const TEAMS = [
 ] as const;
 
 const SEASON_LABELS = [
+  { leagueSlug: "nba", label: "2023-24" },
   { leagueSlug: "nba", label: "2024-25" },
   { leagueSlug: "wnba", label: "2024" },
+  { leagueSlug: "wnba", label: "2025" },
 ] as const;
 
 const SEED_PLAYERS: SeedPlayer[] = [
@@ -42,60 +58,90 @@ const SEED_PLAYERS: SeedPlayer[] = [
     name: "LeBron James",
     leagueSlug: "nba",
     teamAbbrev: "LAL",
+    externalId: "2544",
+    jersey: "23",
     position: "Small Forward, Power Forward",
     birthDate: "1984-12-30",
     hometown: "Akron, Ohio",
     heightCm: 206,
     weightKg: 113,
     profileViews: 14029,
+    stats: [
+      { season: "2024-25", gp: 70, ppg: 24.4, rpg: 7.8, apg: 8.2, spg: 1.0, bpg: 0.6, fg: 51.3 },
+      { season: "2023-24", gp: 71, ppg: 25.7, rpg: 7.3, apg: 8.3, spg: 1.3, bpg: 0.5, fg: 54.0 },
+    ],
   },
   {
     slug: "stephen-curry",
     name: "Stephen Curry",
     leagueSlug: "nba",
     teamAbbrev: "GSW",
+    externalId: "201939",
+    jersey: "30",
     position: "Point Guard",
     birthDate: "1988-03-14",
     hometown: "Akron, Ohio",
     heightCm: 188,
     weightKg: 83,
     profileViews: 15142,
+    stats: [
+      { season: "2024-25", gp: 70, ppg: 24.5, rpg: 4.4, apg: 6.0, spg: 1.1, bpg: 0.4, fg: 45.0 },
+      { season: "2023-24", gp: 74, ppg: 26.4, rpg: 4.5, apg: 5.1, spg: 0.7, bpg: 0.4, fg: 45.0 },
+    ],
   },
   {
     slug: "nikola-jokic",
     name: "Nikola Jokic",
     leagueSlug: "nba",
     teamAbbrev: "DEN",
+    externalId: "203999",
+    jersey: "15",
     position: "Center",
     birthDate: "1995-02-19",
     hometown: "Sombor, Serbia",
     heightCm: 211,
     weightKg: 129,
     profileViews: 11200,
+    stats: [
+      { season: "2024-25", gp: 70, ppg: 29.6, rpg: 12.7, apg: 10.2, spg: 1.8, bpg: 0.6, fg: 57.6 },
+      { season: "2023-24", gp: 79, ppg: 26.4, rpg: 12.4, apg: 9.0, spg: 1.4, bpg: 0.9, fg: 58.3 },
+    ],
   },
   {
     slug: "victor-wembanyama",
     name: "Victor Wembanyama",
     leagueSlug: "nba",
     teamAbbrev: "SAS",
+    externalId: "1641705",
+    jersey: "1",
     position: "Center, Power Forward",
     birthDate: "2004-01-04",
     hometown: "Le Chesnay, France",
     heightCm: 224,
     weightKg: 95,
     profileViews: 18500,
+    stats: [
+      { season: "2024-25", gp: 46, ppg: 24.3, rpg: 11.0, apg: 3.7, spg: 1.1, bpg: 3.8, fg: 47.6 },
+      { season: "2023-24", gp: 71, ppg: 21.4, rpg: 10.6, apg: 3.9, spg: 1.2, bpg: 3.6, fg: 46.8 },
+    ],
   },
   {
     slug: "caitlin-clark",
     name: "Caitlin Clark",
     leagueSlug: "wnba",
     teamAbbrev: "IND",
+    externalId: "clark-ca01w",
+    jersey: "22",
     position: "Point Guard",
     birthDate: "2002-01-22",
     hometown: "West Des Moines, Iowa",
     heightCm: 183,
     weightKg: 77,
     profileViews: 16200,
+    stats: [
+      { season: "2025", gp: 38, ppg: 18.5, rpg: 5.2, apg: 7.9, spg: 1.1, bpg: 0.4, fg: 42.1 },
+      { season: "2024", gp: 40, ppg: 19.2, rpg: 5.7, apg: 8.4, spg: 1.3, bpg: 0.5, fg: 41.7 },
+    ],
   },
 ];
 
@@ -135,7 +181,15 @@ async function seed() {
     return;
   }
 
-  for (const table of ["players", "seasons", "teams", "leagues"]) {
+  for (const table of [
+    "player_season_stats",
+    "player_stints",
+    "player_identities",
+    "players",
+    "seasons",
+    "teams",
+    "leagues",
+  ]) {
     await pool.query(`TRUNCATE TABLE ${table} RESTART IDENTITY CASCADE`);
   }
 
@@ -161,30 +215,82 @@ async function seed() {
     teamMap.set(team.abbrev, row.id);
   }
 
+  const seasonMap = new Map<string, number>();
   for (const season of SEASON_LABELS) {
-    await db.insert(schema.seasons).values({
-      leagueId: leagueMap.get(season.leagueSlug)!,
-      seasonLabel: season.label,
-    });
+    const key = `${season.leagueSlug}:${season.label}`;
+    const [row] = await db
+      .insert(schema.seasons)
+      .values({
+        leagueId: leagueMap.get(season.leagueSlug)!,
+        seasonLabel: season.label,
+      })
+      .returning();
+    seasonMap.set(key, row.id);
   }
 
   for (const player of SEED_PLAYERS) {
-    await db.insert(schema.players).values({
-      slug: player.slug,
-      displayName: player.name,
-      currentTeamId: teamMap.get(player.teamAbbrev)!,
-      position: player.position,
-      birthDate: player.birthDate,
-      hometown: player.hometown,
-      heightCm: player.heightCm,
-      weightKg: player.weightKg,
-      profileViews: player.profileViews,
-      headshotUrl: "",
+    const leagueId = leagueMap.get(player.leagueSlug)!;
+    const teamId = teamMap.get(player.teamAbbrev)!;
+
+    const [playerRow] = await db
+      .insert(schema.players)
+      .values({
+        slug: player.slug,
+        displayName: player.name,
+        currentTeamId: teamId,
+        position: player.position,
+        birthDate: player.birthDate,
+        hometown: player.hometown,
+        heightCm: player.heightCm,
+        weightKg: player.weightKg,
+        profileViews: player.profileViews,
+        headshotUrl: "",
+      })
+      .returning();
+
+    await db.insert(schema.playerIdentities).values({
+      playerId: playerRow.id,
+      leagueId,
+      source: "seed",
+      externalId: player.externalId,
     });
+
+    for (const stat of player.stats) {
+      if (stat.gp === 0) continue;
+
+      const seasonKey = `${player.leagueSlug}:${stat.season}`;
+      const seasonId = seasonMap.get(seasonKey)!;
+
+      const [stint] = await db
+        .insert(schema.playerStints)
+        .values({
+          playerId: playerRow.id,
+          teamId,
+          leagueId,
+          seasonId,
+          jerseyNumber: player.jersey,
+        })
+        .returning();
+
+      await db.insert(schema.playerSeasonStats).values({
+        playerId: playerRow.id,
+        stintId: stint.id,
+        seasonId,
+        leagueId,
+        teamId,
+        gamesPlayed: stat.gp,
+        pointsPerGame: String(stat.ppg),
+        reboundsPerGame: String(stat.rpg),
+        assistsPerGame: String(stat.apg),
+        stealsPerGame: String(stat.spg),
+        blocksPerGame: String(stat.bpg),
+        fgPct: String(stat.fg),
+      });
+    }
   }
 
   console.log(
-    `Seeded ${SEED_PLAYERS.length} players, ${TEAMS.length} teams, ${LEAGUES.length} leagues, ${SEASON_LABELS.length} seasons.`,
+    `Seeded ${SEED_PLAYERS.length} players with identities, stints, and season stats.`,
   );
   await closeDatabaseConnection();
 }
