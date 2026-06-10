@@ -182,3 +182,14 @@ h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary));
 }
+
+/* Player profile hero watermark — matches reference silhouette backdrop */
+.player-profile-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 80% at 78% 42%, hsl(var(--foreground) / 0.04), transparent 70%),
+    radial-gradient(ellipse 40% 60% at 90% 60%, hsl(var(--primary) / 0.03), transparent 65%);
+}
