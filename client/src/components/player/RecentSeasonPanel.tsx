@@ -1,40 +1,29 @@
-import { Activity, Target, Trophy, type LucideIcon } from "lucide-react";
+import { Activity, Target, Trophy } from "lucide-react";
 import type { PlayerStat } from "@/lib/api";
 import { StatTrendChart, buildPerGameTrend } from "./StatTrendChart";
-
-const ORANGE = "hsl(24 95% 53%)";
-const TEAL = "hsl(172 66% 50%)";
-
-function StatCard({
-  icon: Icon,
-  value,
-  label,
-  iconClassName,
-}: {
-  icon: LucideIcon;
-  value: string;
-  label: string;
-  iconClassName: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-background p-4 shadow-xs">
-      <Icon className={`mb-3 h-5 w-5 ${iconClassName}`} />
-      <p className="font-display text-3xl font-bold leading-none text-foreground">{value}</p>
-      <p className="mt-1 font-display text-xs tracking-wider text-muted-foreground">{label}</p>
-    </div>
-  );
-}
 
 export function RecentSeasonPanel({ stats }: { stats: PlayerStat[] }) {
   const recent = stats[0];
 
   if (!recent) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <h2 className="font-display text-xl font-bold tracking-wide text-foreground">
-          MOST RECENT SEASON
-        </h2>
-        <p className="mt-6 text-sm text-muted-foreground">No recent season statistics available.</p>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <section className="h-full rounded-2xl border border-border bg-card p-6 shadow-xl">
+            <h3 className="mb-4 border-b border-border pb-2 font-display text-2xl">
+              Most Recent Season
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              No recent season statistics available.
+            </p>
+          </section>
+        </div>
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-2 gap-2 md:gap-6">
+            <StatTrendChart title="Points" season="—" color="hsl(var(--primary))" data={[]} />
+            <StatTrendChart title="Assists" season="—" color="hsl(var(--accent))" data={[]} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -43,46 +32,50 @@ export function RecentSeasonPanel({ stats }: { stats: PlayerStat[] }) {
   const apg = parseFloat(recent.ast_per_g) || 0;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <h2 className="mb-6 font-display text-xl font-bold tracking-wide text-foreground">
-        MOST RECENT SEASON ({recent.season})
-      </h2>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <StatCard
-            icon={Target}
-            value={recent.pts_per_g}
-            label="PPG"
-            iconClassName="text-primary"
-          />
-          <StatCard
-            icon={Activity}
-            value={recent.ast_per_g}
-            label="APG"
-            iconClassName="text-accent"
-          />
-          <div className="sm:col-span-2">
-            <StatCard
-              icon={Trophy}
-              value={recent.trb_per_g}
-              label="RPG"
-              iconClassName="text-primary"
-            />
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="lg:col-span-1">
+        <section className="h-full rounded-2xl border border-border bg-card p-6 shadow-xl">
+          <h3 className="mb-4 border-b border-border pb-2 font-display text-2xl">
+            Most Recent Season ({recent.season})
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-xl border border-border bg-background p-4 text-center">
+              <Target className="mx-auto mb-2 h-6 w-6 text-primary opacity-80" />
+              <div className="font-display text-4xl">{recent.pts_per_g}</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                PPG
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-background p-4 text-center">
+              <Activity className="mx-auto mb-2 h-6 w-6 text-accent opacity-80" />
+              <div className="font-display text-4xl">{recent.ast_per_g}</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                APG
+              </div>
+            </div>
+            <div className="col-span-2 rounded-xl border border-border bg-background p-4 text-center">
+              <Trophy className="mx-auto mb-2 h-6 w-6 text-yellow-500 opacity-80" />
+              <div className="font-display text-4xl">{recent.trb_per_g}</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                RPG
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="lg:col-span-2">
+        <div className="grid grid-cols-2 gap-2 md:gap-6">
           <StatTrendChart
-            title="POINTS"
+            title="Points"
             season={recent.season}
-            color={ORANGE}
+            color="hsl(var(--primary))"
             data={buildPerGameTrend(ppg)}
           />
           <StatTrendChart
-            title="ASSISTS"
+            title="Assists"
             season={recent.season}
-            color={TEAL}
+            color="hsl(var(--accent))"
             data={buildPerGameTrend(apg)}
           />
         </div>
