@@ -7,9 +7,13 @@ import { playersRouter, statsRouter } from "./routes/players.js";
 import { getFeaturedPlayers } from "./services/player.service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+const projectRoot = path.resolve(__dirname, "../..");
+
+dotenv.config({ path: path.resolve(projectRoot, ".env") });
+
 const PORT = Number(process.env.PORT) || 3001;
-const isProd = process.env.NODE_ENV === "production";
+const isProd =
+  process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT !== undefined;
 
 const app = express();
 
@@ -34,13 +38,13 @@ app.use("/api/players", playersRouter);
 app.use("/api", statsRouter);
 
 if (isProd) {
-  const clientDist = path.resolve(__dirname, "../../client/dist");
+  const clientDist = path.resolve(projectRoot, "client/dist");
   app.use(express.static(clientDist));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(clientDist, "index.html"));
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Hoop Central API running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Hoop Central running on port ${PORT} (${isProd ? "production" : "development"})`);
 });

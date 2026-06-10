@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "../server/src/db/schema/index.js";
@@ -267,6 +267,28 @@ const SEED_PLAYERS: SeedPlayer[] = [
 
 async function seed() {
   console.log("Seeding Hoop Central database...");
+
+  if (!process.env.DATABASE_URL) {
+    console.error("DATABASE_URL is not set. Skipping seed.");
+    process.exit(1);
+  }
+
+  let existingCount = 0;
+  try {
+    const [row] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.players);
+    existingCount = row?.count ?? 0;
+  } catch {
+    console.log("Players table not found yet — will create via seed.");
+  }
+
+  if (existingCount > 0 && process.env.FORCE_SEED !== "true") {
+    console.log(`Database already has ${existingCount} players. Skipping seed.`);
+    console.log("Set FORCE_SEED=true to wipe and re-seed.");
+    await pool.end();
+    return;
+  }
 
   const tables = [
     "player_awards",
