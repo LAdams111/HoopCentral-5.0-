@@ -5,26 +5,16 @@ import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
 import { nbaTeamLogoUrl } from "@/lib/constants";
 import { getLeague } from "@/lib/api";
-import { findLeague, LEAGUE_DISPLAY } from "@/lib/leagues";
-
-function toApiLeagueSlug(slug: string | undefined): string | undefined {
-  if (!slug) return undefined;
-  const league = findLeague(slug);
-  if (league?.slug === "NBA") return "nba";
-  if (league?.slug === "WNBA") return "wnba";
-  return slug.trim().toLowerCase();
-}
+import { getLeagueDisplay } from "@/lib/leagues";
 
 export function LeagueDetail() {
   const { league: leagueSlug } = useParams<{ league: string }>();
-  const league = findLeague(leagueSlug);
-  const meta = league ? LEAGUE_DISPLAY[league.slug] : undefined;
-  const apiSlug = toApiLeagueSlug(leagueSlug);
+  const apiSlug = leagueSlug?.trim().toLowerCase() ?? "";
   const [query, setQuery] = useState("");
 
-  const { data: dbLeague, isLoading } = useQuery({
+  const { data: dbLeague, isLoading, error } = useQuery({
     queryKey: ["league", apiSlug],
-    queryFn: () => getLeague(apiSlug!),
+    queryFn: () => getLeague(apiSlug),
     enabled: Boolean(apiSlug),
     retry: false,
   });
@@ -40,23 +30,18 @@ export function LeagueDetail() {
     );
   }, [dbLeague?.teams, query]);
 
-  if (!league) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <p className="text-muted-foreground">League not found.</p>
-        <BackButton
-          fallback="/leagues"
-          className="mt-4 text-primary hover:underline"
-          label="Back to Leagues"
-        />
-      </div>
-    );
+  if (!apiSlug) {
+    return <LeagueNotFound />;
   }
 
-  const display = meta?.display ?? league.name;
-  const tier = meta?.tier ?? league.tier;
-  const description = meta?.description ?? league.description;
-  const logoUrl = meta?.logoUrl ?? league.logoUrl;
+  if (!isLoading && (error || !dbLeague)) {
+    return <LeagueNotFound />;
+  }
+
+  const displayMeta = dbLeague
+    ? getLeagueDisplay(dbLeague.slug, dbLeague.name)
+    : { display: "", tier: "", description: "", logoUrl: undefined };
+
   const totalTeams = dbLeague?.teams.length ?? 0;
 
   return (
@@ -65,30 +50,38 @@ export function LeagueDetail() {
         <div className="container mx-auto px-4">
           <BackButton fallback="/leagues" />
 
-          <div className="flex flex-col items-center gap-6 md:flex-row">
-            <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={display}
-                  className="max-h-full max-w-full object-contain"
-                />
-              ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 font-display text-3xl font-bold text-primary">
-                  {display.charAt(0)}
-                </div>
-              )}
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             </div>
-            <div className="text-center md:text-left">
-              <div className="mb-1 font-mono text-xs uppercase tracking-widest text-primary">
-                {tier}
+          ) : (
+            <div className="flex flex-col items-center gap-6 md:flex-row">
+              <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center">
+                {displayMeta.logoUrl ? (
+                  <img
+                    src={displayMeta.logoUrl}
+                    alt={displayMeta.display}
+                    className="max-h-full max-w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 font-display text-3xl font-bold text-primary">
+                    {displayMeta.display.charAt(0)}
+                  </div>
+                )}
               </div>
-              <h1 className="font-display text-5xl font-bold uppercase tracking-tighter md:text-7xl">
-                {display}
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p>
+              <div className="text-center md:text-left">
+                <div className="mb-1 font-mono text-xs uppercase tracking-widest text-primary">
+                  {displayMeta.tier}
+                </div>
+                <h1 className="font-display text-5xl font-bold uppercase tracking-tighter md:text-7xl">
+                  {displayMeta.display}
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                  {displayMeta.description}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -131,7 +124,7 @@ export function LeagueDetail() {
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 truncate font-mono text-[10px] uppercase tracking-widest text-primary">
-                      {display}
+                      {displayMeta.display}
                     </div>
                     <div className="truncate text-sm font-bold">{team.name}</div>
                     <div className="mt-2 flex items-center justify-between gap-1">
@@ -161,6 +154,19 @@ export function LeagueDetail() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function LeagueNotFound() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <p className="text-muted-foreground">League not found.</p>
+      <BackButton
+        fallback="/leagues"
+        className="mt-4 text-primary hover:underline"
+        label="Back to Leagues"
+      />
     </div>
   );
 }

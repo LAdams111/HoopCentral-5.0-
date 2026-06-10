@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import type { LeagueInfo } from "@/lib/leagues";
+import type { LeagueCardData } from "@/lib/leagues";
 
-export function LeagueCard({ league }: { league: LeagueInfo }) {
+export function LeagueCard({ league }: { league: LeagueCardData }) {
   return (
     <Link
       to={`/leagues/${league.slug}`}
@@ -37,20 +37,31 @@ export function LeagueCard({ league }: { league: LeagueInfo }) {
         </div>
 
         <div className="hidden flex-shrink-0 rounded-xl border border-border bg-muted px-4 py-2 md:block">
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Region
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {league.regions.map((region) => (
-              <img
-                key={region}
-                src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${region}.svg`}
-                alt={region}
-                title={region}
-                className="h-5 w-7 rounded-sm border border-border/50 object-cover"
-              />
-            ))}
-          </div>
+          {league.regions.length > 0 ? (
+            <>
+              <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Region
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {league.regions.map((region) => (
+                  <img
+                    key={region}
+                    src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${region}.svg`}
+                    alt={region}
+                    title={region}
+                    className="h-5 w-7 rounded-sm border border-border/50 object-cover"
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Teams
+              </div>
+              <div className="font-display text-lg font-bold">{league.teamCount}</div>
+            </>
+          )}
         </div>
       </div>
     </Link>

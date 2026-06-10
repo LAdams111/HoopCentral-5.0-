@@ -2,19 +2,12 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { eq } from "drizzle-orm";
+import { SEED_LEAGUES } from "../server/src/data/leagues.js";
 import { NBA_TEAMS_WITH_SLUGS } from "../server/src/data/nba-teams.js";
+import { WNBA_TEAMS_WITH_SLUGS } from "../server/src/data/wnba-teams.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-
-const WNBA_TEAMS = [
-  {
-    abbrev: "IND",
-    name: "Indiana Fever",
-    slug: "indiana-fever",
-    leagueSlug: "wnba",
-  },
-] as const;
 
 export async function ensureLeagueTeams() {
   const { closeDatabaseConnection, db } = await import("../server/src/db/index.js");
@@ -26,10 +19,7 @@ export async function ensureLeagueTeams() {
   }
 
   const leagueMap = new Map<string, number>();
-  for (const league of [
-    { slug: "nba", name: "NBA" },
-    { slug: "wnba", name: "WNBA" },
-  ]) {
+  for (const league of SEED_LEAGUES) {
     const [existing] = await db
       .select()
       .from(schema.leagues)
@@ -53,7 +43,10 @@ export async function ensureLeagueTeams() {
       ...team,
       leagueSlug: "nba" as const,
     })),
-    ...WNBA_TEAMS,
+    ...WNBA_TEAMS_WITH_SLUGS.map((team) => ({
+      ...team,
+      leagueSlug: "wnba" as const,
+    })),
   ];
 
   let added = 0;

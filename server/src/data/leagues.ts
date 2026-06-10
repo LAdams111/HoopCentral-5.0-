@@ -1,0 +1,16 @@
+export const SEED_LEAGUES = [
+  { slug: "nba", name: "NBA" },
+  { slug: "wnba", name: "WNBA" },
+  { slug: "g-league", name: "NBA G League" },
+  { slug: "ncaa", name: "NCAA Division I" },
+  { slug: "u-sports", name: "U Sports" },
+  { slug: "ote", name: "Overtime Elite (OTE)" },
+  { slug: "high-school", name: "High School" },
+  { slug: "aau", name: "AAU" },
+  { slug: "euroleague", name: "EuroLeague" },
+  { slug: "acb", name: "Liga ACB" },
+  { slug: "nbl", name: "NBL Australia" },
+  { slug: "bal", name: "Basketball Africa League" },
+  { slug: "cba", name: "Chinese Basketball Association" },
+  { slug: "b-league", name: "B.League (Japan)" },
+] as const;

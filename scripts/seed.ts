@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { SEED_LEAGUES } from "../server/src/data/leagues.js";
 import { NBA_TEAMS_WITH_SLUGS } from "../server/src/data/nba-teams.js";
+import { WNBA_TEAMS_WITH_SLUGS } from "../server/src/data/wnba-teams.js";
 import { ensureLeagueTeams } from "./ensure-teams.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -32,10 +34,7 @@ type SeedPlayer = {
   stats: SeasonStat[];
 };
 
-const LEAGUES = [
-  { slug: "nba", name: "NBA" },
-  { slug: "wnba", name: "WNBA" },
-] as const;
+const LEAGUES = SEED_LEAGUES;
 
 const TEAMS = [
   ...NBA_TEAMS_WITH_SLUGS.map((team) => ({
@@ -44,12 +43,12 @@ const TEAMS = [
     slug: team.slug,
     leagueSlug: "nba" as const,
   })),
-  {
-    abbrev: "IND",
-    name: "Indiana Fever",
-    slug: "indiana-fever",
+  ...WNBA_TEAMS_WITH_SLUGS.map((team) => ({
+    abbrev: team.abbrev,
+    name: team.name,
+    slug: team.slug,
     leagueSlug: "wnba" as const,
-  },
+  })),
 ] as const;
 
 const SEASON_LABELS = [
