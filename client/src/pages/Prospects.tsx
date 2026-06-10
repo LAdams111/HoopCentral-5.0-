@@ -20,7 +20,7 @@ export function Prospects() {
   });
 
   const prospects = players
-    .filter((p) => getAge(p.birthDate) < 23)
+    .filter((p) => getAge(p.birthDate) < 20)
     .sort((a, b) => b.profileViews - a.profileViews)
     .slice(0, 50);
 
@@ -36,7 +36,7 @@ export function Prospects() {
               Hottest <span className="text-primary">Prospects</span>
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              Top most viewed players under 23
+              Top 50 most viewed players under 20
             </p>
           </div>
         </div>
@@ -51,6 +51,9 @@ export function Prospects() {
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center">
             <Sparkles className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 className="font-display text-2xl text-muted-foreground">No prospects found</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              No players under 20 in the database yet.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">

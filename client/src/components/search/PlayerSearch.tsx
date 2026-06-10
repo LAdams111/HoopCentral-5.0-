@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/Button";
 import { getPlayers, type PlayerCard } from "@/lib/api";
 import { DEFAULT_HEADSHOT } from "@/lib/constants";
 
@@ -63,15 +62,14 @@ export function PlayerSearch() {
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search players or teams..."
-          className="w-full rounded-full border-2 border-black bg-white/5 py-7 pl-12 pr-14 text-lg transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="flex h-9 w-full rounded-full border-2 border-black bg-white/5 px-3 py-7 pl-12 pr-12 text-base ring-offset-background transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 md:text-sm"
         />
-        <Button
+        <button
           type="submit"
-          size="icon"
-          className="absolute right-2 top-2 h-10 w-10 rounded-full p-0"
+          className="hover-elevate active-elevate-2 absolute right-2 top-2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--primary-border)] bg-primary p-0 text-primary-foreground shadow-xs"
         >
           <ArrowRight className="h-4 w-4" />
-        </Button>
+        </button>
       </form>
 
       {showDropdown && (
