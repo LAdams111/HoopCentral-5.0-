@@ -10,6 +10,7 @@ import {
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
+import { isPostgresUniqueViolation } from "../utils/postgres.js";
 
 export interface IngestPlayerSeasonInput {
   source: string;
@@ -178,12 +179,22 @@ async function findOrCreateLeague(
 
   if (existing) return { id: existing.id, created: false };
 
-  const [created] = await database
-    .insert(leagues)
-    .values({ slug, name })
-    .returning();
-
-  return { id: created.id, created: true };
+  try {
+    const [created] = await database
+      .insert(leagues)
+      .values({ slug, name })
+      .returning();
+    return { id: created.id, created: true };
+  } catch (err) {
+    if (!isPostgresUniqueViolation(err)) throw err;
+    const [again] = await database
+      .select()
+      .from(leagues)
+      .where(eq(leagues.slug, slug))
+      .limit(1);
+    if (!again) throw err;
+    return { id: again.id, created: false };
+  }
 }
 
 async function findOrCreateTeam(
@@ -208,17 +219,32 @@ async function findOrCreateTeam(
     return { id: existing.id, created: false };
   }
 
-  const [created] = await database
-    .insert(teams)
-    .values({
-      slug,
-      name,
-      abbreviation,
-      leagueId,
-    })
-    .returning();
-
-  return { id: created.id, created: true };
+  try {
+    const [created] = await database
+      .insert(teams)
+      .values({
+        slug,
+        name,
+        abbreviation,
+        leagueId,
+      })
+      .returning();
+    return { id: created.id, created: true };
+  } catch (err) {
+    if (!isPostgresUniqueViolation(err)) throw err;
+    const [again] = await database
+      .select()
+      .from(teams)
+      .where(eq(teams.slug, slug))
+      .limit(1);
+    if (!again) throw err;
+    if (again.leagueId !== leagueId) {
+      throw new IngestValidationError(
+        `Team slug "${slug}" already belongs to a different league`,
+      );
+    }
+    return { id: again.id, created: false };
+  }
 }
 
 async function findOrCreateSeason(
@@ -234,12 +260,22 @@ async function findOrCreateSeason(
 
   if (existing) return { id: existing.id, created: false };
 
-  const [created] = await database
-    .insert(seasons)
-    .values({ leagueId, seasonLabel })
-    .returning();
-
-  return { id: created.id, created: true };
+  try {
+    const [created] = await database
+      .insert(seasons)
+      .values({ leagueId, seasonLabel })
+      .returning();
+    return { id: created.id, created: true };
+  } catch (err) {
+    if (!isPostgresUniqueViolation(err)) throw err;
+    const [again] = await database
+      .select()
+      .from(seasons)
+      .where(and(eq(seasons.leagueId, leagueId), eq(seasons.seasonLabel, seasonLabel)))
+      .limit(1);
+    if (!again) throw err;
+    return { id: again.id, created: false };
+  }
 }
 
 async function upsertStint(
@@ -266,14 +302,18 @@ async function upsertStint(
 
   if (existing) return false;
 
-  await database.insert(playerStints).values({
-    playerId: params.playerId,
-    teamId: params.teamId,
-    leagueId: params.leagueId,
-    seasonId: params.seasonId,
-  });
-
-  return true;
+  try {
+    await database.insert(playerStints).values({
+      playerId: params.playerId,
+      teamId: params.teamId,
+      leagueId: params.leagueId,
+      seasonId: params.seasonId,
+    });
+    return true;
+  } catch (err) {
+    if (isPostgresUniqueViolation(err)) return false;
+    throw err;
+  }
 }
 
 async function upsertSeasonStats(
@@ -333,15 +373,36 @@ async function upsertSeasonStats(
     return false;
   }
 
-  await database.insert(playerSeasonStats).values({
-    playerId: params.playerId,
-    teamId: params.teamId,
-    leagueId: params.leagueId,
-    seasonId: params.seasonId,
-    ...values,
-  });
-
-  return true;
+  try {
+    await database.insert(playerSeasonStats).values({
+      playerId: params.playerId,
+      teamId: params.teamId,
+      leagueId: params.leagueId,
+      seasonId: params.seasonId,
+      ...values,
+    });
+    return true;
+  } catch (err) {
+    if (!isPostgresUniqueViolation(err)) throw err;
+    const [raceExisting] = await database
+      .select({ id: playerSeasonStats.id })
+      .from(playerSeasonStats)
+      .where(
+        and(
+          eq(playerSeasonStats.playerId, params.playerId),
+          eq(playerSeasonStats.teamId, params.teamId),
+          eq(playerSeasonStats.leagueId, params.leagueId),
+          eq(playerSeasonStats.seasonId, params.seasonId),
+        ),
+      )
+      .limit(1);
+    if (!raceExisting) throw err;
+    await database
+      .update(playerSeasonStats)
+      .set(values)
+      .where(eq(playerSeasonStats.id, raceExisting.id));
+    return false;
+  }
 }
 
 export async function ingestPlayerSeason(
