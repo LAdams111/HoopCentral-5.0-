@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { PlayerStat } from "@/lib/api";
+import { rosterPath } from "@/lib/constants";
 
 export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
   if (stats.length === 0) {
@@ -50,7 +51,7 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
                 </td>
                 <td className="px-6 py-4 font-mono">
                   <Link
-                    to={`/teams/${stat.teamSlug}`}
+                    to={rosterPath(stat.team, stat.season)}
                     className="whitespace-nowrap text-primary hover:underline"
                   >
                     {stat.team}

@@ -6,6 +6,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
 import { getPlayer, incrementProfileView } from "@/lib/api";
+import { rosterPath } from "@/lib/constants";
 
 const FAVORITES_KEY = "hoopcentral-favorites";
 
@@ -173,9 +174,9 @@ export function PlayerProfile() {
                         {player.league}
                       </Link>
                     ) : null}
-                    {player.teamSlug && player.team ? (
+                    {player.team ? (
                       <Link
-                        to={`/teams/${player.teamSlug}`}
+                        to={rosterPath(player.team)}
                         className="font-mono text-sm uppercase tracking-widest text-primary hover:underline md:text-lg"
                       >
                         {player.team}

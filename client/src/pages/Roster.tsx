@@ -8,6 +8,7 @@ import {
   formatSeasonHeading,
   generateSeasonYears,
   nbaTeamLogoUrl,
+  seasonKeyToYear,
   seasonYearToLabel,
 } from "@/lib/constants";
 import { getTeamRecord, getTeamRoster } from "@/lib/api";
@@ -76,6 +77,8 @@ export function Roster() {
   const navigate = useNavigate();
   const location = useLocation();
   const decodedTeam = decodeURIComponent(team);
+  const decodedSeason = decodeURIComponent(season);
+  const seasonYear = seasonKeyToYear(decodedSeason);
   const seasonYears = generateSeasonYears();
 
   const {
@@ -84,14 +87,14 @@ export function Roster() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["team-roster", team, season],
-    queryFn: () => getTeamRoster(decodedTeam, season),
+    queryKey: ["team-roster", team, decodedSeason],
+    queryFn: () => getTeamRoster(decodedTeam, decodedSeason),
     enabled: Boolean(team && season),
   });
 
   const { data: record } = useQuery({
-    queryKey: ["team-record", team, season],
-    queryFn: () => getTeamRecord(decodedTeam, season),
+    queryKey: ["team-record", team, decodedSeason],
+    queryFn: () => getTeamRecord(decodedTeam, decodedSeason),
     enabled: Boolean(team && season),
   });
 
@@ -202,7 +205,7 @@ export function Roster() {
               </div>
               <div className="relative">
                 <select
-                  value={season}
+                  value={seasonYear}
                   onChange={(e) => handleSeasonChange(e.target.value)}
                   className="h-12 w-full appearance-none rounded-xl border-2 border-border bg-background px-3 py-2 pr-10 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   data-testid="select-season"
@@ -232,7 +235,7 @@ export function Roster() {
               className="font-display text-3xl font-bold uppercase tracking-tight"
               data-testid="text-season-heading"
             >
-              {formatSeasonHeading(season)} Season Roster
+              {formatSeasonHeading(decodedSeason)} Season Roster
             </h2>
             {players.length > 0 && (
               <Badge className="font-mono text-[10px] uppercase tracking-widest">

@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
-import { nbaTeamLogoUrl } from "@/lib/constants";
+import { nbaTeamLogoUrl, rosterPath, seasonYearToLabel, getCurrentSeasonYear } from "@/lib/constants";
 import { getLeague } from "@/lib/api";
 import { getLeagueDisplay } from "@/lib/leagues";
 
@@ -43,6 +43,7 @@ export function LeagueDetail() {
     : { display: "", tier: "", description: "", logoUrl: undefined };
 
   const totalTeams = dbLeague?.teams.length ?? 0;
+  const currentSeasonLabel = seasonYearToLabel(getCurrentSeasonYear());
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -118,7 +119,7 @@ export function LeagueDetail() {
             {teams.map((team) => (
               <Link
                 key={team.slug}
-                to={`/teams/${team.slug}`}
+                to={rosterPath(team.name, currentSeasonLabel)}
                 className="hover-elevate rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
               >
                 <div className="flex items-start gap-2">
@@ -129,7 +130,7 @@ export function LeagueDetail() {
                     <div className="truncate text-sm font-bold">{team.name}</div>
                     <div className="mt-2 flex items-center justify-between gap-1">
                       <span className="font-mono text-[9px] text-muted-foreground">
-                        {team.abbreviation}
+                        {currentSeasonLabel}
                       </span>
                       <ArrowRight className="h-3 w-3 text-muted-foreground" />
                     </div>

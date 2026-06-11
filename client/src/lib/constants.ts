@@ -81,6 +81,19 @@ export function formatSeasonHeading(seasonKey: string): string {
   return seasonKey;
 }
 
+export function seasonKeyToYear(seasonKey: string): string {
+  if (/^\d{4}$/.test(seasonKey)) {
+    return seasonKey;
+  }
+  return seasonLabelToUrlYear(seasonKey);
+}
+
+export function rosterPath(teamName: string, season?: string): string {
+  const seasonKey =
+    season ?? seasonYearToLabel(getCurrentSeasonYear());
+  return `/roster/${encodeURIComponent(teamName)}/${encodeURIComponent(seasonKey)}`;
+}
+
 export const NAV_ITEMS: {
   label: string;
   href: string;
