@@ -3,6 +3,7 @@ import { getTeamCount } from "../services/player.service.js";
 import {
   getAllTeams,
   getTeamBySlug,
+  getTeamRecord,
   getTeamRoster,
   getTeamSeasons,
 } from "../services/team.service.js";
@@ -49,6 +50,24 @@ teamsRouter.get("/:team/roster/:season", async (req, res) => {
     console.error(err);
     res.status(500).json({
       error: { code: "INTERNAL_ERROR", message: "Failed to get team roster" },
+    });
+  }
+});
+
+teamsRouter.get("/:team/record/:season", async (req, res) => {
+  try {
+    const record = await getTeamRecord(req.params.team, req.params.season);
+    if (!record) {
+      res.status(404).json({
+        error: { code: "RECORD_NOT_FOUND", message: "Team record not found" },
+      });
+      return;
+    }
+    res.json(record);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to get team record" },
     });
   }
 });

@@ -53,6 +53,34 @@ export function seasonLabelToUrlYear(seasonLabel: string): string {
   return seasonLabel.split("-")[0] ?? seasonLabel;
 }
 
+export const SEASON_START_YEAR = 1987;
+
+export function getCurrentSeasonYear(): number {
+  const now = new Date();
+  const year = now.getFullYear();
+  return now.getMonth() + 1 >= 10 ? year : year - 1;
+}
+
+export function seasonYearToLabel(year: number): string {
+  const endYear = String(year + 1).slice(-2);
+  return `${year}-${endYear}`;
+}
+
+export function generateSeasonYears(): number[] {
+  const current = getCurrentSeasonYear();
+  return Array.from(
+    { length: current - SEASON_START_YEAR + 1 },
+    (_, index) => current - index,
+  );
+}
+
+export function formatSeasonHeading(seasonKey: string): string {
+  if (/^\d{4}$/.test(seasonKey)) {
+    return seasonYearToLabel(parseInt(seasonKey, 10));
+  }
+  return seasonKey;
+}
+
 export const NAV_ITEMS: {
   label: string;
   href: string;

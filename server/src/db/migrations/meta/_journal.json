@@ -50,6 +50,13 @@
       "when": 1750089600000,
       "tag": "0006_add_steals_blocks",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1750176000000,
+      "tag": "0007_team_season_records",
+      "breakpoints": true
     }
   ]
 }

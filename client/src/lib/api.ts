@@ -98,6 +98,15 @@ export interface TeamRosterResponse {
   players: PlayerCard[];
 }
 
+export interface TeamRecordResponse {
+  id: number;
+  team: string;
+  season: string;
+  wins: number;
+  losses: number;
+  league: string;
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) {
@@ -159,6 +168,15 @@ export function getTeamRoster(
 
 export function getTeamSeasons(team: string): Promise<string[]> {
   return fetchJson(`/api/teams/${encodeURIComponent(team)}/seasons`);
+}
+
+export function getTeamRecord(
+  team: string,
+  season: string,
+): Promise<TeamRecordResponse | null> {
+  return fetch(
+    `/api/teams/${encodeURIComponent(team)}/record/${encodeURIComponent(season)}`,
+  ).then((res) => (res.ok ? (res.json() as Promise<TeamRecordResponse>) : null));
 }
 
 export function getSeasonCount(): Promise<{ count: number }> {

@@ -5,6 +5,7 @@ import {
   playerSeasonStats,
   players,
   seasons,
+  teamSeasonRecords,
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
@@ -36,6 +37,15 @@ export interface TeamRoster {
   team: TeamInfo;
   seasonLabel: string;
   players: PlayerCard[];
+}
+
+export interface TeamRecord {
+  id: number;
+  team: string;
+  season: string;
+  wins: number;
+  losses: number;
+  league: string;
 }
 
 async function findTeam(teamKey: string) {
@@ -255,4 +265,46 @@ export async function getTeamSeasons(teamKey: string): Promise<string[]> {
     .orderBy(desc(seasons.seasonLabel));
 
   return rows.map((row) => row.label);
+}
+
+export async function getTeamRecord(
+  teamKey: string,
+  seasonKey: string,
+): Promise<TeamRecord | null> {
+  const team = await findTeam(teamKey);
+  if (!team) return null;
+
+  const season =
+    (await findSeason(seasonKey, team.leagueId)) ??
+    (await findLatestSeasonForTeam(team.id));
+
+  if (!season) return null;
+
+  const [recordRow] = await db
+    .select({ record: teamSeasonRecords })
+    .from(teamSeasonRecords)
+    .where(
+      and(
+        eq(teamSeasonRecords.teamId, team.id),
+        eq(teamSeasonRecords.seasonId, season.id),
+      ),
+    )
+    .limit(1);
+
+  if (!recordRow) return null;
+
+  const [leagueRow] = await db
+    .select()
+    .from(leagues)
+    .where(eq(leagues.id, team.leagueId))
+    .limit(1);
+
+  return {
+    id: recordRow.record.id,
+    team: team.name,
+    season: season.seasonLabel,
+    wins: recordRow.record.wins,
+    losses: recordRow.record.losses,
+    league: leagueRow?.name ?? "",
+  };
 }
