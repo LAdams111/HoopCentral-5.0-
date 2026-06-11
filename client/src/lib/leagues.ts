@@ -25,8 +25,7 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     tier: "Professional",
     description:
       "The Women's National Basketball Association - the premier professional women's basketball league in the world.",
-    logoUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/2/2f/WNBA_Logo_2019.svg",
+    logoUrl: "https://cdn.nba.com/logos/leagues/logo-wnba.svg",
     regions: ["US"],
     category: "domestic",
   },

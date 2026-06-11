@@ -43,10 +43,46 @@ export const NBA_TEAM_IDS: Record<string, string> = {
   "Washington Wizards": "1610612764",
 };
 
+export const WNBA_TEAM_ABBREVS: Record<string, string> = {
+  "Atlanta Dream": "ATL",
+  "Chicago Sky": "CHI",
+  "Connecticut Sun": "CON",
+  "Dallas Wings": "DAL",
+  "Golden State Valkyries": "GSV",
+  "Indiana Fever": "IND",
+  "Las Vegas Aces": "LVA",
+  "Los Angeles Sparks": "LAS",
+  "Minnesota Lynx": "MIN",
+  "New York Liberty": "NYL",
+  "Phoenix Mercury": "PHO",
+  "Seattle Storm": "SEA",
+  "Washington Mystics": "WAS",
+};
+
 export function nbaTeamLogoUrl(teamName: string, variant: "global" | "primary" = "global") {
   const id = NBA_TEAM_IDS[teamName] ?? "1610612737";
   const path = variant === "primary" ? "primary" : "global";
   return `https://cdn.nba.com/logos/nba/${id}/${path}/L/logo.svg`;
+}
+
+export function wnbaTeamLogoUrl(teamName: string, abbreviation?: string) {
+  const abbr = (abbreviation ?? WNBA_TEAM_ABBREVS[teamName] ?? "ATL").toUpperCase();
+  return `https://stats.wnba.com/media/img/teams/logos/${abbr}.svg`;
+}
+
+export function teamLogoUrl(
+  teamName: string,
+  options?: {
+    leagueSlug?: string;
+    abbreviation?: string;
+    variant?: "global" | "primary";
+  },
+) {
+  const leagueSlug = options?.leagueSlug?.toLowerCase();
+  if (leagueSlug === "wnba" || WNBA_TEAM_ABBREVS[teamName]) {
+    return wnbaTeamLogoUrl(teamName, options?.abbreviation);
+  }
+  return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
 }
 
 export function seasonLabelToUrlYear(seasonLabel: string): string {

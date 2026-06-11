@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
-import { nbaTeamLogoUrl, rosterPath, seasonYearToLabel, getCurrentSeasonYear } from "@/lib/constants";
+import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, teamLogoUrl } from "@/lib/constants";
 import { getLeague } from "@/lib/api";
 import { getLeagueDisplay } from "@/lib/leagues";
 
@@ -136,7 +136,11 @@ export function LeagueDetail() {
                     </div>
                   </div>
                   <img
-                    src={nbaTeamLogoUrl(team.name, "primary")}
+                    src={teamLogoUrl(team.name, {
+                      leagueSlug: apiSlug,
+                      abbreviation: team.abbreviation,
+                      variant: "primary",
+                    })}
                     alt={team.name}
                     className="h-8 w-8 flex-shrink-0 object-contain"
                   />

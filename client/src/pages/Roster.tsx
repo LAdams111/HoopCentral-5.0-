@@ -7,7 +7,7 @@ import {
   DEFAULT_HEADSHOT,
   formatSeasonHeading,
   generateSeasonYears,
-  nbaTeamLogoUrl,
+  teamLogoUrl,
   seasonKeyToYear,
   seasonYearToLabel,
 } from "@/lib/constants";
@@ -178,7 +178,10 @@ export function Roster() {
             <div className="flex items-center gap-6">
               <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center">
                 <img
-                  src={nbaTeamLogoUrl(teamName, "primary")}
+                  src={teamLogoUrl(teamName, {
+                    abbreviation: roster?.team.abbreviation,
+                    variant: "primary",
+                  })}
                   alt={`${teamName} logo`}
                   className="max-h-full max-w-full object-contain"
                   data-testid="img-team-logo"
