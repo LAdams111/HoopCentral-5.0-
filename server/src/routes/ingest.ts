@@ -5,10 +5,27 @@ import {
   ingestPlayerSeason,
   parseIngestPlayerSeasonBody,
 } from "../services/ingest.service.js";
+import { getCompletionStatusBySource } from "../services/ingest-status.service.js";
 
 export const ingestRouter = Router();
 
 ingestRouter.use(requireIngestApiKey);
+
+ingestRouter.get("/completion-status", async (req, res) => {
+  try {
+    const source =
+      typeof req.query.source === "string" && req.query.source.trim()
+        ? req.query.source.trim()
+        : "balldontlie";
+    const players = await getCompletionStatusBySource(source);
+    res.json({ source, players });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to load completion status" },
+    });
+  }
+});
 
 ingestRouter.post("/player-season", async (req, res) => {
   try {
