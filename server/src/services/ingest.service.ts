@@ -10,7 +10,10 @@ import {
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
-import { isPostgresUniqueViolation } from "../utils/postgres.js";
+import {
+  isPostgresTransientError,
+  isPostgresUniqueViolation,
+} from "../utils/postgres.js";
 
 export interface IngestPlayerSeasonInput {
   source: string;
@@ -405,7 +408,11 @@ async function upsertSeasonStats(
   }
 }
 
-export async function ingestPlayerSeason(
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function ingestPlayerSeasonOnce(
   input: IngestPlayerSeasonInput,
 ): Promise<IngestPlayerSeasonResult> {
   return db.transaction(async (tx) => {
@@ -476,4 +483,23 @@ export async function ingestPlayerSeason(
       },
     };
   });
+}
+
+export async function ingestPlayerSeason(
+  input: IngestPlayerSeasonInput,
+): Promise<IngestPlayerSeasonResult> {
+  const maxAttempts = 4;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await ingestPlayerSeasonOnce(input);
+    } catch (err) {
+      if (!isPostgresTransientError(err) || attempt === maxAttempts) {
+        throw err;
+      }
+      await sleep(150 * attempt * attempt);
+    }
+  }
+
+  throw new Error("ingestPlayerSeason failed after retries");
 }

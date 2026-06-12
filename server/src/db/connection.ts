@@ -9,11 +9,18 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+function parsePoolMax(): number {
+  const raw = process.env.DATABASE_POOL_MAX?.trim();
+  if (!raw) return 40;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isNaN(parsed) || parsed < 1 ? 40 : parsed;
+}
+
 export const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 10,
+  max: parsePoolMax(),
   idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 10_000,
+  connectionTimeoutMillis: 30_000,
 });
 
 export const db = drizzle(pool, { schema });
