@@ -57,6 +57,13 @@
       "when": 1750176000000,
       "tag": "0007_team_season_records",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1750262400000,
+      "tag": "0008_player_bio_fields",
+      "breakpoints": true
     }
   ]
 }

@@ -18,6 +18,8 @@ export const players = pgTable("players", {
   weightKg: integer("weight_kg"),
   birthDate: date("birth_date"),
   hometown: text("hometown"),
+  country: text("country"),
+  jerseyNumber: text("jersey_number"),
   headshotUrl: text("headshot_url").default(""),
   profileViews: integer("profile_views").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })

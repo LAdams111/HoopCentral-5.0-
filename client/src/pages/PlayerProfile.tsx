@@ -112,8 +112,7 @@ export function PlayerProfile() {
 
   const age = player.birthDate ? calcAge(player.birthDate) : null;
   const headshot = player.headshotUrl || undefined;
-  const jerseyLabel =
-    player.jerseyNumber > 0 ? `#${player.jerseyNumber}` : null;
+  const jerseyLabel = player.jerseyNumber ? `#${player.jerseyNumber}` : null;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -251,6 +250,19 @@ export function PlayerProfile() {
                       </span>
                       <span className="font-mono text-lg font-bold text-foreground">
                         {player.hometown}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {player.country && (
+                  <div className="flex w-fit items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+                    <div className="flex flex-col">
+                      <span className="mb-2 text-[10px] font-bold uppercase leading-none tracking-[0.2em] text-primary/70">
+                        Country
+                      </span>
+                      <span className="font-mono text-lg font-bold text-foreground">
+                        {player.country}
                       </span>
                     </div>
                   </div>

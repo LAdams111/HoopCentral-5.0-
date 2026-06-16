@@ -4,6 +4,17 @@ import { playerIdentities, players } from "../db/schema/index.js";
 import { isPostgresUniqueViolation } from "../utils/postgres.js";
 import { nameToSlug } from "../utils/slug.js";
 
+export function normalizeDisplayName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export interface FindOrCreatePlayerByIdentityInput {
   source: string;
   externalId: string;
@@ -40,7 +51,7 @@ async function generateUniquePlayerSlug(
   }
 }
 
-async function lookupPlayerByIdentity(
+export async function lookupPlayerByIdentity(
   database: DbClient,
   source: string,
   externalId: string,
@@ -126,4 +137,75 @@ export async function findOrCreatePlayerByIdentity(
   throw new Error(
     `Failed to find or create player identity for ${source}:${externalId}`,
   );
+}
+
+export async function findUniquePlayerByNameAndBirthDate(
+  displayName: string,
+  birthDate: string,
+  database: DbClient = db,
+): Promise<(typeof players.$inferSelect) | null> {
+  const normalized = normalizeDisplayName(displayName);
+  if (!normalized || !birthDate.trim()) return null;
+
+  const rows = await database
+    .select()
+    .from(players)
+    .where(eq(players.birthDate, birthDate));
+
+  const matches = rows.filter(
+    (player) => normalizeDisplayName(player.displayName) === normalized,
+  );
+
+  if (matches.length === 1) return matches[0];
+  return null;
+}
+
+export async function upsertPlayerIdentity(
+  database: DbClient,
+  source: string,
+  externalId: string,
+  playerId: number,
+): Promise<typeof playerIdentities.$inferSelect> {
+  const trimmedSource = source.trim();
+  const trimmedExternalId = externalId.trim();
+  const existing = await lookupPlayerByIdentity(
+    database,
+    trimmedSource,
+    trimmedExternalId,
+  );
+
+  if (existing) {
+    if (existing.player.id !== playerId) {
+      throw new Error(
+        `Identity ${trimmedSource}:${trimmedExternalId} is linked to player ${existing.player.id}, not ${playerId}`,
+      );
+    }
+    return existing.identity;
+  }
+
+  try {
+    const [identity] = await database
+      .insert(playerIdentities)
+      .values({
+        playerId,
+        source: trimmedSource,
+        externalId: trimmedExternalId,
+      })
+      .returning();
+    return identity;
+  } catch (err) {
+    if (!isPostgresUniqueViolation(err)) throw err;
+    const raced = await lookupPlayerByIdentity(
+      database,
+      trimmedSource,
+      trimmedExternalId,
+    );
+    if (!raced) throw err;
+    if (raced.player.id !== playerId) {
+      throw new Error(
+        `Identity ${trimmedSource}:${trimmedExternalId} is linked to player ${raced.player.id}, not ${playerId}`,
+      );
+    }
+    return raced.identity;
+  }
 }

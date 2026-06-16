@@ -18,6 +18,8 @@ export interface IngestedSeasonStat {
 export interface IngestedPlayerStatus {
   playerId: number;
   externalId: string;
+  displayName: string;
+  birthDate: string | null;
   seasons: IngestedSeasonStat[];
 }
 
@@ -28,6 +30,8 @@ export async function getCompletionStatusBySource(
     .select({
       externalId: playerIdentities.externalId,
       playerId: players.id,
+      displayName: players.displayName,
+      birthDate: players.birthDate,
       seasonLabel: seasons.seasonLabel,
       gamesPlayed: playerSeasonStats.gamesPlayed,
       pointsPerGame: playerSeasonStats.pointsPerGame,
@@ -48,6 +52,8 @@ export async function getCompletionStatusBySource(
       entry = {
         playerId: row.playerId,
         externalId: row.externalId,
+        displayName: row.displayName,
+        birthDate: row.birthDate ?? null,
         seasons: [],
       };
       byExternalId.set(row.externalId, entry);

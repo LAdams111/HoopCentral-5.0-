@@ -6,7 +6,8 @@ export interface PlayerCard {
   teamSlug: string | null;
   height: string;
   weight: string;
-  jerseyNumber: number;
+  jerseyNumber: string;
+  country: string;
   headshotUrl: string;
   bio: string | null;
   profileViews: number;

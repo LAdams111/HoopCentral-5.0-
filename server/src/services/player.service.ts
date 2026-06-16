@@ -18,7 +18,8 @@ export interface PlayerCard {
   teamSlug: string | null;
   height: string;
   weight: string;
-  jerseyNumber: number;
+  jerseyNumber: string;
+  country: string;
   headshotUrl: string;
   bio: string | null;
   profileViews: number;
@@ -80,7 +81,8 @@ export function toPlayerCard(
     teamSlug,
     height: cmToFeetInches(player.heightCm),
     weight: kgToLbs(player.weightKg),
-    jerseyNumber: 0,
+    jerseyNumber: player.jerseyNumber ?? "",
+    country: player.country ?? "",
     headshotUrl: player.headshotUrl ?? "",
     bio: null,
     profileViews: player.profileViews,

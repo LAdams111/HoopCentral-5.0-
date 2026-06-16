@@ -87,7 +87,7 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
             position: "",
             height: "",
             weight: "",
-            jerseyNumber: 0,
+            jerseyNumber: "",
             bio: null,
             profileViews: 0,
             hometown: "",

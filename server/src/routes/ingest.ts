@@ -5,6 +5,10 @@ import {
   ingestPlayerSeason,
   parseIngestPlayerSeasonBody,
 } from "../services/ingest.service.js";
+import {
+  ingestPlayerBio,
+  parseIngestPlayerBioBody,
+} from "../services/ingest-bio.service.js";
 import { getCompletionStatusBySource } from "../services/ingest-status.service.js";
 
 export const ingestRouter = Router();
@@ -43,6 +47,26 @@ ingestRouter.post("/player-season", async (req, res) => {
     console.error(err);
     res.status(500).json({
       error: { code: "INTERNAL_ERROR", message: "Failed to ingest player season" },
+    });
+  }
+});
+
+ingestRouter.post("/player-bio", async (req, res) => {
+  try {
+    const input = parseIngestPlayerBioBody(req.body);
+    const result = await ingestPlayerBio(input);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof IngestValidationError) {
+      res.status(400).json({
+        error: { code: "INVALID_BODY", message: err.message },
+      });
+      return;
+    }
+
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to ingest player bio" },
     });
   }
 });
