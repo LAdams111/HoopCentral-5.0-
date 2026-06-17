@@ -7,6 +7,8 @@ import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
 import { getPlayer, incrementProfileView } from "@/lib/api";
 import { rosterPath } from "@/lib/constants";
+import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
+import { formatPosition } from "@/lib/position";
 
 const FAVORITES_KEY = "hoopcentral-favorites";
 
@@ -111,7 +113,8 @@ export function PlayerProfile() {
   }
 
   const age = player.birthDate ? calcAge(player.birthDate) : null;
-  const headshot = player.headshotUrl || undefined;
+  const headshot = resolvePlayerHeadshot(player.headshotUrl);
+  const positionLabel = formatPosition(player.position);
   const jerseyLabel = player.jerseyNumber ? `#${player.jerseyNumber}` : null;
 
   return (
@@ -119,12 +122,10 @@ export function PlayerProfile() {
       {/* Hero — matches reference hoop-central-production */}
       <div className="relative min-h-[auto] overflow-hidden border-b border-border pb-6 md:min-h-[60vh] md:pb-12">
         <div className="absolute inset-0 z-10 bg-background/60" />
-        {headshot && (
-          <div
-            className="absolute inset-0 z-0 bg-cover bg-center opacity-10 grayscale"
-            style={{ backgroundImage: `url("${headshot}")` }}
-          />
-        )}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center opacity-10 grayscale"
+          style={{ backgroundImage: `url("${headshot}")` }}
+        />
 
         <div className="container relative z-20 mx-auto flex h-full flex-col justify-between px-4 py-8">
           <BackButton
@@ -135,24 +136,12 @@ export function PlayerProfile() {
           <div className="flex flex-col items-center gap-4 md:flex-row md:items-end md:gap-12">
             <div className="relative z-30 mt-4 shrink-0 md:mb-[-160px] md:mt-0 md:-translate-y-[120px]">
               <div className="h-36 w-36 overflow-hidden rounded-2xl border-4 border-background bg-muted shadow-2xl md:h-64 md:w-64">
-                {headshot ? (
-                  <img
-                    src={headshot}
-                    alt={player.name}
-                    className="h-full w-full object-cover object-top"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="h-24 w-24 text-muted-foreground/30 md:h-32 md:w-32"
-                      fill="currentColor"
-                      aria-hidden
-                    >
-                      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2h19.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z" />
-                    </svg>
-                  </div>
-                )}
+                <img
+                  src={headshot}
+                  alt={player.name}
+                  onError={onHeadshotError}
+                  className="h-full w-full object-cover object-top"
+                />
               </div>
               {jerseyLabel && (
                 <div className="absolute -right-3 -top-3 flex h-12 w-12 items-center justify-center rounded-lg border-4 border-background bg-primary font-display text-2xl font-bold text-white shadow-lg md:-right-4 md:-top-4 md:h-16 md:w-16 md:text-3xl">
@@ -211,9 +200,9 @@ export function PlayerProfile() {
 
               <div className="flex flex-col items-center gap-3 md:items-start md:gap-6">
                 <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-xs text-foreground/60 md:justify-start md:gap-4 md:text-sm">
-                  {player.position && (
+                  {positionLabel && (
                     <div className="inline-flex items-center whitespace-nowrap rounded-md border border-border px-4 py-1 text-xs font-semibold text-foreground shadow-xs [border-color:var(--badge-outline)]">
-                      {player.position.split(",")[0]?.trim()}
+                      {positionLabel}
                     </div>
                   )}
                   {player.height && (

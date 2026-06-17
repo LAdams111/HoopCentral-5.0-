@@ -1,13 +1,8 @@
 import { Link } from "react-router-dom";
 import { Ruler, Weight } from "lucide-react";
 import type { PlayerCard as PlayerCardType } from "@/lib/api";
-import { DEFAULT_HEADSHOT } from "@/lib/constants";
-
-function formatPosition(position: string) {
-  if (!position) return "PLAYER";
-  const first = position.split(",")[0]?.trim();
-  return first?.toUpperCase() || "PLAYER";
-}
+import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
+import { formatPositionLabel } from "@/lib/position";
 
 function formatName(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -38,12 +33,10 @@ export function PlayerCard({
         <div className="relative aspect-[4/5] flex-shrink-0 overflow-hidden bg-muted">
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
           <img
-            src={player.headshotUrl || DEFAULT_HEADSHOT}
+            src={resolvePlayerHeadshot(player.headshotUrl)}
             alt={player.name}
             loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = DEFAULT_HEADSHOT;
-            }}
+            onError={onHeadshotError}
             className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute right-2 top-2 z-20 font-display text-xl font-bold text-foreground/5 transition-colors group-hover:text-primary/10 md:right-4 md:top-4 md:text-4xl">
@@ -51,7 +44,7 @@ export function PlayerCard({
           </div>
           <div className="absolute bottom-2 left-2 z-20 md:bottom-4 md:left-4">
             <span className="rounded-sm bg-primary px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white md:px-2.5 md:text-xs">
-              {formatPosition(player.position)}
+              {formatPositionLabel(player.position)}
             </span>
           </div>
         </div>

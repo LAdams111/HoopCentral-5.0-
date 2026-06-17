@@ -4,13 +4,13 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
-  DEFAULT_HEADSHOT,
   formatSeasonHeading,
   generateSeasonYears,
   teamLogoUrl,
   seasonKeyToYear,
   seasonYearToLabel,
 } from "@/lib/constants";
+import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { getTeamRecord, getTeamRoster } from "@/lib/api";
 
 function TeamRecordHeader({ record }: { record: { wins: number; losses: number } | null | undefined }) {
@@ -264,12 +264,10 @@ export function Roster() {
                 <div className="flex flex-col items-center gap-4 rounded-3xl border border-transparent p-6 transition-all duration-300 hover:border-border hover:bg-muted">
                   <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-border shadow-md transition-all duration-300 group-hover:scale-105 group-hover:border-primary">
                     <img
-                      src={player.headshotUrl || DEFAULT_HEADSHOT}
+                      src={resolvePlayerHeadshot(player.headshotUrl)}
                       alt={player.name}
                       loading="lazy"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = DEFAULT_HEADSHOT;
-                      }}
+                      onError={onHeadshotError}
                       className="h-full w-full object-cover object-top"
                       data-testid={`img-player-${player.id}`}
                     />

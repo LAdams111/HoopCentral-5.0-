@@ -9,6 +9,7 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
+import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
   isPostgresTransientError,
@@ -425,7 +426,10 @@ function buildSeasonIngestPlayerUpdate(
   if (input.heightCm != null) update.heightCm = input.heightCm;
   if (input.weightKg != null) update.weightKg = input.weightKg;
   if (input.hometown != null) update.hometown = input.hometown;
-  if (input.headshotUrl) update.headshotUrl = input.headshotUrl;
+  if (input.headshotUrl) {
+    const sanitized = sanitizeHeadshotUrl(input.headshotUrl);
+    if (sanitized) update.headshotUrl = sanitized;
+  }
 
   return update;
 }

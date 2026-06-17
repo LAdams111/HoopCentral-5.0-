@@ -9,6 +9,8 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
+import { sanitizeHeadshotUrl } from "../utils/headshot.js";
+import { formatPosition } from "../utils/position.js";
 
 export interface PlayerCard {
   id: number;
@@ -76,14 +78,14 @@ export function toPlayerCard(
   return {
     id: player.id,
     name: player.displayName,
-    position: player.position ?? "",
+    position: formatPosition(player.position),
     team: teamName ?? "",
     teamSlug,
     height: cmToFeetInches(player.heightCm),
     weight: kgToLbs(player.weightKg),
     jerseyNumber: player.jerseyNumber ?? "",
     country: player.country ?? "",
-    headshotUrl: player.headshotUrl ?? "",
+    headshotUrl: sanitizeHeadshotUrl(player.headshotUrl),
     bio: null,
     profileViews: player.profileViews,
     hometown: player.hometown ?? "",

@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Trophy, Users } from "lucide-react";
 import type { PlayerCard as PlayerCardType } from "@/lib/api";
-import { DEFAULT_HEADSHOT, nbaTeamLogoUrl } from "@/lib/constants";
+import { nbaTeamLogoUrl } from "@/lib/constants";
+import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 
 const FAVORITES_KEY = "hoopcentral-favorites";
 const PLAYER_FAVORITES_KEY = "player_favorites";
@@ -136,12 +137,10 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
                 >
                   <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-border shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:border-primary">
                     <img
-                      src={player.headshotUrl || DEFAULT_HEADSHOT}
+                      src={resolvePlayerHeadshot(player.headshotUrl)}
                       alt={player.name}
                       className="h-full w-full object-cover object-top"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = DEFAULT_HEADSHOT;
-                      }}
+                      onError={onHeadshotError}
                     />
                   </div>
                   <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-primary opacity-0 transition-opacity group-hover:opacity-100" />

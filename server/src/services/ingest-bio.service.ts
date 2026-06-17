@@ -10,6 +10,7 @@ import {
 import {
   isPostgresTransientError,
 } from "../utils/postgres.js";
+import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { IngestValidationError } from "./ingest.service.js";
 
 export interface IngestPlayerBioInput {
@@ -214,7 +215,8 @@ function buildBioUpdate(input: IngestPlayerBioInput): Partial<typeof players.$in
   if (input.player.country !== undefined) update.country = input.player.country;
 
   if (input.player.headshotUrl) {
-    update.headshotUrl = input.player.headshotUrl;
+    const sanitized = sanitizeHeadshotUrl(input.player.headshotUrl);
+    if (sanitized) update.headshotUrl = sanitized;
   }
 
   return update;

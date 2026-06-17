@@ -3,7 +3,7 @@ import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPlayers, type PlayerCard } from "@/lib/api";
-import { DEFAULT_HEADSHOT } from "@/lib/constants";
+import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
 
 export function PlayerSearch() {
   const [query, setQuery] = useState("");
@@ -108,12 +108,10 @@ function Dropdown({
             >
               <div className="h-8 w-8 overflow-hidden rounded-full border border-border">
                 <img
-                  src={player.headshotUrl || DEFAULT_HEADSHOT}
+                  src={resolvePlayerHeadshot(player.headshotUrl)}
                   alt={player.name}
                   className="h-full w-full object-cover object-top"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = DEFAULT_HEADSHOT;
-                  }}
+                  onError={onHeadshotError}
                 />
               </div>
               <div className="flex-1">
