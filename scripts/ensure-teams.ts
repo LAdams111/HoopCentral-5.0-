@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { eq } from "drizzle-orm";
 import { SEED_LEAGUES } from "../server/src/data/leagues.js";
+import { G_LEAGUE_TEAMS_WITH_SLUGS } from "../server/src/data/g-league-teams.js";
 import { NBA_TEAMS_WITH_SLUGS } from "../server/src/data/nba-teams.js";
 import { WNBA_TEAMS_WITH_SLUGS } from "../server/src/data/wnba-teams.js";
 
@@ -47,6 +48,10 @@ export async function ensureLeagueTeams(options?: { closeConnection?: boolean })
     ...WNBA_TEAMS_WITH_SLUGS.map((team) => ({
       ...team,
       leagueSlug: "wnba" as const,
+    })),
+    ...G_LEAGUE_TEAMS_WITH_SLUGS.map((team) => ({
+      ...team,
+      leagueSlug: "g-league" as const,
     })),
   ];
 
