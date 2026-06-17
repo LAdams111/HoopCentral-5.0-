@@ -1,5 +1,6 @@
 import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
+import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import {
   leagues,
@@ -125,6 +126,13 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
   const normalizedLeague = leagueSlug
     ? normalizeSlugParam(leagueSlug)
     : undefined;
+  const canonicalSlugs = normalizedLeague
+    ? normalizedLeague === "g-league"
+      ? G_LEAGUE_CURRENT_TEAM_SLUGS
+      : normalizedLeague === "wnba"
+        ? WNBA_CURRENT_TEAM_SLUGS
+        : null
+    : null;
 
   const rows = await db
     .select({
@@ -135,10 +143,10 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
     .innerJoin(leagues, eq(teams.leagueId, leagues.id))
     .where(
       normalizedLeague
-        ? normalizedLeague === "g-league"
+        ? canonicalSlugs
           ? and(
               eq(leagues.slug, normalizedLeague),
-              inArray(teams.slug, [...G_LEAGUE_CURRENT_TEAM_SLUGS]),
+              inArray(teams.slug, [...canonicalSlugs]),
             )
           : eq(leagues.slug, normalizedLeague)
         : undefined,

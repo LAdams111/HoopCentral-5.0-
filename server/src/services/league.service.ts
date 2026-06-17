@@ -1,11 +1,22 @@
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
+import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 
-function filterGLeagueTeams<T extends { slug: string }>(teams: T[]): T[] {
-  return teams.filter((team) => G_LEAGUE_CURRENT_TEAM_SLUGS.has(team.slug));
+const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
+  "g-league": G_LEAGUE_CURRENT_TEAM_SLUGS,
+  wnba: WNBA_CURRENT_TEAM_SLUGS,
+};
+
+function filterLeagueTeams<T extends { slug: string }>(
+  leagueSlug: string,
+  teams: T[],
+): T[] {
+  const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[leagueSlug];
+  if (!canonicalSlugs) return teams;
+  return teams.filter((team) => canonicalSlugs.has(team.slug));
 }
 
 export interface LeagueSummary {
@@ -39,18 +50,20 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
     .groupBy(leagues.id)
     .orderBy(leagues.name);
 
-  const gLeague = rows.find((row) => row.slug === "g-league");
-  if (gLeague) {
+  for (const row of rows) {
+    const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
+    if (!canonicalSlugs) continue;
+
     const [countRow] = await db
       .select({ teamCount: sql<number>`count(*)::int` })
       .from(teams)
       .where(
         and(
-          eq(teams.leagueId, gLeague.id),
-          inArray(teams.slug, [...G_LEAGUE_CURRENT_TEAM_SLUGS]),
+          eq(teams.leagueId, row.id),
+          inArray(teams.slug, [...canonicalSlugs]),
         ),
       );
-    gLeague.teamCount = countRow?.teamCount ?? 0;
+    row.teamCount = countRow?.teamCount ?? 0;
   }
 
   return rows;
@@ -78,8 +91,7 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
     .where(eq(teams.leagueId, league.id))
     .orderBy(teams.name);
 
-  const visibleTeams =
-    league.slug === "g-league" ? filterGLeagueTeams(leagueTeams) : leagueTeams;
+  const visibleTeams = filterLeagueTeams(league.slug, leagueTeams);
 
   return {
     id: league.id,

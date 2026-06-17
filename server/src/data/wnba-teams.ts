@@ -20,3 +20,7 @@ export const WNBA_TEAMS_WITH_SLUGS = WNBA_TEAMS.map((team) => ({
   ...team,
   slug: nameToSlug(team.name),
 }));
+
+export const WNBA_CURRENT_TEAM_SLUGS = new Set(
+  WNBA_TEAMS_WITH_SLUGS.map((team) => team.slug),
+);
