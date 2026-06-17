@@ -1,4 +1,4 @@
-import { desc, eq, ilike, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, isNotNull, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import {
   leagues,
@@ -152,6 +152,71 @@ export async function searchPlayers(params: {
     .offset(offset);
 
   return rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug));
+}
+
+export interface BirthYearCount {
+  year: number;
+  count: number;
+}
+
+export interface BirthYearPlayersResult {
+  year: number;
+  totalCount: number;
+  players: PlayerCard[];
+}
+
+export const BIRTH_YEAR_TOP_LIMIT = 50;
+
+export async function getBirthYearCounts(): Promise<BirthYearCount[]> {
+  const rows = await db
+    .select({
+      year: sql<number>`extract(year from ${players.birthDate})::int`,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(players)
+    .where(isNotNull(players.birthDate))
+    .groupBy(sql`extract(year from ${players.birthDate})`)
+    .orderBy(desc(sql`extract(year from ${players.birthDate})`));
+
+  return rows;
+}
+
+export async function getPlayersByBirthYear(
+  year: number,
+  params?: { page?: number; limit?: number },
+): Promise<BirthYearPlayersResult> {
+  const page = Math.max(1, params?.page ?? 1);
+  const limit = Math.min(BIRTH_YEAR_TOP_LIMIT, Math.max(1, params?.limit ?? BIRTH_YEAR_TOP_LIMIT));
+  const offset = (page - 1) * limit;
+
+  const birthYearFilter = and(
+    isNotNull(players.birthDate),
+    sql`extract(year from ${players.birthDate}) = ${year}`,
+  );
+
+  const [countRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(players)
+    .where(birthYearFilter);
+
+  const rows = await db
+    .select({
+      player: players,
+      teamName: teams.name,
+      teamSlug: teams.slug,
+    })
+    .from(players)
+    .leftJoin(teams, eq(players.currentTeamId, teams.id))
+    .where(birthYearFilter)
+    .orderBy(desc(players.profileViews))
+    .limit(limit)
+    .offset(offset);
+
+  return {
+    year,
+    totalCount: countRow?.count ?? 0,
+    players: rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug)),
+  };
 }
 
 export async function getPlayerCount(): Promise<number> {

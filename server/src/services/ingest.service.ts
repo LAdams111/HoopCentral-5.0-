@@ -412,6 +412,24 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function buildSeasonIngestPlayerUpdate(
+  input: IngestPlayerSeasonInput["player"],
+): Partial<typeof players.$inferInsert> {
+  const update: Partial<typeof players.$inferInsert> = {
+    displayName: input.displayName,
+    updatedAt: new Date(),
+  };
+
+  if (input.birthDate != null) update.birthDate = input.birthDate;
+  if (input.position != null) update.position = input.position;
+  if (input.heightCm != null) update.heightCm = input.heightCm;
+  if (input.weightKg != null) update.weightKg = input.weightKg;
+  if (input.hometown != null) update.hometown = input.hometown;
+  if (input.headshotUrl) update.headshotUrl = input.headshotUrl;
+
+  return update;
+}
+
 async function ingestPlayerSeasonOnce(
   input: IngestPlayerSeasonInput,
 ): Promise<IngestPlayerSeasonResult> {
@@ -428,16 +446,7 @@ async function ingestPlayerSeasonOnce(
 
     await tx
       .update(players)
-      .set({
-        displayName: input.player.displayName,
-        birthDate: input.player.birthDate ?? null,
-        position: input.player.position ?? null,
-        heightCm: input.player.heightCm ?? null,
-        weightKg: input.player.weightKg ?? null,
-        hometown: input.player.hometown ?? null,
-        headshotUrl: input.player.headshotUrl ?? "",
-        updatedAt: new Date(),
-      })
+      .set(buildSeasonIngestPlayerUpdate(input.player))
       .where(eq(players.id, identityResult.player.id));
 
     const leagueResult = await findOrCreateLeague(tx, input.league.slug, input.league.name);

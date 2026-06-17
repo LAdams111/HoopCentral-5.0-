@@ -108,6 +108,17 @@ export interface TeamRecordResponse {
   league: string;
 }
 
+export interface BirthYearCount {
+  year: number;
+  count: number;
+}
+
+export interface BirthYearPlayersResponse {
+  year: number;
+  totalCount: number;
+  players: PlayerCard[];
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) {
@@ -121,6 +132,14 @@ export function getPlayers(q?: string): Promise<PlayerCard[]> {
   if (q) params.set("q", q);
   const qs = params.toString();
   return fetchJson(`/api/players${qs ? `?${qs}` : ""}`);
+}
+
+export function getBirthYearCounts(): Promise<BirthYearCount[]> {
+  return fetchJson("/api/players/birth-year-counts");
+}
+
+export function getPlayersByBirthYear(year: number): Promise<BirthYearPlayersResponse> {
+  return fetchJson(`/api/players/birth-year/${year}?limit=50`);
 }
 
 export function getPlayer(id: number): Promise<PlayerProfile> {

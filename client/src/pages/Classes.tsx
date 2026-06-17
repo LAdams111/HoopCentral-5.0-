@@ -1,24 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
-import { getPlayers } from "@/lib/api";
+import { getBirthYearCounts } from "@/lib/api";
 
 export function Classes() {
-  const { data: players = [] } = useQuery({
-    queryKey: ["all-players-classes"],
-    queryFn: () => getPlayers(),
+  const { data: yearCounts = [], isLoading, error } = useQuery({
+    queryKey: ["birth-year-counts"],
+    queryFn: getBirthYearCounts,
   });
-
-  const yearCounts = players.reduce<Record<number, number>>((acc, p) => {
-    if (!p.birthDate) return acc;
-    const year = new Date(p.birthDate).getFullYear();
-    acc[year] = (acc[year] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  const years = Object.keys(yearCounts)
-    .map(Number)
-    .sort((a, b) => b - a);
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-12">
@@ -32,26 +21,39 @@ export function Classes() {
               Birth <span className="text-primary">Year</span>
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              Browse players by birth year
+              Browse every birth year in the database
             </p>
           </div>
         </div>
 
-        {years.length === 0 ? (
+        {isLoading ? (
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded-xl border border-border bg-card/50"
+              />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
+            Unable to load birth year data.
+          </div>
+        ) : yearCounts.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
             No birth year data available yet.
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {years.map((year) => (
+            {yearCounts.map(({ year, count }) => (
               <Link
                 key={year}
-                to={`/players?q=`}
+                to={`/classes/${year}`}
                 className="flex items-center justify-between rounded-xl border border-border bg-card/50 px-5 py-4 transition-all hover:border-primary/50 hover:bg-card"
               >
                 <span className="font-display text-3xl text-foreground">{year}</span>
                 <span className="font-mono text-sm text-muted-foreground">
-                  {yearCounts[year]} players
+                  {count} player{count !== 1 ? "s" : ""}
                 </span>
               </Link>
             ))}

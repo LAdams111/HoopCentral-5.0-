@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
+  getBirthYearCounts,
   getPlayerById,
   getPlayerCount,
+  getPlayersByBirthYear,
   getSeasonCount,
   incrementProfileViews,
   searchPlayers,
@@ -29,6 +31,34 @@ playersRouter.get("/", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to search players" } });
+  }
+});
+
+playersRouter.get("/birth-year-counts", async (_req, res) => {
+  try {
+    const counts = await getBirthYearCounts();
+    res.json(counts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get birth year counts" } });
+  }
+});
+
+playersRouter.get("/birth-year/:year", async (req, res) => {
+  try {
+    const year = Number(req.params.year);
+    if (Number.isNaN(year) || year < 1900 || year > 2100) {
+      res.status(400).json({ error: { code: "INVALID_YEAR", message: "Birth year must be a valid year" } });
+      return;
+    }
+
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const result = await getPlayersByBirthYear(year, { page, limit });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get players by birth year" } });
   }
 });
 
