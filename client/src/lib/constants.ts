@@ -43,6 +43,82 @@ export const NBA_TEAM_IDS: Record<string, string> = {
   "Washington Wizards": "1610612764",
 };
 
+export const G_LEAGUE_TEAM_IDS: Record<string, string> = {
+  "Austin Spurs": "1612709890",
+  "Birmingham Squadron": "1612709913",
+  "Capital City Go-Go": "1612709928",
+  "Cleveland Charge": "1612709893",
+  "Coachella Valley Lakers": "1612709905",
+  "College Park Skyhawks": "1612709929",
+  "Delaware Blue Coats": "1612709909",
+  "Grand Rapids Gold": "1612709917",
+  "Greensboro Swarm": "1612709922",
+  "Indiana Mad Ants": "1612709910",
+  "Iowa Wolves": "1612709911",
+  "Laketown Squadron": "1612709913",
+  "Long Island Nets": "1612709921",
+  "Maine Celtics": "1612709915",
+  "Memphis Hustle": "1612709926",
+  "Mexico City Capitanes": "1612709931",
+  "Motor City Cruise": "1612709932",
+  "Noblesville Boom": "1612709910",
+  "Oklahoma City Blue": "1612709889",
+  "Osceola Magic": "1612709925",
+  "Raptors 905": "1612709920",
+  "Rio Grande Valley Vipers": "1612709908",
+  "Rip City Remix": "1612709933",
+  "Salt Lake City Stars": "1612709903",
+  "San Diego Clippers": "1612709924",
+  "Santa Cruz Warriors": "1612709902",
+  "Sioux Falls Skyforce": "1612709904",
+  "South Bay Lakers": "1612709905",
+  "Stockton Kings": "1612709914",
+  "Texas Legends": "1612709918",
+  "Valley Suns": "1612709934",
+  "Westchester Knicks": "1612709919",
+  "Windy City Bulls": "1612709923",
+  "Wisconsin Herd": "1612709927",
+};
+
+export const G_LEAGUE_TEAM_ABBREV_IDS: Record<string, string> = {
+  AUS: "1612709890",
+  BIR: "1612709913",
+  CCG: "1612709928",
+  CLC: "1612709893",
+  CPS: "1612709929",
+  CVL: "1612709905",
+  DEL: "1612709909",
+  GBO: "1612709922",
+  GRG: "1612709917",
+  IND: "1612709910",
+  IWA: "1612709911",
+  LIN: "1612709921",
+  LKS: "1612709913",
+  MCC: "1612709932",
+  MHU: "1612709926",
+  MNE: "1612709915",
+  MXC: "1612709931",
+  NOB: "1612709910",
+  OKC: "1612709889",
+  OKL: "1612709889",
+  ORL: "1612709925",
+  OSC: "1612709925",
+  RAP: "1612709920",
+  RGV: "1612709908",
+  RIP: "1612709933",
+  SBL: "1612709905",
+  SCW: "1612709902",
+  SDC: "1612709924",
+  SLC: "1612709903",
+  STO: "1612709914",
+  SXF: "1612709904",
+  TEX: "1612709918",
+  VAL: "1612709934",
+  WCB: "1612709923",
+  WES: "1612709919",
+  WIS: "1612709927",
+};
+
 export const WNBA_TEAM_ABBREVS: Record<string, string> = {
   "Atlanta Dream": "ATL",
   "Chicago Sky": "CHI",
@@ -70,6 +146,22 @@ export function wnbaTeamLogoUrl(teamName: string, abbreviation?: string) {
   return `https://stats.wnba.com/media/img/teams/logos/${abbr}.svg`;
 }
 
+export function gleagueTeamLogoUrl(
+  teamName: string,
+  abbreviation?: string,
+  variant: "global" | "primary" = "global",
+) {
+  const abbr = abbreviation?.toUpperCase();
+  const id =
+    G_LEAGUE_TEAM_IDS[teamName] ??
+    (abbr ? G_LEAGUE_TEAM_ABBREV_IDS[abbr] : undefined);
+  if (!id) {
+    return "https://cdn.nba.com/logos/leagues/logo-gleague.svg";
+  }
+  const path = variant === "primary" ? "primary" : "global";
+  return `https://cdn.nba.com/logos/nbagleague/${id}/${path}/L/logo.svg`;
+}
+
 export function teamLogoUrl(
   teamName: string,
   options?: {
@@ -79,6 +171,13 @@ export function teamLogoUrl(
   },
 ) {
   const leagueSlug = options?.leagueSlug?.toLowerCase();
+  if (leagueSlug === "g-league" || G_LEAGUE_TEAM_IDS[teamName]) {
+    return gleagueTeamLogoUrl(
+      teamName,
+      options?.abbreviation,
+      options?.variant ?? "global",
+    );
+  }
   if (leagueSlug === "wnba" || WNBA_TEAM_ABBREVS[teamName]) {
     return wnbaTeamLogoUrl(teamName, options?.abbreviation);
   }
