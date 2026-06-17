@@ -46,6 +46,15 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     regions: ["US"],
     category: "domestic",
   },
+  "ncaa-d2": {
+    display: "NCAA Division II",
+    tier: "Collegiate",
+    description:
+      "The second tier of intercollegiate athletics sanctioned by the NCAA, featuring competitive programs across the United States.",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg",
+    regions: ["US"],
+    category: "domestic",
+  },
   "u-sports": {
     display: "U Sports",
     tier: "Collegiate",
@@ -186,6 +195,7 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
     "wnba",
     "g-league",
     "ncaa",
+    "ncaa-d2",
     "u-sports",
     "ote",
     "high-school",

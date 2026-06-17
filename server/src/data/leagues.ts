@@ -3,6 +3,7 @@ export const SEED_LEAGUES = [
   { slug: "wnba", name: "WNBA" },
   { slug: "g-league", name: "NBA G League" },
   { slug: "ncaa", name: "NCAA Division I" },
+  { slug: "ncaa-d2", name: "NCAA Division II" },
   { slug: "u-sports", name: "U Sports" },
   { slug: "ote", name: "Overtime Elite (OTE)" },
   { slug: "high-school", name: "High School" },
