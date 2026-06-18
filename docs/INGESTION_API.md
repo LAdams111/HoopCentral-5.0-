@@ -55,7 +55,8 @@ If `INGEST_API_KEY` is not set, the endpoint is open (intended for local develop
     "reboundsPerGame": 7.8,
     "assistsPerGame": 8.2,
     "stealsPerGame": 1.0,
-    "blocksPerGame": 0.6
+    "blocksPerGame": 0.6,
+    "fieldGoalPct": 51.3
   }
 }
 ```
@@ -80,7 +81,7 @@ If `INGEST_API_KEY` is not set, the endpoint is open (intended for local develop
 
 Optional player fields: `birthDate`, `position`, `heightCm`, `weightKg`, `hometown`, `headshotUrl`.
 
-Optional stats fields: `stealsPerGame`, `blocksPerGame`. Older scraper payloads without these fields remain valid; existing steals/blocks values are left unchanged on update when omitted.
+Optional stats fields: `stealsPerGame`, `blocksPerGame`, `fieldGoalPct`. Older scraper payloads without these fields remain valid; existing steals, blocks, and FG% values are left unchanged on update when omitted.
 
 ## Response
 
@@ -158,7 +159,8 @@ curl -X POST http://localhost:3001/api/ingest/player-season \
       "reboundsPerGame": 7.8,
       "assistsPerGame": 8.2,
       "stealsPerGame": 1.0,
-      "blocksPerGame": 0.6
+      "blocksPerGame": 0.6,
+      "fieldGoalPct": 51.3
     }
   }'
 ```

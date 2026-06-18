@@ -47,6 +47,7 @@ export interface IngestPlayerSeasonInput {
     assistsPerGame: number;
     stealsPerGame?: number | null;
     blocksPerGame?: number | null;
+    fieldGoalPct?: number | null;
   };
 }
 
@@ -166,6 +167,7 @@ export function parseIngestPlayerSeasonBody(body: unknown): IngestPlayerSeasonIn
       assistsPerGame: requireNumber(statsObj.assistsPerGame, "stats.assistsPerGame"),
       stealsPerGame: optionalNumber(statsObj.stealsPerGame, "stats.stealsPerGame"),
       blocksPerGame: optionalNumber(statsObj.blocksPerGame, "stats.blocksPerGame"),
+      fieldGoalPct: optionalNumber(statsObj.fieldGoalPct, "stats.fieldGoalPct"),
     },
   };
 }
@@ -333,6 +335,7 @@ async function upsertSeasonStats(
     assistsPerGame: number;
     stealsPerGame?: number | null;
     blocksPerGame?: number | null;
+    fieldGoalPct?: number | null;
   },
 ): Promise<boolean> {
   const [existing] = await database
@@ -355,6 +358,7 @@ async function upsertSeasonStats(
     assistsPerGame: string;
     stealsPerGame?: string;
     blocksPerGame?: string;
+    fieldGoalPct?: string;
   } = {
     gamesPlayed: params.gamesPlayed,
     pointsPerGame: String(params.pointsPerGame),
@@ -367,6 +371,9 @@ async function upsertSeasonStats(
   }
   if (params.blocksPerGame != null) {
     values.blocksPerGame = String(params.blocksPerGame);
+  }
+  if (params.fieldGoalPct != null) {
+    values.fieldGoalPct = String(params.fieldGoalPct);
   }
 
   if (existing) {
@@ -481,6 +488,7 @@ async function ingestPlayerSeasonOnce(
       assistsPerGame: input.stats.assistsPerGame,
       stealsPerGame: input.stats.stealsPerGame,
       blocksPerGame: input.stats.blocksPerGame,
+      fieldGoalPct: input.stats.fieldGoalPct,
     });
 
     return {

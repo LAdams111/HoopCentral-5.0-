@@ -106,6 +106,7 @@ function toStatRow(
   const ast = formatStat(stat.assistsPerGame);
   const stl = formatStat(stat.stealsPerGame);
   const blk = formatStat(stat.blocksPerGame);
+  const fg = formatStat(stat.fieldGoalPct);
 
   return {
     id: stat.id,
@@ -126,8 +127,8 @@ function toStatRow(
     stealsPerGame: stl,
     blk_per_g: blk,
     blocksPerGame: blk,
-    fg_pct: "—",
-    fieldGoalPct: "—",
+    fg_pct: fg,
+    fieldGoalPct: fg,
   };
 }
 
