@@ -71,6 +71,13 @@
       "when": 1750435200000,
       "tag": "0010_split_ncaa_leagues",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1750521600000,
+      "tag": "0011_league_gender_and_ncaa_w",
+      "breakpoints": true
     }
   ]
 }

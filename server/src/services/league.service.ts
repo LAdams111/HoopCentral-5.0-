@@ -10,7 +10,7 @@ import {
 import {
   displaySlugForLeagueRow,
   findLeagueRowBySlug,
-  genderForLeagueSlug,
+  genderForLeagueRow,
 } from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 
@@ -53,6 +53,7 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
       id: leagues.id,
       name: leagues.name,
       slug: leagues.slug,
+      gender: leagues.gender,
       teamCount: sql<number>`count(${teams.id})::int`,
     })
     .from(leagues)
@@ -65,7 +66,7 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
     id: row.id,
     name: row.name,
     slug: row.slug,
-    gender: genderForLeagueSlug(row.slug),
+    gender: genderForLeagueRow(row.slug, row),
     teamCount: row.teamCount,
   }));
 
@@ -75,6 +76,7 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
       id: leagues.id,
       name: leagues.name,
       slug: leagues.slug,
+      gender: leagues.gender,
       teamCount: sql<number>`count(${teams.id})::int`,
     })
     .from(leagues)
@@ -89,7 +91,7 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
       id: legacy.id,
       name: "NCAA Division I (Men)",
       slug: "ncaa-m",
-      gender: "male",
+      gender: genderForLeagueRow("ncaa-m", legacy),
       teamCount: legacy.teamCount,
     });
   }
@@ -161,7 +163,7 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
     id: league.id,
     name: responseName,
     slug: responseSlug,
-    gender: genderForLeagueSlug(responseSlug),
+    gender: genderForLeagueRow(responseSlug, league),
     teamCount: visibleTeams.length,
     teams: visibleTeams,
   };

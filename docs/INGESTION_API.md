@@ -85,18 +85,16 @@ Optional stats fields: `stealsPerGame`, `blocksPerGame`, `fieldGoalPct`. Older s
 
 ### NCAA Division I league slugs
 
-Men's and women's NCAA D1 are stored as separate leagues:
+| Slug | Name | Gender | Used by |
+|------|------|--------|---------|
+| `ncaa` | NCAA Division I | male | **Live men's scraper** (`usbasket-ncaa-d1`) — unchanged |
+| `ncaa-w` | NCAA Division I (Women) | female | Future women's scraper |
 
-| Slug | Name | Gender |
-|------|------|--------|
-| `ncaa-m` | NCAA Division I (Men) | male |
-| `ncaa-w` | NCAA Division I (Women) | female |
+**Backward compatibility:** the men's scraper keeps sending `"league": { "slug": "ncaa", "name": "NCAA Division I" }` and data stays in the `ncaa` league. No payload changes required.
 
-**Backward compatibility:** payloads from `usbasket-ncaa-d1` that send `"league": { "slug": "ncaa", "name": "NCAA Division I" }` are automatically mapped to `ncaa-m`. No scraper changes are required.
+Women's ingest uses `source: "usbasket-ncaa-d1-w"` with `"slug": "ncaa-w"`, or `"slug": "ncaa-w"` explicitly.
 
-Future women's ingest should use `source: "usbasket-ncaa-d1-w"` with `"slug": "ncaa-w"`, or the same source with an explicit `"slug": "ncaa-w"`.
-
-Team slugs are unique per league, so men's and women's versions of the same school (e.g. `duke`) can coexist.
+If gender/league cannot be determined, data defaults to the legacy `ncaa` league.
 
 ## Completion status
 

@@ -177,6 +177,7 @@ async function findOrCreateLeague(
   database: DbClient,
   slug: string,
   name: string,
+  gender: string | null = null,
 ): Promise<{ id: number; created: boolean }> {
   const [existing] = await database
     .select()
@@ -189,7 +190,7 @@ async function findOrCreateLeague(
   try {
     const [created] = await database
       .insert(leagues)
-      .values({ slug, name })
+      .values({ slug, name, gender })
       .returning();
     return { id: created.id, created: true };
   } catch (err) {
@@ -462,6 +463,7 @@ async function ingestPlayerSeasonOnce(
       tx,
       resolvedLeague.slug,
       resolvedLeague.name,
+      resolvedLeague.gender,
     );
     const teamResult = await findOrCreateTeam(
       tx,

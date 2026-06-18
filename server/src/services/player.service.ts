@@ -318,6 +318,7 @@ export async function getPlayerById(
       teamSlug: teams.slug,
       leagueName: leagues.name,
       leagueSlug: leagues.slug,
+      leagueGender: leagues.gender,
     })
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
@@ -373,7 +374,7 @@ export async function getPlayerById(
         s.teamSlug,
         s.leagueName,
         s.leagueSlug,
-        leagueGenderForSlug(s.leagueSlug),
+        leagueGenderForSlug(s.leagueSlug) ?? s.leagueGender ?? null,
       ),
     ),
     awards: [],

@@ -302,6 +302,7 @@ async function seed() {
       .values({
         slug: league.slug,
         name: league.name,
+        gender: "gender" in league ? league.gender : null,
       })
       .returning();
     leagueMap.set(league.slug, row.id);
