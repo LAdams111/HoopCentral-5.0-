@@ -9,11 +9,7 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
-import {
-  canonicalLeagueName,
-  leagueGenderForSlug,
-  resolveIngestLeagueSlug,
-} from "../utils/league-slug.js";
+import { resolveOperationalIngestLeague } from "../utils/league-resolution.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -182,8 +178,6 @@ async function findOrCreateLeague(
   slug: string,
   name: string,
 ): Promise<{ id: number; created: boolean }> {
-  const gender = leagueGenderForSlug(slug);
-
   const [existing] = await database
     .select()
     .from(leagues)
@@ -195,7 +189,7 @@ async function findOrCreateLeague(
   try {
     const [created] = await database
       .insert(leagues)
-      .values({ slug, name, gender })
+      .values({ slug, name })
       .returning();
     return { id: created.id, created: true };
   } catch (err) {
@@ -457,19 +451,17 @@ async function ingestPlayerSeasonOnce(
       .set(buildSeasonIngestPlayerUpdate(input.player))
       .where(eq(players.id, identityResult.player.id));
 
-    const resolvedLeagueSlug = resolveIngestLeagueSlug(
+    const resolvedLeague = await resolveOperationalIngestLeague(
+      tx,
       input.source,
       input.league.slug,
-    );
-    const resolvedLeagueName = canonicalLeagueName(
-      resolvedLeagueSlug,
       input.league.name,
     );
 
     const leagueResult = await findOrCreateLeague(
       tx,
-      resolvedLeagueSlug,
-      resolvedLeagueName,
+      resolvedLeague.slug,
+      resolvedLeague.name,
     );
     const teamResult = await findOrCreateTeam(
       tx,

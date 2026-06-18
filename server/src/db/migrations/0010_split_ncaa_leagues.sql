@@ -1,12 +1,9 @@
-ALTER TABLE "leagues" ADD COLUMN IF NOT EXISTS "gender" text;--> statement-breakpoint
-INSERT INTO "leagues" ("slug", "name", "gender")
+INSERT INTO "leagues" ("slug", "name")
 VALUES
-  ('ncaa-m', 'NCAA Division I (Men)', 'male'),
-  ('ncaa-w', 'NCAA Division I (Women)', 'female')
+  ('ncaa-m', 'NCAA Division I (Men)'),
+  ('ncaa-w', 'NCAA Division I (Women)')
 ON CONFLICT ("slug") DO UPDATE
-SET
-  "name" = EXCLUDED."name",
-  "gender" = EXCLUDED."gender";--> statement-breakpoint
+SET "name" = EXCLUDED."name";--> statement-breakpoint
 UPDATE "teams"
 SET "league_id" = (SELECT "id" FROM "leagues" WHERE "slug" = 'ncaa-m')
 WHERE "league_id" = (SELECT "id" FROM "leagues" WHERE "slug" = 'ncaa');--> statement-breakpoint

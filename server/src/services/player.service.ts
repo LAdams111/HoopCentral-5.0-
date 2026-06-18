@@ -8,7 +8,8 @@ import {
   seasons,
   teams,
 } from "../db/schema/index.js";
-import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
+import { resolvePublicLeagueSlug, leagueGenderForSlug } from "../utils/league-slug.js";
+import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
@@ -146,20 +147,22 @@ export async function searchPlayers(params: {
   const page = Math.max(1, params.page ?? 1);
   const limit = Math.min(100, Math.max(1, params.limit ?? 50));
   const offset = (page - 1) * limit;
-  const leagueSlug = params.league
-    ? resolvePublicLeagueSlug(normalizeSlugParam(params.league))
-    : undefined;
+  const leagueRow = params.league
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(params.league)),
+      )
+    : null;
 
-  const leagueFilter = leagueSlug
+  const leagueFilter = leagueRow
     ? exists(
         db
           .select({ one: sql`1` })
           .from(playerSeasonStats)
-          .innerJoin(leagues, eq(playerSeasonStats.leagueId, leagues.id))
           .where(
             and(
               eq(playerSeasonStats.playerId, players.id),
-              eq(leagues.slug, leagueSlug),
+              eq(playerSeasonStats.leagueId, leagueRow.id),
             ),
           ),
       )
@@ -284,9 +287,12 @@ export async function getPlayerById(
   id: number,
   options?: { league?: string },
 ): Promise<PlayerProfile | null> {
-  const leagueSlug = options?.league
-    ? resolvePublicLeagueSlug(normalizeSlugParam(options.league))
-    : undefined;
+  const leagueRow = options?.league
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(options.league)),
+      )
+    : null;
 
   const [row] = await db
     .select({
@@ -312,7 +318,6 @@ export async function getPlayerById(
       teamSlug: teams.slug,
       leagueName: leagues.name,
       leagueSlug: leagues.slug,
-      leagueGender: leagues.gender,
     })
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
@@ -321,7 +326,7 @@ export async function getPlayerById(
     .where(
       and(
         eq(playerSeasonStats.playerId, id),
-        leagueSlug ? eq(leagues.slug, leagueSlug) : undefined,
+        leagueRow ? eq(playerSeasonStats.leagueId, leagueRow.id) : undefined,
       ),
     )
     .orderBy(desc(seasons.seasonLabel));
@@ -340,7 +345,7 @@ export async function getPlayerById(
     .where(
       and(
         eq(playerStints.playerId, id),
-        leagueSlug ? eq(leagues.slug, leagueSlug) : undefined,
+        leagueRow ? eq(playerStints.leagueId, leagueRow.id) : undefined,
       ),
     )
     .orderBy(desc(seasons.seasonLabel));
@@ -368,7 +373,7 @@ export async function getPlayerById(
         s.teamSlug,
         s.leagueName,
         s.leagueSlug,
-        s.leagueGender ?? null,
+        leagueGenderForSlug(s.leagueSlug),
       ),
     ),
     awards: [],

@@ -8,6 +8,7 @@ import {
   seasons,
 } from "../db/schema/index.js";
 import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
+import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 
 export interface IngestedSeasonStat {
@@ -30,9 +31,12 @@ export async function getCompletionStatusBySource(
   source: string,
   leagueSlug?: string,
 ): Promise<IngestedPlayerStatus[]> {
-  const resolvedLeagueSlug = leagueSlug
-    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
-    : undefined;
+  const leagueRow = leagueSlug
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
+      )
+    : null;
 
   const rows = await db
     .select({
@@ -70,7 +74,7 @@ export async function getCompletionStatusBySource(
     }
 
     if (!row.seasonLabel || row.gamesPlayed == null) continue;
-    if (resolvedLeagueSlug && row.leagueSlug !== resolvedLeagueSlug) continue;
+    if (leagueRow && row.leagueSlug !== leagueRow.slug) continue;
 
     entry.seasons.push({
       seasonLabel: row.seasonLabel,

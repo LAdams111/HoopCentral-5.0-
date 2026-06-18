@@ -7,6 +7,11 @@ import {
   DEPRECATED_PUBLIC_LEAGUE_SLUGS,
   resolvePublicLeagueSlug,
 } from "../utils/league-slug.js";
+import {
+  displaySlugForLeagueRow,
+  findLeagueRowBySlug,
+  genderForLeagueSlug,
+} from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 
 const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
@@ -48,7 +53,6 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
       id: leagues.id,
       name: leagues.name,
       slug: leagues.slug,
-      gender: leagues.gender,
       teamCount: sql<number>`count(${teams.id})::int`,
     })
     .from(leagues)
@@ -57,7 +61,58 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
     .groupBy(leagues.id)
     .orderBy(leagues.name);
 
-  for (const row of rows) {
+  const results: LeagueSummary[] = rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    gender: genderForLeagueSlug(row.slug),
+    teamCount: row.teamCount,
+  }));
+
+  const hasNcaaM = results.some((row) => row.slug === "ncaa-m");
+  const legacyNcaa = await db
+    .select({
+      id: leagues.id,
+      name: leagues.name,
+      slug: leagues.slug,
+      teamCount: sql<number>`count(${teams.id})::int`,
+    })
+    .from(leagues)
+    .leftJoin(teams, eq(teams.leagueId, leagues.id))
+    .where(eq(leagues.slug, "ncaa"))
+    .groupBy(leagues.id)
+    .limit(1);
+
+  if (!hasNcaaM && legacyNcaa[0]) {
+    const legacy = legacyNcaa[0];
+    results.push({
+      id: legacy.id,
+      name: "NCAA Division I (Men)",
+      slug: "ncaa-m",
+      gender: "male",
+      teamCount: legacy.teamCount,
+    });
+  }
+
+  if (!results.some((row) => row.slug === "ncaa-w")) {
+    const [ncaaW] = await db
+      .select({ id: leagues.id, teamCount: sql<number>`count(${teams.id})::int` })
+      .from(leagues)
+      .leftJoin(teams, eq(teams.leagueId, leagues.id))
+      .where(eq(leagues.slug, "ncaa-w"))
+      .groupBy(leagues.id)
+      .limit(1);
+
+    results.push({
+      id: ncaaW?.id ?? 0,
+      name: "NCAA Division I (Women)",
+      slug: "ncaa-w",
+      gender: "female",
+      teamCount: ncaaW?.teamCount ?? 0,
+    });
+  }
+
+  for (const row of results) {
     const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
     if (!canonicalSlugs) continue;
 
@@ -73,19 +128,21 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
     row.teamCount = countRow?.teamCount ?? 0;
   }
 
-  return rows;
+  return results.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null> {
   const normalized = resolvePublicLeagueSlug(normalizeSlugParam(slug));
-
-  const [league] = await db
-    .select()
-    .from(leagues)
-    .where(eq(leagues.slug, normalized))
-    .limit(1);
-
+  const league = await findLeagueRowBySlug(db, normalized);
   if (!league) return null;
+
+  const responseSlug = displaySlugForLeagueRow(normalized, league.slug);
+  const responseName =
+    responseSlug === "ncaa-m"
+      ? "NCAA Division I (Men)"
+      : responseSlug === "ncaa-w"
+        ? "NCAA Division I (Women)"
+        : league.name;
 
   const leagueTeams = await db
     .select({
@@ -98,13 +155,13 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
     .where(eq(teams.leagueId, league.id))
     .orderBy(teams.name);
 
-  const visibleTeams = filterLeagueTeams(league.slug, leagueTeams);
+  const visibleTeams = filterLeagueTeams(responseSlug, leagueTeams);
 
   return {
     id: league.id,
-    name: league.name,
-    slug: league.slug,
-    gender: league.gender ?? null,
+    name: responseName,
+    slug: responseSlug,
+    gender: genderForLeagueSlug(responseSlug),
     teamCount: visibleTeams.length,
     teams: visibleTeams,
   };

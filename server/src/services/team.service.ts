@@ -12,6 +12,7 @@ import {
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
+import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -54,9 +55,12 @@ export interface TeamRecord {
 async function findTeam(teamKey: string, leagueSlug?: string) {
   const decoded = decodeURIComponent(teamKey).trim();
   const slugCandidate = normalizeSlugParam(decoded);
-  const resolvedLeagueSlug = leagueSlug
-    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
-    : undefined;
+  const leagueRow = leagueSlug
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
+      )
+    : null;
 
   const matches = await db
     .select({ team: teams })
@@ -69,13 +73,13 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
           ilike(teams.abbreviation, decoded),
           ilike(teams.name, decoded),
         ),
-        resolvedLeagueSlug ? eq(leagues.slug, resolvedLeagueSlug) : undefined,
+        leagueRow ? eq(teams.leagueId, leagueRow.id) : undefined,
       ),
     )
-    .limit(resolvedLeagueSlug ? 1 : 2);
+    .limit(leagueRow ? 1 : 2);
 
   if (matches.length === 0) return null;
-  if (matches.length === 1 || resolvedLeagueSlug) return matches[0]!.team;
+  if (matches.length === 1 || leagueRow) return matches[0]!.team;
 
   return matches[0]!.team;
 }
@@ -134,9 +138,13 @@ function toTeamInfo(team: typeof teams.$inferSelect): TeamInfo {
 }
 
 export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
-  const normalizedLeague = leagueSlug
-    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
-    : undefined;
+  const leagueRow = leagueSlug
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
+      )
+    : null;
+  const normalizedLeague = leagueRow?.slug;
   const canonicalSlugs = normalizedLeague
     ? normalizedLeague === "g-league"
       ? G_LEAGUE_CURRENT_TEAM_SLUGS
@@ -153,13 +161,13 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
     .from(teams)
     .innerJoin(leagues, eq(teams.leagueId, leagues.id))
     .where(
-      normalizedLeague
+      leagueRow
         ? canonicalSlugs
           ? and(
-              eq(leagues.slug, normalizedLeague),
+              eq(teams.leagueId, leagueRow.id),
               inArray(teams.slug, [...canonicalSlugs]),
             )
-          : eq(leagues.slug, normalizedLeague)
+          : eq(teams.leagueId, leagueRow.id)
         : undefined,
     )
     .orderBy(teams.name);
@@ -179,9 +187,12 @@ export async function getTeamBySlug(
   leagueSlug?: string,
 ): Promise<TeamDetail | null> {
   const normalized = normalizeSlugParam(slug);
-  const resolvedLeagueSlug = leagueSlug
-    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
-    : undefined;
+  const leagueRow = leagueSlug
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
+      )
+    : null;
 
   const rows = await db
     .select({
@@ -193,10 +204,10 @@ export async function getTeamBySlug(
     .where(
       and(
         eq(teams.slug, normalized),
-        resolvedLeagueSlug ? eq(leagues.slug, resolvedLeagueSlug) : undefined,
+        leagueRow ? eq(teams.leagueId, leagueRow.id) : undefined,
       ),
     )
-    .limit(resolvedLeagueSlug ? 1 : 2);
+    .limit(leagueRow ? 1 : 2);
 
   const row = rows[0];
   if (!row) return null;
