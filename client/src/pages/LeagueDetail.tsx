@@ -139,6 +139,7 @@ export function LeagueDetail() {
                     src={teamLogoUrl(team.name, {
                       leagueSlug: apiSlug,
                       abbreviation: team.abbreviation,
+                      slug: team.slug,
                       variant: "primary",
                     })}
                     alt={team.name}
