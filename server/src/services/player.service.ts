@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, isNotNull, sql } from "drizzle-orm";
+import { and, desc, eq, exists, ilike, isNotNull, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import {
   leagues,
@@ -8,6 +8,8 @@ import {
   seasons,
   teams,
 } from "../db/schema/index.js";
+import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
+import { normalizeSlugParam } from "../utils/slug.js";
 import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { formatPosition } from "../utils/position.js";
@@ -36,6 +38,7 @@ export interface PlayerStatRow {
   teamSlug: string;
   league: string;
   leagueSlug: string;
+  leagueGender: string | null;
   games_played: number | null;
   gamesPlayed: number | null;
   pts_per_g: string;
@@ -100,6 +103,7 @@ function toStatRow(
   teamSlug: string,
   leagueName: string,
   leagueSlug: string,
+  leagueGender: string | null,
 ): PlayerStatRow {
   const pts = formatStat(stat.pointsPerGame);
   const reb = formatStat(stat.reboundsPerGame);
@@ -115,6 +119,7 @@ function toStatRow(
     teamSlug,
     league: leagueName,
     leagueSlug,
+    leagueGender,
     games_played: stat.gamesPlayed,
     gamesPlayed: stat.gamesPlayed,
     pts_per_g: pts,
@@ -136,10 +141,29 @@ export async function searchPlayers(params: {
   q?: string;
   page?: number;
   limit?: number;
+  league?: string;
 }): Promise<PlayerCard[]> {
   const page = Math.max(1, params.page ?? 1);
   const limit = Math.min(100, Math.max(1, params.limit ?? 50));
   const offset = (page - 1) * limit;
+  const leagueSlug = params.league
+    ? resolvePublicLeagueSlug(normalizeSlugParam(params.league))
+    : undefined;
+
+  const leagueFilter = leagueSlug
+    ? exists(
+        db
+          .select({ one: sql`1` })
+          .from(playerSeasonStats)
+          .innerJoin(leagues, eq(playerSeasonStats.leagueId, leagues.id))
+          .where(
+            and(
+              eq(playerSeasonStats.playerId, players.id),
+              eq(leagues.slug, leagueSlug),
+            ),
+          ),
+      )
+    : undefined;
 
   const rows = await db
     .select({
@@ -149,7 +173,12 @@ export async function searchPlayers(params: {
     })
     .from(players)
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
-    .where(params.q ? ilike(players.displayName, `%${params.q}%`) : undefined)
+    .where(
+      and(
+        params.q ? ilike(players.displayName, `%${params.q}%`) : undefined,
+        leagueFilter,
+      ),
+    )
     .orderBy(desc(players.profileViews))
     .limit(limit)
     .offset(offset);
@@ -251,7 +280,14 @@ export async function getMostViewedPlayers(limit = 5): Promise<PlayerCard[]> {
   return getFeaturedPlayers(limit);
 }
 
-export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
+export async function getPlayerById(
+  id: number,
+  options?: { league?: string },
+): Promise<PlayerProfile | null> {
+  const leagueSlug = options?.league
+    ? resolvePublicLeagueSlug(normalizeSlugParam(options.league))
+    : undefined;
+
   const [row] = await db
     .select({
       player: players,
@@ -276,12 +312,18 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
       teamSlug: teams.slug,
       leagueName: leagues.name,
       leagueSlug: leagues.slug,
+      leagueGender: leagues.gender,
     })
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
     .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
     .innerJoin(leagues, eq(playerSeasonStats.leagueId, leagues.id))
-    .where(eq(playerSeasonStats.playerId, id))
+    .where(
+      and(
+        eq(playerSeasonStats.playerId, id),
+        leagueSlug ? eq(leagues.slug, leagueSlug) : undefined,
+      ),
+    )
     .orderBy(desc(seasons.seasonLabel));
 
   const stintRows = await db
@@ -295,7 +337,12 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
     .innerJoin(teams, eq(playerStints.teamId, teams.id))
     .innerJoin(leagues, eq(playerStints.leagueId, leagues.id))
     .leftJoin(seasons, eq(playerStints.seasonId, seasons.id))
-    .where(eq(playerStints.playerId, id))
+    .where(
+      and(
+        eq(playerStints.playerId, id),
+        leagueSlug ? eq(leagues.slug, leagueSlug) : undefined,
+      ),
+    )
     .orderBy(desc(seasons.seasonLabel));
 
   const career: CareerEntry[] = stintRows.map((s) => ({
@@ -321,6 +368,7 @@ export async function getPlayerById(id: number): Promise<PlayerProfile | null> {
         s.teamSlug,
         s.leagueName,
         s.leagueSlug,
+        s.leagueGender ?? null,
       ),
     ),
     awards: [],

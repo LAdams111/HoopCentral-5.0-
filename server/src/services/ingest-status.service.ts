@@ -1,11 +1,14 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import {
+  leagues,
   playerIdentities,
   playerSeasonStats,
   players,
   seasons,
 } from "../db/schema/index.js";
+import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
+import { normalizeSlugParam } from "../utils/slug.js";
 
 export interface IngestedSeasonStat {
   seasonLabel: string;
@@ -25,7 +28,12 @@ export interface IngestedPlayerStatus {
 
 export async function getCompletionStatusBySource(
   source: string,
+  leagueSlug?: string,
 ): Promise<IngestedPlayerStatus[]> {
+  const resolvedLeagueSlug = leagueSlug
+    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
+    : undefined;
+
   const rows = await db
     .select({
       externalId: playerIdentities.externalId,
@@ -37,11 +45,13 @@ export async function getCompletionStatusBySource(
       pointsPerGame: playerSeasonStats.pointsPerGame,
       reboundsPerGame: playerSeasonStats.reboundsPerGame,
       assistsPerGame: playerSeasonStats.assistsPerGame,
+      leagueSlug: leagues.slug,
     })
     .from(playerIdentities)
     .innerJoin(players, eq(playerIdentities.playerId, players.id))
     .leftJoin(playerSeasonStats, eq(playerSeasonStats.playerId, players.id))
     .leftJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
+    .leftJoin(leagues, eq(playerSeasonStats.leagueId, leagues.id))
     .where(eq(playerIdentities.source, source));
 
   const byExternalId = new Map<string, IngestedPlayerStatus>();
@@ -60,6 +70,7 @@ export async function getCompletionStatusBySource(
     }
 
     if (!row.seasonLabel || row.gamesPlayed == null) continue;
+    if (resolvedLeagueSlug && row.leagueSlug !== resolvedLeagueSlug) continue;
 
     entry.seasons.push({
       seasonLabel: row.seasonLabel,

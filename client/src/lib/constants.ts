@@ -178,7 +178,7 @@ export function teamLogoUrl(
     slug: options?.slug,
   };
 
-  if (leagueSlug === "ncaa") {
+  if (leagueSlug === "ncaa" || leagueSlug === "ncaa-m" || leagueSlug === "ncaa-w") {
     return ncaaTeamLogoUrl(teamName, ncaaOptions);
   }
   if (leagueSlug === "g-league" || G_LEAGUE_TEAM_IDS[teamName]) {
@@ -239,10 +239,15 @@ export function seasonKeyToYear(seasonKey: string): string {
   return seasonLabelToUrlYear(seasonKey);
 }
 
-export function rosterPath(teamName: string, season?: string): string {
-  const seasonKey =
-    season ?? seasonYearToLabel(getCurrentSeasonYear());
-  return `/roster/${encodeURIComponent(teamName)}/${encodeURIComponent(seasonKey)}`;
+export function rosterPath(
+  teamName: string,
+  season?: string,
+  leagueSlug?: string,
+): string {
+  const seasonKey = season ?? seasonYearToLabel(getCurrentSeasonYear());
+  const base = `/roster/${encodeURIComponent(teamName)}/${encodeURIComponent(seasonKey)}`;
+  if (!leagueSlug) return base;
+  return `${base}?league=${encodeURIComponent(leagueSlug)}`;
 }
 
 export const NAV_ITEMS: {

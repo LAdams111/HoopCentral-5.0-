@@ -9,6 +9,11 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
+import {
+  canonicalLeagueName,
+  leagueGenderForSlug,
+  resolveIngestLeagueSlug,
+} from "../utils/league-slug.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -177,6 +182,8 @@ async function findOrCreateLeague(
   slug: string,
   name: string,
 ): Promise<{ id: number; created: boolean }> {
+  const gender = leagueGenderForSlug(slug);
+
   const [existing] = await database
     .select()
     .from(leagues)
@@ -188,7 +195,7 @@ async function findOrCreateLeague(
   try {
     const [created] = await database
       .insert(leagues)
-      .values({ slug, name })
+      .values({ slug, name, gender })
       .returning();
     return { id: created.id, created: true };
   } catch (err) {
@@ -213,15 +220,10 @@ async function findOrCreateTeam(
   const [existing] = await database
     .select()
     .from(teams)
-    .where(eq(teams.slug, slug))
+    .where(and(eq(teams.leagueId, leagueId), eq(teams.slug, slug)))
     .limit(1);
 
   if (existing) {
-    if (existing.leagueId !== leagueId) {
-      throw new IngestValidationError(
-        `Team slug "${slug}" already belongs to a different league`,
-      );
-    }
     return { id: existing.id, created: false };
   }
 
@@ -241,14 +243,9 @@ async function findOrCreateTeam(
     const [again] = await database
       .select()
       .from(teams)
-      .where(eq(teams.slug, slug))
+      .where(and(eq(teams.leagueId, leagueId), eq(teams.slug, slug)))
       .limit(1);
     if (!again) throw err;
-    if (again.leagueId !== leagueId) {
-      throw new IngestValidationError(
-        `Team slug "${slug}" already belongs to a different league`,
-      );
-    }
     return { id: again.id, created: false };
   }
 }
@@ -460,7 +457,20 @@ async function ingestPlayerSeasonOnce(
       .set(buildSeasonIngestPlayerUpdate(input.player))
       .where(eq(players.id, identityResult.player.id));
 
-    const leagueResult = await findOrCreateLeague(tx, input.league.slug, input.league.name);
+    const resolvedLeagueSlug = resolveIngestLeagueSlug(
+      input.source,
+      input.league.slug,
+    );
+    const resolvedLeagueName = canonicalLeagueName(
+      resolvedLeagueSlug,
+      input.league.name,
+    );
+
+    const leagueResult = await findOrCreateLeague(
+      tx,
+      resolvedLeagueSlug,
+      resolvedLeagueName,
+    );
     const teamResult = await findOrCreateTeam(
       tx,
       leagueResult.id,

@@ -299,7 +299,11 @@ async function seed() {
   for (const league of LEAGUES) {
     const [row] = await db
       .insert(schema.leagues)
-      .values({ slug: league.slug, name: league.name })
+      .values({
+        slug: league.slug,
+        name: league.name,
+        gender: "gender" in league ? league.gender : null,
+      })
       .returning();
     leagueMap.set(league.slug, row.id);
   }

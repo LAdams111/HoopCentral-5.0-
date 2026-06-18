@@ -21,8 +21,12 @@ ingestRouter.get("/completion-status", async (req, res) => {
       typeof req.query.source === "string" && req.query.source.trim()
         ? req.query.source.trim()
         : "balldontlie";
-    const players = await getCompletionStatusBySource(source);
-    res.json({ source, players });
+    const league =
+      typeof req.query.league === "string" && req.query.league.trim()
+        ? req.query.league.trim()
+        : undefined;
+    const players = await getCompletionStatusBySource(source, league);
+    res.json({ source, league, players });
   } catch (err) {
     console.error(err);
     res.status(500).json({

@@ -83,6 +83,30 @@ Optional player fields: `birthDate`, `position`, `heightCm`, `weightKg`, `hometo
 
 Optional stats fields: `stealsPerGame`, `blocksPerGame`, `fieldGoalPct`. Older scraper payloads without these fields remain valid; existing steals, blocks, and FG% values are left unchanged on update when omitted.
 
+### NCAA Division I league slugs
+
+Men's and women's NCAA D1 are stored as separate leagues:
+
+| Slug | Name | Gender |
+|------|------|--------|
+| `ncaa-m` | NCAA Division I (Men) | male |
+| `ncaa-w` | NCAA Division I (Women) | female |
+
+**Backward compatibility:** payloads from `usbasket-ncaa-d1` that send `"league": { "slug": "ncaa", "name": "NCAA Division I" }` are automatically mapped to `ncaa-m`. No scraper changes are required.
+
+Future women's ingest should use `source: "usbasket-ncaa-d1-w"` with `"slug": "ncaa-w"`, or the same source with an explicit `"slug": "ncaa-w"`.
+
+Team slugs are unique per league, so men's and women's versions of the same school (e.g. `duke`) can coexist.
+
+## Completion status
+
+```
+GET /api/ingest/completion-status?source=usbasket-ncaa-d1
+GET /api/ingest/completion-status?source=usbasket-ncaa-d1&league=ncaa-m
+```
+
+Optional `league` query param filters returned season rows to a specific league slug (`ncaa-m`, `ncaa-w`, or legacy alias `ncaa` → men's).
+
 ## Response
 
 ```json

@@ -26,7 +26,8 @@ playersRouter.get("/", async (req, res) => {
     const q = typeof req.query.q === "string" ? req.query.q : undefined;
     const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.limit) : 50;
-    const players = await searchPlayers({ q, page, limit });
+    const league = typeof req.query.league === "string" ? req.query.league : undefined;
+    const players = await searchPlayers({ q, page, limit, league });
     res.json(players);
   } catch (err) {
     console.error(err);
@@ -70,7 +71,8 @@ playersRouter.get("/:id", async (req, res) => {
       return;
     }
 
-    const player = await getPlayerById(id);
+    const league = typeof req.query.league === "string" ? req.query.league : undefined;
+    const player = await getPlayerById(id, { league });
     if (!player) {
       res.status(404).json({ error: { code: "PLAYER_NOT_FOUND", message: "Player not found" } });
       return;

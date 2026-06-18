@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
 import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, teamLogoUrl } from "@/lib/constants";
@@ -32,6 +32,10 @@ export function LeagueDetail() {
 
   if (!apiSlug) {
     return <LeagueNotFound />;
+  }
+
+  if (apiSlug === "ncaa") {
+    return <Navigate to="/leagues/ncaa-m" replace />;
   }
 
   if (!isLoading && (error || !dbLeague)) {
@@ -119,7 +123,7 @@ export function LeagueDetail() {
             {teams.map((team) => (
               <Link
                 key={team.slug}
-                to={rosterPath(team.name, currentSeasonLabel)}
+                to={rosterPath(team.name, currentSeasonLabel, apiSlug)}
                 className="hover-elevate rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
               >
                 <div className="flex items-start gap-2">

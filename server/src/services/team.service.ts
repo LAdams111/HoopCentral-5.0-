@@ -11,6 +11,7 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
+import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -50,23 +51,33 @@ export interface TeamRecord {
   league: string;
 }
 
-async function findTeam(teamKey: string) {
+async function findTeam(teamKey: string, leagueSlug?: string) {
   const decoded = decodeURIComponent(teamKey).trim();
   const slugCandidate = normalizeSlugParam(decoded);
+  const resolvedLeagueSlug = leagueSlug
+    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
+    : undefined;
 
-  const [row] = await db
-    .select()
+  const matches = await db
+    .select({ team: teams })
     .from(teams)
+    .innerJoin(leagues, eq(teams.leagueId, leagues.id))
     .where(
-      or(
-        eq(teams.slug, slugCandidate),
-        ilike(teams.abbreviation, decoded),
-        ilike(teams.name, decoded),
+      and(
+        or(
+          eq(teams.slug, slugCandidate),
+          ilike(teams.abbreviation, decoded),
+          ilike(teams.name, decoded),
+        ),
+        resolvedLeagueSlug ? eq(leagues.slug, resolvedLeagueSlug) : undefined,
       ),
     )
-    .limit(1);
+    .limit(resolvedLeagueSlug ? 1 : 2);
 
-  return row ?? null;
+  if (matches.length === 0) return null;
+  if (matches.length === 1 || resolvedLeagueSlug) return matches[0]!.team;
+
+  return matches[0]!.team;
 }
 
 async function findSeason(seasonKey: string, leagueId: number) {
@@ -124,7 +135,7 @@ function toTeamInfo(team: typeof teams.$inferSelect): TeamInfo {
 
 export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
   const normalizedLeague = leagueSlug
-    ? normalizeSlugParam(leagueSlug)
+    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
     : undefined;
   const canonicalSlugs = normalizedLeague
     ? normalizedLeague === "g-league"
@@ -163,19 +174,31 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
   }));
 }
 
-export async function getTeamBySlug(slug: string): Promise<TeamDetail | null> {
+export async function getTeamBySlug(
+  slug: string,
+  leagueSlug?: string,
+): Promise<TeamDetail | null> {
   const normalized = normalizeSlugParam(slug);
+  const resolvedLeagueSlug = leagueSlug
+    ? resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug))
+    : undefined;
 
-  const [row] = await db
+  const rows = await db
     .select({
       team: teams,
       league: leagues,
     })
     .from(teams)
     .innerJoin(leagues, eq(teams.leagueId, leagues.id))
-    .where(eq(teams.slug, normalized))
-    .limit(1);
+    .where(
+      and(
+        eq(teams.slug, normalized),
+        resolvedLeagueSlug ? eq(leagues.slug, resolvedLeagueSlug) : undefined,
+      ),
+    )
+    .limit(resolvedLeagueSlug ? 1 : 2);
 
+  const row = rows[0];
   if (!row) return null;
 
   const latestSeason = await findLatestSeasonForTeam(row.team.id);
@@ -232,8 +255,9 @@ export async function getTeamBySlug(slug: string): Promise<TeamDetail | null> {
 export async function getTeamRoster(
   teamKey: string,
   seasonKey: string,
+  leagueSlug?: string,
 ): Promise<TeamRoster | null> {
-  const team = await findTeam(teamKey);
+  const team = await findTeam(teamKey, leagueSlug);
   if (!team) return null;
 
   const season =
@@ -271,8 +295,11 @@ export async function getTeamRoster(
   };
 }
 
-export async function getTeamSeasons(teamKey: string): Promise<string[]> {
-  const team = await findTeam(teamKey);
+export async function getTeamSeasons(
+  teamKey: string,
+  leagueSlug?: string,
+): Promise<string[]> {
+  const team = await findTeam(teamKey, leagueSlug);
   if (!team) return [];
 
   const rows = await db
@@ -288,8 +315,9 @@ export async function getTeamSeasons(teamKey: string): Promise<string[]> {
 export async function getTeamRecord(
   teamKey: string,
   seasonKey: string,
+  leagueSlug?: string,
 ): Promise<TeamRecord | null> {
-  const team = await findTeam(teamKey);
+  const team = await findTeam(teamKey, leagueSlug);
   if (!team) return null;
 
   const season =

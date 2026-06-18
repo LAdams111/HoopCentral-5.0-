@@ -38,7 +38,9 @@ teamsRouter.get("/all", async (req, res) => {
 
 teamsRouter.get("/:team/roster/:season", async (req, res) => {
   try {
-    const roster = await getTeamRoster(req.params.team, req.params.season);
+    const league =
+      typeof req.query.league === "string" ? req.query.league : undefined;
+    const roster = await getTeamRoster(req.params.team, req.params.season, league);
     if (!roster) {
       res.status(404).json({
         error: { code: "TEAM_NOT_FOUND", message: "Team not found" },
@@ -56,7 +58,9 @@ teamsRouter.get("/:team/roster/:season", async (req, res) => {
 
 teamsRouter.get("/:team/record/:season", async (req, res) => {
   try {
-    const record = await getTeamRecord(req.params.team, req.params.season);
+    const league =
+      typeof req.query.league === "string" ? req.query.league : undefined;
+    const record = await getTeamRecord(req.params.team, req.params.season, league);
     if (!record) {
       res.status(404).json({
         error: { code: "RECORD_NOT_FOUND", message: "Team record not found" },
@@ -74,7 +78,9 @@ teamsRouter.get("/:team/record/:season", async (req, res) => {
 
 teamsRouter.get("/:team/seasons", async (req, res) => {
   try {
-    const seasons = await getTeamSeasons(req.params.team);
+    const league =
+      typeof req.query.league === "string" ? req.query.league : undefined;
+    const seasons = await getTeamSeasons(req.params.team, league);
     if (seasons.length === 0) {
       res.status(404).json({
         error: { code: "TEAM_NOT_FOUND", message: "Team not found" },
@@ -92,7 +98,9 @@ teamsRouter.get("/:team/seasons", async (req, res) => {
 
 teamsRouter.get("/:slug", async (req, res) => {
   try {
-    const team = await getTeamBySlug(req.params.slug);
+    const league =
+      typeof req.query.league === "string" ? req.query.league : undefined;
+    const team = await getTeamBySlug(req.params.slug, league);
     if (!team) {
       res.status(404).json({
         error: { code: "TEAM_NOT_FOUND", message: "Team not found" },

@@ -22,6 +22,7 @@ export interface PlayerStat {
   teamSlug: string;
   league: string;
   leagueSlug: string;
+  leagueGender?: string | null;
   games_played: number | null;
   gamesPlayed: number | null;
   pts_per_g: string;
@@ -60,6 +61,7 @@ export interface LeagueSummary {
   id: number;
   name: string;
   slug: string;
+  gender?: string | null;
   teamCount: number;
 }
 
@@ -127,9 +129,10 @@ async function fetchJson<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function getPlayers(q?: string): Promise<PlayerCard[]> {
+export function getPlayers(q?: string, league?: string): Promise<PlayerCard[]> {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
+  if (league) params.set("league", league);
   const qs = params.toString();
   return fetchJson(`/api/players${qs ? `?${qs}` : ""}`);
 }
@@ -142,8 +145,9 @@ export function getPlayersByBirthYear(year: number): Promise<BirthYearPlayersRes
   return fetchJson(`/api/players/birth-year/${year}?limit=50`);
 }
 
-export function getPlayer(id: number): Promise<PlayerProfile> {
-  return fetchJson(`/api/players/${id}`);
+export function getPlayer(id: number, league?: string): Promise<PlayerProfile> {
+  const qs = league ? `?league=${encodeURIComponent(league)}` : "";
+  return fetchJson(`/api/players/${id}${qs}`);
 }
 
 export function getFeaturedPlayers(): Promise<PlayerCard[]> {
@@ -180,9 +184,11 @@ export function getTeam(slug: string): Promise<TeamDetail> {
 export function getTeamRoster(
   team: string,
   season: string,
+  league?: string,
 ): Promise<TeamRosterResponse> {
+  const qs = league ? `?league=${encodeURIComponent(league)}` : "";
   return fetchJson(
-    `/api/teams/${encodeURIComponent(team)}/roster/${encodeURIComponent(season)}`,
+    `/api/teams/${encodeURIComponent(team)}/roster/${encodeURIComponent(season)}${qs}`,
   );
 }
 
@@ -193,9 +199,11 @@ export function getTeamSeasons(team: string): Promise<string[]> {
 export function getTeamRecord(
   team: string,
   season: string,
+  league?: string,
 ): Promise<TeamRecordResponse | null> {
+  const qs = league ? `?league=${encodeURIComponent(league)}` : "";
   return fetch(
-    `/api/teams/${encodeURIComponent(team)}/record/${encodeURIComponent(season)}`,
+    `/api/teams/${encodeURIComponent(team)}/record/${encodeURIComponent(season)}${qs}`,
   ).then((res) => (res.ok ? (res.json() as Promise<TeamRecordResponse>) : null));
 }
 

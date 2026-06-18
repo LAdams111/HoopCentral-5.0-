@@ -46,6 +46,24 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     regions: ["US"],
     category: "domestic",
   },
+  "ncaa-m": {
+    display: "NCAA Division I (Men)",
+    tier: "Collegiate",
+    description:
+      "The highest level of men's intercollegiate basketball sanctioned by the NCAA.",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg",
+    regions: ["US"],
+    category: "domestic",
+  },
+  "ncaa-w": {
+    display: "NCAA Division I (Women)",
+    tier: "Collegiate",
+    description:
+      "The highest level of women's intercollegiate basketball sanctioned by the NCAA.",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg",
+    regions: ["US"],
+    category: "domestic",
+  },
   "ncaa-d2": {
     display: "NCAA Division II",
     tier: "Collegiate",
@@ -194,7 +212,8 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
     "nba",
     "wnba",
     "g-league",
-    "ncaa",
+    "ncaa-m",
+    "ncaa-w",
     "ncaa-d2",
     "u-sports",
     "ote",

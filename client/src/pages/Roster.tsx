@@ -81,20 +81,22 @@ export function Roster() {
   const seasonYear = seasonKeyToYear(decodedSeason);
   const seasonYears = generateSeasonYears();
 
+  const leagueSlug = new URLSearchParams(location.search).get("league") ?? undefined;
+
   const {
     data: roster,
     isLoading,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["team-roster", team, decodedSeason],
-    queryFn: () => getTeamRoster(decodedTeam, decodedSeason),
+    queryKey: ["team-roster", team, decodedSeason, leagueSlug],
+    queryFn: () => getTeamRoster(decodedTeam, decodedSeason, leagueSlug ?? undefined),
     enabled: Boolean(team && season),
   });
 
   const { data: record } = useQuery({
-    queryKey: ["team-record", team, decodedSeason],
-    queryFn: () => getTeamRecord(decodedTeam, decodedSeason),
+    queryKey: ["team-record", team, decodedSeason, leagueSlug],
+    queryFn: () => getTeamRecord(decodedTeam, decodedSeason, leagueSlug ?? undefined),
     enabled: Boolean(team && season),
   });
 
@@ -115,8 +117,9 @@ export function Roster() {
   };
 
   const handleSeasonChange = (nextSeason: string) => {
+    const leagueQuery = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
     navigate(
-      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(nextSeason)}`,
+      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(nextSeason)}${leagueQuery}`,
     );
   };
 
@@ -179,7 +182,9 @@ export function Roster() {
               <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center">
                 <img
                   src={teamLogoUrl(teamName, {
+                    leagueSlug: leagueSlug ?? undefined,
                     abbreviation: roster?.team.abbreviation,
+                    slug: roster?.team.slug,
                     variant: "primary",
                   })}
                   alt={`${teamName} logo`}
