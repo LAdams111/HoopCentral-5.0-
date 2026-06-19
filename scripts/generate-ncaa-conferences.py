@@ -18,8 +18,16 @@ ESPN_URL = (
 
 
 def slugify(value: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", value.strip().lower())
+    normalized = value.replace("'", "").replace(".", "").strip().lower()
+    slug = re.sub(r"[^a-z0-9]+", "-", normalized)
     return slug.strip("-")
+
+
+def school_slug(full_slug: str) -> str | None:
+    parts = [part for part in full_slug.split("-") if part]
+    if len(parts) <= 1:
+        return None
+    return "-".join(parts[:-1])
 
 
 def js_string(value: str) -> str:
@@ -31,6 +39,18 @@ def fmt_string_list(values: list[str]) -> str:
         return "[]"
     lines = ",\n".join(f"    {js_string(value)}" for value in values)
     return f"[\n{lines},\n  ]"
+
+
+def add_alias(aliases: set[str], value: str | None) -> None:
+    if not value:
+        return
+    cleaned = value.strip()
+    if not cleaned:
+        return
+    aliases.add(cleaned)
+    slug = slugify(cleaned)
+    if slug:
+        aliases.add(slug)
 
 
 def main() -> None:
@@ -50,32 +70,38 @@ def main() -> None:
         if not name:
             continue
 
-        team_slugs: list[str] = []
-        team_names: list[str] = []
-        team_abbrevs: list[str] = []
+        team_slugs: set[str] = set()
+        team_names: set[str] = set()
+        team_abbrevs: set[str] = set()
 
         for team in group.get("teams", []):
             slug = team.get("slug", "").strip().lower()
             display_name = team.get("displayName", "").strip()
+            short_name = team.get("shortDisplayName", "").strip()
+            location = team.get("location", "").strip()
+            nickname = team.get("nickname", "").strip()
             abbrev = team.get("abbreviation", "").strip().upper()
 
             if slug:
-                team_slugs.append(slug)
-            if display_name:
-                team_names.append(display_name)
-                name_slug = slugify(display_name)
-                if name_slug and name_slug not in team_slugs:
-                    team_slugs.append(name_slug)
+                team_slugs.add(slug)
+                school = school_slug(slug)
+                if school:
+                    team_slugs.add(school)
+
+            for label in (display_name, short_name, location, nickname):
+                add_alias(team_names, label)
+                add_alias(team_slugs, label)
+
             if abbrev:
-                team_abbrevs.append(abbrev)
+                team_abbrevs.add(abbrev)
 
         conferences.append(
             {
                 "slug": slugify(name),
                 "name": name,
-                "teamSlugs": sorted(set(team_slugs)),
-                "teamNames": sorted(set(team_names)),
-                "teamAbbrevs": sorted(set(team_abbrevs)),
+                "teamSlugs": sorted(team_slugs),
+                "teamNames": sorted(team_names),
+                "teamAbbrevs": sorted(team_abbrevs),
             }
         )
 
@@ -117,8 +143,21 @@ function nameToSlug(name: string): string {{
   return name
     .trim()
     .toLowerCase()
+    .replace(/[''.]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+}}
+
+function normalizeName(name: string): string {{
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[''.]/g, "")
+    .replace(/\\s+/g, " ");
+}}
+
+function slugMatches(teamSlug: string, conferenceSlug: string): boolean {{
+  return Boolean(teamSlug && conferenceSlug && teamSlug === conferenceSlug);
 }}
 
 function teamMatchesConference(
@@ -128,10 +167,19 @@ function teamMatchesConference(
   const slug = team.slug.trim().toLowerCase();
   const nameSlug = nameToSlug(team.name);
   const abbrev = team.abbreviation.trim().toUpperCase();
+  const normalizedTeamName = normalizeName(team.name);
 
-  if (conference.teamSlugs.includes(slug)) return true;
-  if (nameSlug && conference.teamSlugs.includes(nameSlug)) return true;
-  if (conference.teamNames.includes(team.name)) return true;
+  for (const conferenceSlug of conference.teamSlugs) {{
+    if (slugMatches(slug, conferenceSlug)) return true;
+    if (nameSlug && slugMatches(nameSlug, conferenceSlug)) return true;
+  }}
+
+  for (const conferenceName of conference.teamNames) {{
+    const normalizedConferenceName = normalizeName(conferenceName);
+    if (normalizedConferenceName === normalizedTeamName) return true;
+    if (normalizedConferenceName.startsWith(`${{normalizedTeamName}} `)) return true;
+  }}
+
   if (abbrev && conference.teamAbbrevs.includes(abbrev)) return true;
   return false;
 }}
