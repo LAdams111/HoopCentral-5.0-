@@ -11,6 +11,7 @@ import {
 import { resolvePublicLeagueSlug, leagueGenderForSlug } from "../utils/league-slug.js";
 import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
+import { wordPrefixMatch } from "../utils/search-match.js";
 import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { formatPosition } from "../utils/position.js";
@@ -178,7 +179,7 @@ export async function searchPlayers(params: {
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
     .where(
       and(
-        params.q ? ilike(players.displayName, `%${params.q}%`) : undefined,
+        params.q ? wordPrefixMatch(players.displayName, params.q) : undefined,
         leagueFilter,
       ),
     )

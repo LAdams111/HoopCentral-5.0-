@@ -24,13 +24,13 @@ export function PlayerSearch() {
 
   const { data: playerResults = [] } = useQuery({
     queryKey: ["search-players", debounced],
-    queryFn: () => getPlayers(debounced),
+    queryFn: () => getPlayers(debounced, undefined, 5),
     enabled,
   });
 
   const { data: teamResults = [] } = useQuery({
     queryKey: ["search-teams", debounced],
-    queryFn: () => searchTeams(debounced, 8),
+    queryFn: () => searchTeams(debounced, 3),
     enabled,
   });
 
@@ -58,12 +58,12 @@ export function PlayerSearch() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (teamResults[0]) {
-      goToTeam(teamResults[0]);
-      return;
-    }
     if (playerResults[0]) {
       goToPlayer(playerResults[0]);
+      return;
+    }
+    if (teamResults[0]) {
+      goToTeam(teamResults[0]);
       return;
     }
     if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
@@ -137,23 +137,23 @@ function SearchDropdown({
           <p className="px-4 py-3 text-sm text-muted-foreground">No results found.</p>
         ) : (
           <>
-            {teams.length > 0 && (
+            {players.length > 0 && (
               <div className="mb-1">
+                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Players
+                </p>
+                {players.map((player) => (
+                  <PlayerSearchRow key={player.id} player={player} onSelect={onSelectPlayer} />
+                ))}
+              </div>
+            )}
+            {teams.length > 0 && (
+              <div>
                 <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                   Teams
                 </p>
                 {teams.map((team) => (
                   <TeamSearchRow key={`${team.league.slug}-${team.id}`} team={team} onSelect={onSelectTeam} />
-                ))}
-              </div>
-            )}
-            {players.length > 0 && (
-              <div>
-                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  Players
-                </p>
-                {players.slice(0, 8).map((player) => (
-                  <PlayerSearchRow key={player.id} player={player} onSelect={onSelectPlayer} />
                 ))}
               </div>
             )}

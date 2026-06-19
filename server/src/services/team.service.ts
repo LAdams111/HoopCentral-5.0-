@@ -11,6 +11,7 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
+import { prefixMatch, wordPrefixMatch } from "../utils/search-match.js";
 import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
 import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
@@ -190,7 +191,6 @@ export async function searchTeams(params: {
   if (!trimmed) return [];
 
   const limit = Math.min(25, Math.max(1, params.limit ?? 10));
-  const pattern = `%${trimmed}%`;
 
   const rows = await db
     .select({
@@ -201,9 +201,9 @@ export async function searchTeams(params: {
     .innerJoin(leagues, eq(teams.leagueId, leagues.id))
     .where(
       or(
-        ilike(teams.name, pattern),
-        ilike(teams.abbreviation, pattern),
-        ilike(teams.slug, pattern),
+        wordPrefixMatch(teams.name, trimmed),
+        prefixMatch(teams.abbreviation, trimmed),
+        wordPrefixMatch(teams.slug, trimmed),
       ),
     )
     .orderBy(teams.name)

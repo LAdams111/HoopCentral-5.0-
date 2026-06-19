@@ -129,10 +129,11 @@ async function fetchJson<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function getPlayers(q?: string, league?: string): Promise<PlayerCard[]> {
+export function getPlayers(q?: string, league?: string, limit?: number): Promise<PlayerCard[]> {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (league) params.set("league", league);
+  if (limit) params.set("limit", String(limit));
   const qs = params.toString();
   return fetchJson(`/api/players${qs ? `?${qs}` : ""}`);
 }
