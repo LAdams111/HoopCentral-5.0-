@@ -2,8 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPlayers, type PlayerCard } from "@/lib/api";
+import { getPlayers, searchTeams, type PlayerCard, type TeamSummary } from "@/lib/api";
 import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
+import { getLeagueDisplay } from "@/lib/leagues";
+import { teamLogoUrl } from "@/lib/constants";
+import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
 
 export function PlayerSearch() {
   const [query, setQuery] = useState("");
@@ -17,10 +20,18 @@ export function PlayerSearch() {
     return () => clearTimeout(t);
   }, [query]);
 
-  const { data: results = [] } = useQuery({
-    queryKey: ["search", debounced],
+  const enabled = debounced.length >= 2;
+
+  const { data: playerResults = [] } = useQuery({
+    queryKey: ["search-players", debounced],
     queryFn: () => getPlayers(debounced),
-    enabled: debounced.length >= 2,
+    enabled,
+  });
+
+  const { data: teamResults = [] } = useQuery({
+    queryKey: ["search-teams", debounced],
+    queryFn: () => searchTeams(debounced, 8),
+    enabled,
   });
 
   useEffect(() => {
@@ -39,13 +50,27 @@ export function PlayerSearch() {
     navigate(`/players/${player.id}`);
   };
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (results[0]) goToPlayer(results[0]);
-    else if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
+  const goToTeam = (team: TeamSummary) => {
+    setOpen(false);
+    setQuery("");
+    navigate(teamRosterPath(team));
   };
 
-  const showDropdown = open && debounced.length >= 2;
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (teamResults[0]) {
+      goToTeam(teamResults[0]);
+      return;
+    }
+    if (playerResults[0]) {
+      goToPlayer(playerResults[0]);
+      return;
+    }
+    if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
+  };
+
+  const showDropdown = open && enabled;
+  const hasResults = teamResults.length > 0 || playerResults.length > 0;
 
   return (
     <div
@@ -79,53 +104,135 @@ export function PlayerSearch() {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <Dropdown results={results} onSelect={goToPlayer} />
+          <SearchDropdown
+            teams={teamResults}
+            players={playerResults}
+            hasResults={hasResults}
+            onSelectTeam={goToTeam}
+            onSelectPlayer={goToPlayer}
+          />
         </>
       )}
     </div>
   );
 }
 
-function Dropdown({
-  results,
-  onSelect,
+function SearchDropdown({
+  teams,
+  players,
+  hasResults,
+  onSelectTeam,
+  onSelectPlayer,
 }: {
-  results: PlayerCard[];
-  onSelect: (p: PlayerCard) => void;
+  teams: TeamSummary[];
+  players: PlayerCard[];
+  hasResults: boolean;
+  onSelectTeam: (team: TeamSummary) => void;
+  onSelectPlayer: (player: PlayerCard) => void;
 }) {
   return (
-    <div className="absolute left-0 right-0 top-full z-[100] mt-2 overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+    <div className="absolute left-0 right-0 top-full z-[100] mt-2 max-h-[min(24rem,70vh)] overflow-y-auto rounded-2xl border border-border bg-card shadow-xl">
       <div className="py-2">
-        {results.length === 0 ? (
-          <p className="px-4 py-3 text-sm text-muted-foreground">No players found.</p>
+        {!hasResults ? (
+          <p className="px-4 py-3 text-sm text-muted-foreground">No results found.</p>
         ) : (
-          results.slice(0, 8).map((player) => (
-            <button
-              key={player.id}
-              type="button"
-              onClick={() => onSelect(player)}
-              className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover-elevate"
-            >
-              <div className="h-8 w-8 overflow-hidden rounded-full border border-border">
-                <img
-                  src={resolvePlayerHeadshot(player.headshotUrl)}
-                  alt={player.name}
-                  className="h-full w-full object-cover object-top"
-                  onError={onHeadshotError}
-                />
-              </div>
-              <div className="flex-1">
-                <p className="font-display font-bold text-foreground transition-colors group-hover:text-primary">
-                  {player.name}
+          <>
+            {teams.length > 0 && (
+              <div className="mb-1">
+                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Teams
                 </p>
-                <p className="font-mono text-xs uppercase text-muted-foreground">
-                  {player.team} • #{player.jerseyNumber}
-                </p>
+                {teams.map((team) => (
+                  <TeamSearchRow key={`${team.league.slug}-${team.id}`} team={team} onSelect={onSelectTeam} />
+                ))}
               </div>
-            </button>
-          ))
+            )}
+            {players.length > 0 && (
+              <div>
+                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Players
+                </p>
+                {players.slice(0, 8).map((player) => (
+                  <PlayerSearchRow key={player.id} player={player} onSelect={onSelectPlayer} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
+  );
+}
+
+function TeamSearchRow({
+  team,
+  onSelect,
+}: {
+  team: TeamSummary;
+  onSelect: (team: TeamSummary) => void;
+}) {
+  const leagueSlug = publicLeagueSlugForRoster(team.league.slug);
+  const leagueMeta = getLeagueDisplay(leagueSlug, team.league.name);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(team)}
+      className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover-elevate"
+    >
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
+        <img
+          src={teamLogoUrl(team.name, {
+            leagueSlug,
+            abbreviation: team.abbreviation,
+            slug: team.slug,
+            variant: "primary",
+          })}
+          alt={team.name}
+          className="max-h-full max-w-full object-contain"
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-display font-bold text-foreground transition-colors group-hover:text-primary">
+          {team.name}
+        </p>
+        <p className="truncate font-mono text-xs uppercase text-muted-foreground">
+          {leagueMeta.display} • {team.abbreviation}
+        </p>
+      </div>
+    </button>
+  );
+}
+
+function PlayerSearchRow({
+  player,
+  onSelect,
+}: {
+  player: PlayerCard;
+  onSelect: (player: PlayerCard) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(player)}
+      className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover-elevate"
+    >
+      <div className="h-8 w-8 overflow-hidden rounded-full border border-border">
+        <img
+          src={resolvePlayerHeadshot(player.headshotUrl)}
+          alt={player.name}
+          className="h-full w-full object-cover object-top"
+          onError={onHeadshotError}
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-display font-bold text-foreground transition-colors group-hover:text-primary">
+          {player.name}
+        </p>
+        <p className="truncate font-mono text-xs uppercase text-muted-foreground">
+          {player.team} • #{player.jerseyNumber}
+        </p>
+      </div>
+    </button>
   );
 }

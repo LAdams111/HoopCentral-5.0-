@@ -182,6 +182,43 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
   }));
 }
 
+export async function searchTeams(params: {
+  q: string;
+  limit?: number;
+}): Promise<TeamSummary[]> {
+  const trimmed = params.q.trim();
+  if (!trimmed) return [];
+
+  const limit = Math.min(25, Math.max(1, params.limit ?? 10));
+  const pattern = `%${trimmed}%`;
+
+  const rows = await db
+    .select({
+      team: teams,
+      league: leagues,
+    })
+    .from(teams)
+    .innerJoin(leagues, eq(teams.leagueId, leagues.id))
+    .where(
+      or(
+        ilike(teams.name, pattern),
+        ilike(teams.abbreviation, pattern),
+        ilike(teams.slug, pattern),
+      ),
+    )
+    .orderBy(teams.name)
+    .limit(limit);
+
+  return rows.map((row) => ({
+    ...toTeamInfo(row.team),
+    league: {
+      id: row.league.id,
+      name: row.league.name,
+      slug: row.league.slug,
+    },
+  }));
+}
+
 export async function getTeamBySlug(
   slug: string,
   leagueSlug?: string,

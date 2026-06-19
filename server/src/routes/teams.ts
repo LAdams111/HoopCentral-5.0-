@@ -6,6 +6,7 @@ import {
   getTeamRecord,
   getTeamRoster,
   getTeamSeasons,
+  searchTeams,
 } from "../services/team.service.js";
 
 export const teamsRouter = Router();
@@ -32,6 +33,20 @@ teamsRouter.get("/all", async (req, res) => {
     console.error(err);
     res.status(500).json({
       error: { code: "INTERNAL_ERROR", message: "Failed to get teams" },
+    });
+  }
+});
+
+teamsRouter.get("/search", async (req, res) => {
+  try {
+    const q = typeof req.query.q === "string" ? req.query.q : "";
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const results = await searchTeams({ q, limit });
+    res.json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to search teams" },
     });
   }
 });

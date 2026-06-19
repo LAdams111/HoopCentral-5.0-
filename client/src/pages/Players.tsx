@@ -3,7 +3,8 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { PlayerCard } from "@/components/player/PlayerCard";
-import { getPlayers } from "@/lib/api";
+import { TeamSearchResults } from "@/components/search/TeamSearchResults";
+import { getPlayers, searchTeams } from "@/lib/api";
 
 export function Players() {
   const [searchParams] = useSearchParams();
@@ -16,10 +17,22 @@ export function Players() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const { data: players = [], isLoading } = useQuery({
+  const hasQuery = debouncedQuery.trim().length >= 2;
+
+  const { data: teams = [], isLoading: teamsLoading } = useQuery({
+    queryKey: ["search-teams", debouncedQuery],
+    queryFn: () => searchTeams(debouncedQuery, 12),
+    enabled: hasQuery,
+  });
+
+  const { data: players = [], isLoading: playersLoading } = useQuery({
     queryKey: ["players", debouncedQuery],
     queryFn: () => getPlayers(debouncedQuery || undefined),
   });
+
+  const isLoading = hasQuery ? teamsLoading || playersLoading : playersLoading;
+  const noResults = hasQuery && !isLoading && teams.length === 0 && players.length === 0;
+  const showPlayers = players.length > 0;
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-12">
@@ -30,7 +43,7 @@ export function Players() {
               Player <span className="text-primary">Directory</span>
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              Search the complete Hoop Central database
+              Search players and teams across Hoop Central
             </p>
           </div>
         </div>
@@ -39,7 +52,7 @@ export function Players() {
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
-            placeholder="Search player name..."
+            placeholder="Search players or teams..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full rounded-full border border-border bg-white py-3 pl-12 pr-4 text-foreground shadow-sm placeholder:text-muted-foreground/50 transition-colors focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -55,23 +68,29 @@ export function Players() {
               />
             ))}
           </div>
-        ) : players.length === 0 ? (
+        ) : noResults ? (
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center">
-            <p className="font-display text-2xl text-muted-foreground">No players found</p>
+            <p className="font-display text-2xl text-muted-foreground">No results found</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Try a different search term
             </p>
           </div>
         ) : (
           <>
-            <p className="mb-6 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              {players.length} player{players.length !== 1 ? "s" : ""} found
-            </p>
-            <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">
-              {players.map((player) => (
-                <PlayerCard key={player.id} player={player} />
-              ))}
-            </div>
+            <TeamSearchResults teams={hasQuery ? teams : []} />
+
+            {showPlayers && (
+              <>
+                <p className="mb-6 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  {players.length} player{players.length !== 1 ? "s" : ""} found
+                </p>
+                <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">
+                  {players.map((player) => (
+                    <PlayerCard key={player.id} player={player} />
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

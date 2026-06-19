@@ -177,6 +177,13 @@ export function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
   return fetchJson(`/api/teams/all${qs ? `?${qs}` : ""}`);
 }
 
+export function searchTeams(q: string, limit?: number): Promise<TeamSummary[]> {
+  const params = new URLSearchParams();
+  params.set("q", q);
+  if (limit) params.set("limit", String(limit));
+  return fetchJson(`/api/teams/search?${params.toString()}`);
+}
+
 export function getTeam(slug: string): Promise<TeamDetail> {
   return fetchJson(`/api/teams/${encodeURIComponent(slug)}`);
 }
