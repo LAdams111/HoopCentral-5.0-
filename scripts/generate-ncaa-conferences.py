@@ -294,6 +294,50 @@ export interface NcaaConferenceGroup<T> {{
   teams: T[];
 }}
 
+function pickPreferredDuplicateTeam<T extends {{ name: string; abbreviation: string; slug: string }}>(
+  current: T,
+  candidate: T,
+): T {{
+  const currentSlug = current.slug.trim().toLowerCase();
+  const candidateSlug = candidate.slug.trim().toLowerCase();
+
+  if (candidateSlug.length !== currentSlug.length) {{
+    return candidateSlug.length > currentSlug.length ? candidate : current;
+  }}
+
+  return candidateSlug.localeCompare(currentSlug) < 0 ? candidate : current;
+}}
+
+/** Collapse duplicate DB rows that resolve to the same ESPN school. */
+function dedupeTeamsByEspnId<T extends {{ name: string; abbreviation: string; slug: string }}>(
+  teams: T[],
+): T[] {{
+  const byEspnId = new Map<string, T>();
+  const withoutEspnId: T[] = [];
+
+  for (const team of teams) {{
+    const espnId = resolveNcaaEspnId(team.name, {{
+      abbreviation: team.abbreviation,
+      slug: team.slug,
+    }});
+
+    if (!espnId) {{
+      withoutEspnId.push(team);
+      continue;
+    }}
+
+    const existing = byEspnId.get(espnId);
+    byEspnId.set(
+      espnId,
+      existing ? pickPreferredDuplicateTeam(existing, team) : team,
+    );
+  }}
+
+  return [...byEspnId.values(), ...withoutEspnId].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+}}
+
 export function groupNcaaTeamsByConference<T extends {{ name: string; abbreviation: string; slug: string }}>(
   teams: T[],
 ): NcaaConferenceGroup<T>[] {{
@@ -308,14 +352,14 @@ export function groupNcaaTeamsByConference<T extends {{ name: string; abbreviati
 
   const groups: NcaaConferenceGroup<T>[] = NCAA_M_CONFERENCES.map((conference) => ({{
     conference,
-    teams: (buckets.get(conference.slug) ?? []).sort((a, b) => a.name.localeCompare(b.name)),
+    teams: dedupeTeamsByEspnId(buckets.get(conference.slug) ?? []),
   }})).filter((group) => group.teams.length > 0);
 
-  const otherTeams = buckets.get(OTHER_NCAA_M_CONFERENCE_SLUG) ?? [];
+  const otherTeams = dedupeTeamsByEspnId(buckets.get(OTHER_NCAA_M_CONFERENCE_SLUG) ?? []);
   if (otherTeams.length > 0) {{
     groups.push({{
       conference: {{ slug: OTHER_NCAA_M_CONFERENCE_SLUG, name: "Other" }},
-      teams: otherTeams.sort((a, b) => a.name.localeCompare(b.name)),
+      teams: otherTeams,
     }});
   }}
 
