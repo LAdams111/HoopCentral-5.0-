@@ -16,6 +16,7 @@
     "ingest:test-data": "tsx --tsconfig tsconfig.json ../scripts/ingest-test-data.ts",
     "ingest:verify": "tsx --tsconfig tsconfig.json ../scripts/ingest-verify.ts",
     "db:merge-seed-duplicates": "tsx --tsconfig tsconfig.json ../scripts/merge-seed-duplicates.ts",
+    "db:merge-ncaa-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-ncaa-teams.ts",
     "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {

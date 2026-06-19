@@ -10,6 +10,8 @@ import {
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { resolveOperationalIngestLeague } from "../utils/league-resolution.js";
+import { MENS_NCAA_SOURCES } from "../utils/league-slug.js";
+import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -465,12 +467,17 @@ async function ingestPlayerSeasonOnce(
       resolvedLeague.name,
       resolvedLeague.gender,
     );
+
+    const teamPayload = MENS_NCAA_SOURCES.has(input.source)
+      ? normalizeNcaaTeamForIngest(input.team)
+      : input.team;
+
     const teamResult = await findOrCreateTeam(
       tx,
       leagueResult.id,
-      input.team.slug,
-      input.team.name,
-      input.team.abbreviation,
+      teamPayload.slug,
+      teamPayload.name,
+      teamPayload.abbreviation,
     );
     const seasonResult = await findOrCreateSeason(tx, leagueResult.id, input.season.label);
 
