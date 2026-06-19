@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getPlayers, searchTeams, type PlayerCard, type TeamSummary } from "@/lib/api";
 import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
 import { getLeagueDisplay } from "@/lib/leagues";
-import { teamLogoUrl } from "@/lib/constants";
+import { teamLogoUrl, displayTeamName } from "@/lib/constants";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
 
 export function PlayerSearch() {
@@ -173,6 +173,11 @@ function TeamSearchRow({
 }) {
   const leagueSlug = publicLeagueSlugForRoster(team.league.slug);
   const leagueMeta = getLeagueDisplay(leagueSlug, team.league.name);
+  const label = displayTeamName(team.name, {
+    leagueSlug,
+    abbreviation: team.abbreviation,
+    slug: team.slug,
+  });
 
   return (
     <button
@@ -188,13 +193,13 @@ function TeamSearchRow({
             slug: team.slug,
             variant: "primary",
           })}
-          alt={team.name}
+          alt={label}
           className="max-h-full max-w-full object-contain"
         />
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate font-display font-bold text-foreground transition-colors group-hover:text-primary">
-          {team.name}
+          {label}
         </p>
         <p className="truncate font-mono text-xs uppercase text-muted-foreground">
           {leagueMeta.display} • {team.abbreviation}
@@ -230,7 +235,7 @@ function PlayerSearchRow({
           {player.name}
         </p>
         <p className="truncate font-mono text-xs uppercase text-muted-foreground">
-          {player.team} • #{player.jerseyNumber}
+          {displayTeamName(player.team, { slug: player.teamSlug ?? undefined })} • #{player.jerseyNumber}
         </p>
       </div>
     </button>

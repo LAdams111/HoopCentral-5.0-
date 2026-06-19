@@ -1,4 +1,5 @@
 import type { PlayerStat } from "@/lib/api";
+import { displayTeamName } from "@/lib/constants";
 
 export function StatsTable({ stats }: { stats: PlayerStat[] }) {
   if (stats.length === 0) {
@@ -30,7 +31,12 @@ export function StatsTable({ stats }: { stats: PlayerStat[] }) {
           {stats.map((stat) => (
             <tr key={stat.id} className="transition-colors hover:bg-muted/20">
               <td className="px-4 py-3 font-medium text-foreground">{stat.season}</td>
-              <td className="px-4 py-3 text-muted-foreground">{stat.team}</td>
+              <td className="px-4 py-3 text-muted-foreground">
+                {displayTeamName(stat.team, {
+                  leagueSlug: stat.leagueSlug,
+                  slug: stat.teamSlug,
+                })}
+              </td>
               <td className="px-4 py-3">
                 <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {stat.league}

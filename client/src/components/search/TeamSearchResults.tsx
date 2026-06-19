@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { TeamSummary } from "@/lib/api";
-import { teamLogoUrl } from "@/lib/constants";
+import { teamLogoUrl, displayTeamName } from "@/lib/constants";
 import { getLeagueDisplay } from "@/lib/leagues";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
 
@@ -23,6 +23,12 @@ export function TeamSearchResults({
           const leagueSlug = publicLeagueSlugForRoster(team.league.slug);
           const leagueMeta = getLeagueDisplay(leagueSlug, team.league.name);
 
+          const label = displayTeamName(team.name, {
+            leagueSlug,
+            abbreviation: team.abbreviation,
+            slug: team.slug,
+          });
+
           return (
             <Link
               key={`${team.league.slug}-${team.id}`}
@@ -37,12 +43,12 @@ export function TeamSearchResults({
                     slug: team.slug,
                     variant: "primary",
                   })}
-                  alt={team.name}
+                  alt={label}
                   className="max-h-full max-w-full object-contain"
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-bold">{team.name}</div>
+                <div className="truncate text-sm font-bold">{label}</div>
                 <div className="truncate font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                   {leagueMeta.display} • {team.abbreviation}
                 </div>

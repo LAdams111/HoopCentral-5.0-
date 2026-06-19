@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
-import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, teamLogoUrl } from "@/lib/constants";
+import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, teamLogoUrl, displayTeamName } from "@/lib/constants";
 import { getLeague, type LeagueTeam } from "@/lib/api";
 import { getLeagueDisplay } from "@/lib/leagues";
 import {
@@ -240,7 +240,14 @@ function TeamGrid({
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {teams.map((team) => (
+      {teams.map((team) => {
+        const label = displayTeamName(team.name, {
+          leagueSlug,
+          abbreviation: team.abbreviation,
+          slug: team.slug,
+        });
+
+        return (
         <Link
           key={team.slug}
           to={rosterPath(team.name, seasonLabel, leagueSlug)}
@@ -251,7 +258,7 @@ function TeamGrid({
               <div className="mb-1 truncate font-mono text-[10px] uppercase tracking-widest text-primary">
                 {leagueLabel}
               </div>
-              <div className="truncate text-sm font-bold">{team.name}</div>
+              <div className="truncate text-sm font-bold">{label}</div>
               <div className="mt-2 flex items-center justify-between gap-1">
                 <span className="font-mono text-[9px] text-muted-foreground">{seasonLabel}</span>
                 <ArrowRight className="h-3 w-3 text-muted-foreground" />
@@ -264,12 +271,13 @@ function TeamGrid({
                 slug: team.slug,
                 variant: "primary",
               })}
-              alt={team.name}
+              alt={label}
               className="h-8 w-8 flex-shrink-0 object-contain"
             />
           </div>
         </Link>
-      ))}
+        );
+      })}
     </div>
   );
 }

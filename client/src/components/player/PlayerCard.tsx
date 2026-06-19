@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Ruler, Weight } from "lucide-react";
 import type { PlayerCard as PlayerCardType } from "@/lib/api";
+import { displayTeamName } from "@/lib/constants";
 import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
 import { formatPositionLabel } from "@/lib/position";
 
@@ -54,7 +55,7 @@ export function PlayerCard({
         >
           <div className="min-h-0">
             <div className="mb-0.5 truncate font-mono text-[8px] uppercase tracking-widest text-primary md:mb-1 md:text-[10px]">
-              {player.team}
+              {displayTeamName(player.team, { slug: player.teamSlug ?? undefined })}
             </div>
             <h3
               className={`font-display leading-tight text-foreground transition-colors group-hover:text-primary ${compact ? "line-clamp-2 text-sm" : "line-clamp-2 text-sm md:text-2xl"}`}

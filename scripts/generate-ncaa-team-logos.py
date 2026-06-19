@@ -16,14 +16,55 @@ ESPN_URL = (
     "mens-college-basketball/teams?limit=500"
 )
 
+MANUAL_ALIASES: dict[str, str] = {
+    "la tech": "louisiana-tech-bulldogs",
+    "la-tech": "louisiana-tech-bulldogs",
+    "louisiana tech bulldogs": "louisiana-tech-bulldogs",
+    "louisiana ragin cajuns": "louisiana-ragin-cajuns",
+    "louisiana ragin' cajuns": "louisiana-ragin-cajuns",
+    "maine black bears": "maine-black-bears",
+    "maine blackbears": "maine-black-bears",
+}
 
-def name_to_slug(name: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", name.strip().lower())
+
+def slugify(value: str) -> str:
+    normalized = value.replace("'", "").replace(".", "").strip().lower()
+    slug = re.sub(r"[^a-z0-9]+", "-", normalized)
     return slug.strip("-")
+
+
+def normalize_name(value: str) -> str:
+    return re.sub(r"\s+", " ", value.strip().lower().replace("'", "").replace(".", ""))
+
+
+def school_slug(full_slug: str) -> str | None:
+    parts = [part for part in full_slug.split("-") if part]
+    if len(parts) <= 1:
+        return None
+    return "-".join(parts[:-1])
 
 
 def fmt_record(record: dict[str, str]) -> str:
     return "\n".join(f'  "{key}": "{value}",' for key, value in sorted(record.items()))
+
+
+def add_slug_alias(by_slug: dict[str, str], alias: str | None, espn_id: str) -> None:
+    if not alias:
+        return
+    cleaned = alias.strip().lower()
+    if cleaned:
+        by_slug[cleaned] = espn_id
+
+
+def add_name_alias(by_name: dict[str, str], alias: str | None, espn_id: str) -> None:
+    if not alias:
+        return
+    cleaned = alias.strip()
+    if cleaned:
+        by_name[cleaned] = espn_id
+        normalized = normalize_name(cleaned)
+        if normalized:
+            by_name[normalized] = espn_id
 
 
 def main() -> None:
@@ -34,19 +75,38 @@ def main() -> None:
     by_slug: dict[str, str] = {}
     by_name: dict[str, str] = {}
     by_abbrev: dict[str, str] = {}
+    display_name_by_id: dict[str, str] = {}
+    slug_to_canonical: dict[str, str] = {}
 
     for entry in teams:
         team = entry["team"]
         espn_id = team["id"]
-        slug = team["slug"]
-        display_name = team["displayName"]
+        slug = team["slug"].strip().lower()
+        display_name = team["displayName"].strip()
+        short_name = team.get("shortDisplayName", "").strip()
+        location = team.get("location", "").strip()
+        nickname = team.get("nickname", "").strip()
         abbrev = team["abbreviation"].upper()
-        computed_slug = name_to_slug(display_name)
 
-        for key in {slug, computed_slug}:
-            by_slug[key] = espn_id
-        by_name[display_name] = espn_id
+        display_name_by_id[espn_id] = display_name
+        slug_to_canonical[slug] = slug
+
+        for alias in (slug, school_slug(slug), slugify(display_name)):
+            add_slug_alias(by_slug, alias, espn_id)
+
+        for label in (display_name, short_name, location, nickname):
+            add_name_alias(by_name, label, espn_id)
+            add_slug_alias(by_slug, slugify(label), espn_id)
+
         by_abbrev[abbrev] = espn_id
+
+    for alias, canonical_slug in MANUAL_ALIASES.items():
+        espn_id = by_slug.get(canonical_slug)
+        if not espn_id:
+            continue
+        add_slug_alias(by_slug, alias, espn_id)
+        add_slug_alias(by_slug, slugify(alias), espn_id)
+        add_name_alias(by_name, alias, espn_id)
 
     content = f"""// Auto-generated from ESPN men's college basketball teams API.
 // Regenerate with: python3 scripts/generate-ncaa-team-logos.py
@@ -67,12 +127,25 @@ const ESPN_IDS_BY_ABBREV: Record<string, string> = {{
 {fmt_record(by_abbrev)}
 }};
 
+const ESPN_DISPLAY_NAME_BY_ID: Record<string, string> = {{
+{fmt_record(display_name_by_id)}
+}};
+
 function nameToSlug(name: string): string {{
   return name
     .trim()
     .toLowerCase()
+    .replace(/[''.]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+}}
+
+function normalizeTeamName(name: string): string {{
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[''.]/g, "")
+    .replace(/\\s+/g, " ");
 }}
 
 export function resolveNcaaEspnId(
@@ -83,14 +156,28 @@ export function resolveNcaaEspnId(
   if (slug && ESPN_IDS_BY_SLUG[slug]) return ESPN_IDS_BY_SLUG[slug];
 
   const nameSlug = nameToSlug(teamName);
-  if (ESPN_IDS_BY_SLUG[nameSlug]) return ESPN_IDS_BY_SLUG[nameSlug];
+  if (nameSlug && ESPN_IDS_BY_SLUG[nameSlug]) return ESPN_IDS_BY_SLUG[nameSlug];
 
   if (ESPN_IDS_BY_NAME[teamName]) return ESPN_IDS_BY_NAME[teamName];
+
+  const normalizedName = normalizeTeamName(teamName);
+  if (normalizedName && ESPN_IDS_BY_NAME[normalizedName]) {{
+    return ESPN_IDS_BY_NAME[normalizedName];
+  }}
 
   const abbrev = options?.abbreviation?.trim().toUpperCase();
   if (abbrev && ESPN_IDS_BY_ABBREV[abbrev]) return ESPN_IDS_BY_ABBREV[abbrev];
 
   return undefined;
+}}
+
+export function resolveNcaaTeamDisplayName(
+  teamName: string,
+  options?: {{ abbreviation?: string; slug?: string }},
+): string | undefined {{
+  const espnId = resolveNcaaEspnId(teamName, options);
+  if (!espnId) return undefined;
+  return ESPN_DISPLAY_NAME_BY_ID[espnId];
 }}
 
 export function ncaaTeamLogoUrl(

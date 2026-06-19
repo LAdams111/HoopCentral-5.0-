@@ -1,3 +1,4 @@
+import { displayTeamName } from "@/lib/constants";
 import type { CareerEntry } from "@/lib/api";
 
 function formatDate(value: string | null): string {
@@ -46,7 +47,9 @@ export function CareerHistoryTable({ career }: { career: CareerEntry[] }) {
                   {entry.league}
                 </td>
                 <td className="px-6 py-4 font-mono">
-                  <span className="whitespace-nowrap text-primary">{entry.team}</span>
+                  <span className="whitespace-nowrap text-primary">
+                    {displayTeamName(entry.team)}
+                  </span>
                 </td>
                 <td className="px-6 py-4 font-mono text-muted-foreground">
                   {formatDate(entry.startDate)}

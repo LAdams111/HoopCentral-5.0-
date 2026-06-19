@@ -6,7 +6,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
 import { getPlayer, incrementProfileView } from "@/lib/api";
-import { rosterPath } from "@/lib/constants";
+import { rosterPath, displayTeamName } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { formatPosition } from "@/lib/position";
 
@@ -116,6 +116,12 @@ export function PlayerProfile() {
   const headshot = resolvePlayerHeadshot(player.headshotUrl);
   const positionLabel = formatPosition(player.position);
   const jerseyLabel = player.jerseyNumber ? `#${player.jerseyNumber}` : null;
+  const teamDisplayName = player.team
+    ? displayTeamName(player.team, {
+        leagueSlug: player.leagueSlug ?? undefined,
+        slug: player.teamSlug ?? undefined,
+      })
+    : null;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -167,11 +173,11 @@ export function PlayerProfile() {
                         to={rosterPath(player.team)}
                         className="font-mono text-sm uppercase tracking-widest text-primary hover:underline md:text-lg"
                       >
-                        {player.team}
+                        {teamDisplayName}
                       </Link>
                     ) : (
                       <h3 className="font-mono text-sm uppercase tracking-widest text-primary md:text-lg">
-                        {player.team}
+                        {teamDisplayName}
                       </h3>
                     )}
                   </div>

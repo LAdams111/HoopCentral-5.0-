@@ -6,7 +6,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { ncaaTeamLogoUrl, resolveNcaaEspnId } from "./ncaa-team-logos";
+import { ncaaTeamLogoUrl, resolveNcaaEspnId, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
 
 export const DEFAULT_HEADSHOT =
   "https://cdn.nba.com/headshots/nba/latest/1040x760/1040x760/fallback.png";
@@ -161,6 +161,22 @@ export function gleagueTeamLogoUrl(
   }
   const path = variant === "primary" ? "primary" : "global";
   return `https://cdn.nba.com/logos/nbagleague/${id}/${path}/L/logo.svg`;
+}
+
+export function displayTeamName(
+  teamName: string,
+  options?: {
+    leagueSlug?: string;
+    abbreviation?: string;
+    slug?: string;
+  },
+): string {
+  return (
+    resolveNcaaTeamDisplayName(teamName, {
+      abbreviation: options?.abbreviation,
+      slug: options?.slug,
+    }) ?? teamName
+  );
 }
 
 export function teamLogoUrl(

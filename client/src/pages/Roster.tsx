@@ -7,6 +7,7 @@ import {
   formatSeasonHeading,
   generateSeasonYears,
   teamLogoUrl,
+  displayTeamName,
   seasonKeyToYear,
   seasonYearToLabel,
 } from "@/lib/constants";
@@ -101,6 +102,11 @@ export function Roster() {
   });
 
   const teamName = roster?.team.name ?? decodedTeam;
+  const teamDisplayName = displayTeamName(teamName, {
+    leagueSlug,
+    abbreviation: roster?.team.abbreviation,
+    slug: roster?.team.slug,
+  });
   const players = roster?.players ?? [];
 
   const handleBack = () => {
@@ -187,7 +193,7 @@ export function Roster() {
                     slug: roster?.team.slug,
                     variant: "primary",
                   })}
-                  alt={`${teamName} logo`}
+                  alt={`${teamDisplayName} logo`}
                   className="max-h-full max-w-full object-contain"
                   data-testid="img-team-logo"
                 />
@@ -197,7 +203,7 @@ export function Roster() {
                   className="font-display text-5xl font-bold uppercase tracking-tighter md:text-7xl"
                   data-testid="text-team-name"
                 >
-                  {teamName}
+                  {teamDisplayName}
                 </h1>
                 <p className="font-mono text-xl uppercase tracking-widest text-muted-foreground">
                   Team Roster
