@@ -4,4 +4,5 @@ export {
   loadNcaaTeamAliasReport,
   normalizeNcaaTeamForIngest,
   resolveCanonicalIdentity,
+  resolveNcaaTeamSlugVariants,
 } from "./ncaa-team-alias-report.js";

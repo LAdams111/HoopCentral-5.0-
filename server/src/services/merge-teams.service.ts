@@ -189,6 +189,14 @@ async function countTeamStints(teamId: number, database: DbClient): Promise<numb
   return row?.count ?? 0;
 }
 
+async function countTeamSeasonStats(teamId: number, database: DbClient): Promise<number> {
+  const [row] = await database
+    .select({ count: sql<number>`count(*)::int` })
+    .from(playerSeasonStats)
+    .where(eq(playerSeasonStats.teamId, teamId));
+  return row?.count ?? 0;
+}
+
 export async function findNcaaMensDuplicateMergePlans(
   database: DbClient = db,
 ): Promise<NcaaTeamMergePlan[]> {
@@ -219,16 +227,20 @@ export async function findNcaaMensDuplicateMergePlans(
     const withCounts = await Promise.all(
       matchedTeams.map(async (team) => ({
         ...team,
+        stats: await countTeamSeasonStats(team.id, database),
         stints: await countTeamStints(team.id, database),
       })),
     );
 
-    const canonicalMatch = withCounts.find((t) => t.slug === group.canonicalSlug);
-    const keep =
-      canonicalMatch ??
-      withCounts.reduce((best, current) =>
-        current.stints > best.stints ? current : best,
-      );
+    const keep = withCounts.reduce((best, current) =>
+      current.stats !== best.stats
+        ? current.stats > best.stats
+          ? current
+          : best
+        : current.stints > best.stints
+          ? current
+          : best,
+    );
 
     const duplicates = withCounts.filter((t) => t.id !== keep.id);
     if (duplicates.length === 0) continue;

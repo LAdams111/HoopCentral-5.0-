@@ -170,7 +170,11 @@ export function PlayerProfile() {
                     ) : null}
                     {player.team ? (
                       <Link
-                        to={rosterPath(player.team)}
+                        to={rosterPath(
+                          player.teamSlug ?? player.team,
+                          undefined,
+                          player.leagueSlug ?? undefined,
+                        )}
                         className="font-mono text-sm uppercase tracking-widest text-primary hover:underline md:text-lg"
                       >
                         {teamDisplayName}

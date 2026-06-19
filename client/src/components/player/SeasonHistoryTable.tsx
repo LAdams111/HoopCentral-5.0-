@@ -51,7 +51,7 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
                 </td>
                 <td className="px-6 py-4 font-mono">
                   <Link
-                    to={rosterPath(stat.team, stat.season)}
+                    to={rosterPath(stat.teamSlug, stat.season, stat.leagueSlug)}
                     className="whitespace-nowrap text-primary hover:underline"
                   >
                     {displayTeamName(stat.team, {

@@ -250,7 +250,7 @@ function TeamGrid({
         return (
         <Link
           key={team.slug}
-          to={rosterPath(team.name, seasonLabel, leagueSlug)}
+          to={rosterPath(team.slug, seasonLabel, leagueSlug)}
           className="hover-elevate rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
         >
           <div className="flex items-start gap-2">

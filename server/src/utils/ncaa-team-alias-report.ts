@@ -50,8 +50,10 @@ export interface NcaaTeamMergeGroup {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPORT_PATH = path.resolve(__dirname, "../../data/ncaa-team-alias-report.json");
+const MANUAL_ALIASES_PATH = path.resolve(__dirname, "../../../scripts/ncaa-manual-aliases.json");
 
 let cachedReport: NcaaTeamAliasReport | null = null;
+let cachedManualAliasSlugs: Map<string, Set<string>> | null = null;
 
 export function getNcaaTeamAliasReportPath(): string {
   return process.env.NCAA_TEAM_ALIAS_REPORT_PATH?.trim() || DEFAULT_REPORT_PATH;
@@ -375,6 +377,52 @@ export function buildNcaaSlugRedirectMap(
   report: NcaaTeamAliasReport = loadNcaaTeamAliasReport(),
 ): Map<string, string> {
   return buildNcaaSlugToCanonicalMap(report);
+}
+
+/** Trusted USBasket ↔ ESPN slug groups (manual list only — not the full aliasMap). */
+function loadTrustedManualAliasGroups(): Map<string, Set<string>> {
+  if (cachedManualAliasSlugs) return cachedManualAliasSlugs;
+
+  const raw = readFileSync(MANUAL_ALIASES_PATH, "utf8") as string;
+  const manual = JSON.parse(raw) as Record<string, string>;
+  const groups = new Map<string, Set<string>>();
+
+  const addPair = (aliasSlug: string, canonicalSlug: string): void => {
+    const alias = normalizeSlugParam(aliasSlug);
+    const canonical = normalizeSlugParam(canonicalSlug);
+    if (!alias || !canonical) return;
+
+    const key = [alias, canonical].sort().join("|");
+    const members = groups.get(key) ?? new Set<string>();
+    members.add(alias);
+    members.add(canonical);
+    groups.set(key, members);
+  };
+
+  for (const [alias, canonical] of Object.entries(manual)) {
+    addPair(alias, canonical);
+  }
+
+  cachedManualAliasSlugs = groups;
+  return groups;
+}
+
+/** All slug variants for one NCAA school (trusted alias groups only). */
+export function resolveNcaaTeamSlugVariants(
+  slug: string,
+): string[] {
+  const normalized = normalizeSlugParam(slug);
+  const variants = new Set<string>([normalized]);
+
+  for (const members of loadTrustedManualAliasGroups().values()) {
+    if (members.has(normalized)) {
+      for (const member of members) {
+        variants.add(member);
+      }
+    }
+  }
+
+  return [...variants];
 }
 
 /** Resolve usbasket team payload fields using aliasMap + allTeams inventory. */

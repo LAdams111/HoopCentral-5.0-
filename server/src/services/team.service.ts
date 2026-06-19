@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
@@ -12,8 +12,9 @@ import {
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { prefixMatch, wordPrefixMatch } from "../utils/search-match.js";
-import { resolvePublicLeagueSlug } from "../utils/league-slug.js";
+import { resolvePublicLeagueSlug, LEGACY_NCAA_MENS_SLUG } from "../utils/league-slug.js";
 import { findLeagueRowBySlug } from "../utils/league-resolution.js";
+import { resolveNcaaTeamSlugVariants } from "../utils/ncaa-team-aliases.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -53,6 +54,65 @@ export interface TeamRecord {
   league: string;
 }
 
+async function countTeamSeasonStats(teamId: number): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(playerSeasonStats)
+    .where(eq(playerSeasonStats.teamId, teamId));
+  return row?.count ?? 0;
+}
+
+async function pickBestTeamMatch(
+  matches: Array<{ team: typeof teams.$inferSelect }>,
+): Promise<typeof teams.$inferSelect> {
+  if (matches.length === 1) return matches[0]!.team;
+
+  const withStats = await Promise.all(
+    matches.map(async (match) => ({
+      team: match.team,
+      stats: await countTeamSeasonStats(match.team.id),
+    })),
+  );
+
+  return withStats.reduce((best, current) =>
+    current.stats > best.stats ? current : best,
+  ).team;
+}
+
+function slugVariantPredicates(slugVariants: string[]) {
+  return slugVariants.map((variant) => eq(teams.slug, variant));
+}
+
+async function relatedTeamIds(
+  team: typeof teams.$inferSelect,
+  leagueSlug?: string,
+): Promise<number[]> {
+  const leagueRow = leagueSlug
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
+      )
+    : null;
+
+  const slugVariants =
+    leagueRow?.slug === LEGACY_NCAA_MENS_SLUG || leagueRow?.slug === "ncaa-m"
+      ? resolveNcaaTeamSlugVariants(team.slug)
+      : [team.slug];
+
+  const rows = await db
+    .select({ id: teams.id })
+    .from(teams)
+    .where(
+      and(
+        eq(teams.leagueId, team.leagueId),
+        inArray(teams.slug, slugVariants),
+      ),
+    );
+
+  const ids = rows.map((row) => row.id);
+  return ids.length > 0 ? ids : [team.id];
+}
+
 async function findTeam(teamKey: string, leagueSlug?: string) {
   const decoded = decodeURIComponent(teamKey).trim();
   const slugCandidate = normalizeSlugParam(decoded);
@@ -63,6 +123,12 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
       )
     : null;
 
+  const isNcaaMen =
+    leagueRow?.slug === LEGACY_NCAA_MENS_SLUG || leagueRow?.slug === "ncaa-m";
+  const slugVariants = isNcaaMen
+    ? resolveNcaaTeamSlugVariants(slugCandidate)
+    : [slugCandidate];
+
   const matches = await db
     .select({ team: teams })
     .from(teams)
@@ -70,19 +136,23 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
     .where(
       and(
         or(
-          eq(teams.slug, slugCandidate),
+          ...slugVariantPredicates(slugVariants),
           ilike(teams.abbreviation, decoded),
           ilike(teams.name, decoded),
         ),
         leagueRow ? eq(teams.leagueId, leagueRow.id) : undefined,
       ),
     )
-    .limit(leagueRow ? 1 : 2);
+    .limit(leagueRow ? 20 : 40);
 
   if (matches.length === 0) return null;
-  if (matches.length === 1 || leagueRow) return matches[0]!.team;
+  if (matches.length === 1 || !leagueRow) {
+    return matches.length === 1
+      ? matches[0]!.team
+      : pickBestTeamMatch(matches);
+  }
 
-  return matches[0]!.team;
+  return pickBestTeamMatch(matches);
 }
 
 async function findSeason(seasonKey: string, leagueId: number) {
@@ -123,6 +193,20 @@ async function findLatestSeasonForTeam(teamId: number) {
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
     .where(eq(playerSeasonStats.teamId, teamId))
+    .orderBy(desc(seasons.seasonLabel))
+    .limit(1);
+
+  return row?.season ?? null;
+}
+
+async function findLatestSeasonForTeams(teamIds: number[]) {
+  if (teamIds.length === 0) return null;
+
+  const [row] = await db
+    .select({ season: seasons })
+    .from(playerSeasonStats)
+    .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
+    .where(inArray(playerSeasonStats.teamId, teamIds))
     .orderBy(desc(seasons.seasonLabel))
     .limit(1);
 
@@ -308,9 +392,11 @@ export async function getTeamRoster(
   const team = await findTeam(teamKey, leagueSlug);
   if (!team) return null;
 
+  const teamIds = await relatedTeamIds(team, leagueSlug);
+
   const season =
     (await findSeason(seasonKey, team.leagueId)) ??
-    (await findLatestSeasonForTeam(team.id));
+    (await findLatestSeasonForTeams(teamIds));
 
   if (!season) {
     return {
@@ -330,7 +416,7 @@ export async function getTeamRoster(
     .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
     .where(
       and(
-        eq(playerSeasonStats.teamId, team.id),
+        inArray(playerSeasonStats.teamId, teamIds),
         eq(playerSeasonStats.seasonId, season.id),
       ),
     )
@@ -350,11 +436,13 @@ export async function getTeamSeasons(
   const team = await findTeam(teamKey, leagueSlug);
   if (!team) return [];
 
+  const teamIds = await relatedTeamIds(team, leagueSlug);
+
   const rows = await db
     .selectDistinct({ label: seasons.seasonLabel })
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
-    .where(eq(playerSeasonStats.teamId, team.id))
+    .where(inArray(playerSeasonStats.teamId, teamIds))
     .orderBy(desc(seasons.seasonLabel));
 
   return rows.map((row) => row.label);
@@ -368,9 +456,11 @@ export async function getTeamRecord(
   const team = await findTeam(teamKey, leagueSlug);
   if (!team) return null;
 
+  const teamIds = await relatedTeamIds(team, leagueSlug);
+
   const season =
     (await findSeason(seasonKey, team.leagueId)) ??
-    (await findLatestSeasonForTeam(team.id));
+    (await findLatestSeasonForTeams(teamIds));
 
   if (!season) return null;
 
@@ -379,7 +469,7 @@ export async function getTeamRecord(
     .from(teamSeasonRecords)
     .where(
       and(
-        eq(teamSeasonRecords.teamId, team.id),
+        inArray(teamSeasonRecords.teamId, teamIds),
         eq(teamSeasonRecords.seasonId, season.id),
       ),
     )

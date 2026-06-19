@@ -41,5 +41,10 @@ export function Team() {
     team.latestSeasonLabel ??
     seasonYearToLabel(getCurrentSeasonYear());
 
-  return <Navigate to={rosterPath(team.name, season)} replace />;
+  return (
+    <Navigate
+      to={rosterPath(team.slug, season, team.league.slug === "ncaa" ? "ncaa-m" : team.league.slug)}
+      replace
+    />
+  );
 }
