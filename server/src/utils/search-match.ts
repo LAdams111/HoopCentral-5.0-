@@ -1,14 +1,21 @@
 import { sql, type SQL } from "drizzle-orm";
 import type { AnyColumn } from "drizzle-orm/column";
 
-/** True when any word in the column value starts with `query` (not mid-word). */
+/**
+ * True when every query token prefix-matches some word in the column value.
+ * e.g. "Leo R" matches "Leo Rautins" (leo→leo, r→rautins), not only whole-string prefixes.
+ */
 export function wordPrefixMatch(column: AnyColumn, query: string): SQL {
   const trimmed = query.trim().toLowerCase();
-  const likePrefix = `${trimmed}%`;
-  return sql`EXISTS (
+  return sql`NOT EXISTS (
     SELECT 1
-    FROM unnest(regexp_split_to_array(lower(${column}), '[^a-z0-9]+')) AS w(word)
-    WHERE w.word <> '' AND w.word LIKE ${likePrefix}
+    FROM unnest(regexp_split_to_array(${trimmed}, '[^a-z0-9]+')) AS t(token)
+    WHERE t.token <> ''
+      AND NOT EXISTS (
+        SELECT 1
+        FROM unnest(regexp_split_to_array(lower(${column}), '[^a-z0-9]+')) AS w(word)
+        WHERE w.word <> '' AND w.word LIKE t.token || '%'
+      )
   )`;
 }
 
