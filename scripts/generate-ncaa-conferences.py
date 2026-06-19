@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate client/src/lib/ncaa-conferences.ts from ESPN conference groups."""
+"""Regenerate client/src/lib/ncaa-conferences.ts from ESPN standings (all 32 D1 conferences)."""
 
 from __future__ import annotations
 
@@ -11,9 +11,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "client/src/lib/ncaa-conferences.ts"
-ESPN_URL = (
+MANUAL_ALIASES_PATH = ROOT / "scripts/ncaa-manual-aliases.json"
+STANDINGS_URL = (
+    "https://site.api.espn.com/apis/v2/sports/basketball/"
+    "mens-college-basketball/standings"
+)
+TEAMS_URL = (
     "https://site.api.espn.com/apis/site/v2/sports/basketball/"
-    "mens-college-basketball/groups"
+    "mens-college-basketball/teams?limit=500"
 )
 
 
@@ -53,34 +58,76 @@ def add_alias(aliases: set[str], value: str | None) -> None:
         aliases.add(slug)
 
 
-def main() -> None:
-    with urllib.request.urlopen(ESPN_URL) as response:
-        data = json.load(response)
+def slug_from_team_link(team: dict) -> str | None:
+    for link in team.get("links", []):
+        href = link.get("href", "")
+        match = re.search(r"/team/_/id/\d+/([^/?#]+)", href)
+        if match:
+            return match.group(1).strip().lower()
+    return None
 
-    division_one = next(
-        (group for group in data.get("groups", []) if group.get("name") == "NCAA Division I"),
-        None,
-    )
-    if not division_one:
-        raise SystemExit("Could not find NCAA Division I group in ESPN response")
+
+def load_manual_aliases() -> dict[str, str]:
+    if not MANUAL_ALIASES_PATH.exists():
+        return {}
+    return json.loads(MANUAL_ALIASES_PATH.read_text(encoding="utf-8"))
+
+
+def fetch_json(url: str) -> dict:
+    with urllib.request.urlopen(url) as response:
+        return json.load(response)
+
+
+def build_teams_by_id() -> dict[str, dict]:
+    data = fetch_json(TEAMS_URL)
+    by_id: dict[str, dict] = {}
+    for entry in data["sports"][0]["leagues"][0]["teams"]:
+        team = entry["team"]
+        by_id[team["id"]] = team
+    return by_id
+
+
+def main() -> None:
+    standings = fetch_json(STANDINGS_URL)
+    teams_by_id = build_teams_by_id()
+    manual_aliases = load_manual_aliases()
 
     conferences: list[dict[str, object]] = []
-    for group in division_one.get("children", []):
+    espn_id_to_conference: dict[str, str] = {}
+    team_count = 0
+
+    for group in standings.get("children", []):
         name = group.get("name", "").strip()
-        if not name:
+        if not name or name == "College Basketball Crown":
             continue
 
+        conference_slug = slugify(name)
         team_slugs: set[str] = set()
         team_names: set[str] = set()
         team_abbrevs: set[str] = set()
+        team_espn_ids: set[str] = set()
 
-        for team in group.get("teams", []):
-            slug = team.get("slug", "").strip().lower()
-            display_name = team.get("displayName", "").strip()
-            short_name = team.get("shortDisplayName", "").strip()
-            location = team.get("location", "").strip()
-            nickname = team.get("nickname", "").strip()
-            abbrev = team.get("abbreviation", "").strip().upper()
+        for entry in group.get("standings", {}).get("entries", []):
+            team = entry.get("team", {})
+            espn_id = str(team.get("id", "")).strip()
+            if not espn_id:
+                continue
+
+            team_count += 1
+            team_espn_ids.add(espn_id)
+            espn_id_to_conference[espn_id] = conference_slug
+
+            full_team = teams_by_id.get(espn_id, {})
+            slug = (
+                full_team.get("slug", "").strip().lower()
+                or slug_from_team_link(team)
+                or ""
+            )
+            display_name = team.get("displayName", "").strip() or full_team.get("displayName", "").strip()
+            short_name = team.get("shortDisplayName", "").strip() or full_team.get("shortDisplayName", "").strip()
+            location = team.get("location", "").strip() or full_team.get("location", "").strip()
+            nickname = team.get("name", "").strip() or full_team.get("nickname", "").strip()
+            abbrev = team.get("abbreviation", "").strip().upper() or full_team.get("abbreviation", "").upper()
 
             if slug:
                 team_slugs.add(slug)
@@ -95,13 +142,27 @@ def main() -> None:
             if abbrev:
                 team_abbrevs.add(abbrev)
 
+        for alias, canonical_slug in manual_aliases.items():
+            espn_id = None
+            for candidate in (canonical_slug, slugify(alias)):
+                for team in teams_by_id.values():
+                    if team.get("slug", "").strip().lower() == candidate:
+                        espn_id = team["id"]
+                        break
+                if espn_id:
+                    break
+            if espn_id and espn_id in team_espn_ids:
+                add_alias(team_slugs, alias)
+                add_alias(team_names, alias)
+
         conferences.append(
             {
-                "slug": slugify(name),
+                "slug": conference_slug,
                 "name": name,
                 "teamSlugs": sorted(team_slugs),
                 "teamNames": sorted(team_names),
                 "teamAbbrevs": sorted(team_abbrevs),
+                "teamEspnIds": sorted(team_espn_ids),
             }
         )
 
@@ -116,14 +177,23 @@ def main() -> None:
     teamSlugs: {fmt_string_list(conference["teamSlugs"])},
     teamNames: {fmt_string_list(conference["teamNames"])},
     teamAbbrevs: {fmt_string_list(conference["teamAbbrevs"])},
+    teamEspnIds: {fmt_string_list(conference["teamEspnIds"])},
   }}"""
         )
 
     joined_conferences = ",\n".join(conference_blocks)
+    espn_id_map_lines = ",\n".join(
+        f"  {js_string(espn_id)}: {js_string(conference_slug)}"
+        for espn_id, conference_slug in sorted(
+            espn_id_to_conference.items(), key=lambda item: int(item[0])
+        )
+    )
 
-    content = f"""// Auto-generated from ESPN men's college basketball conference groups.
+    content = f"""// Auto-generated from ESPN men's college basketball standings.
 // Regenerate with: python3 scripts/generate-ncaa-conferences.py
 // Generated: {date.today().isoformat()}
+
+import {{ resolveNcaaEspnId }} from "./ncaa-team-logos";
 
 export interface NcaaConferenceMeta {{
   slug: string;
@@ -131,11 +201,16 @@ export interface NcaaConferenceMeta {{
   teamSlugs: readonly string[];
   teamNames: readonly string[];
   teamAbbrevs: readonly string[];
+  teamEspnIds: readonly string[];
 }}
 
 export const NCAA_M_CONFERENCES: readonly NcaaConferenceMeta[] = [
 {joined_conferences},
 ] as const;
+
+const ESPN_ID_TO_CONFERENCE: Record<string, string> = {{
+{espn_id_map_lines}
+}};
 
 export const OTHER_NCAA_M_CONFERENCE_SLUG = "other";
 
@@ -181,12 +256,27 @@ function teamMatchesConference(
   }}
 
   if (abbrev && conference.teamAbbrevs.includes(abbrev)) return true;
+
+  const espnId = resolveNcaaEspnId(team.name, {{
+    abbreviation: team.abbreviation,
+    slug: team.slug,
+  }});
+  if (espnId && conference.teamEspnIds.includes(espnId)) return true;
+
   return false;
 }}
 
 export function conferenceForNcaaTeam(
   team: {{ name: string; abbreviation: string; slug: string }},
 ): string {{
+  const espnId = resolveNcaaEspnId(team.name, {{
+    abbreviation: team.abbreviation,
+    slug: team.slug,
+  }});
+  if (espnId && ESPN_ID_TO_CONFERENCE[espnId]) {{
+    return ESPN_ID_TO_CONFERENCE[espnId];
+  }}
+
   for (const conference of NCAA_M_CONFERENCES) {{
     if (teamMatchesConference(team, conference)) {{
       return conference.slug;
@@ -234,8 +324,10 @@ export function groupNcaaTeamsByConference<T extends {{ name: string; abbreviati
 """
 
     OUTPUT.write_text(content, encoding="utf-8")
-    team_count = sum(len(group.get("teams", [])) for group in division_one.get("children", []))
-    print(f"Wrote {len(conferences)} conferences ({team_count} ESPN teams) to {OUTPUT}")
+    print(
+        f"Wrote {len(conferences)} conferences ({team_count} ESPN teams, "
+        f"{len(espn_id_to_conference)} ESPN ID mappings) to {OUTPUT}"
+    )
 
 
 if __name__ == "__main__":

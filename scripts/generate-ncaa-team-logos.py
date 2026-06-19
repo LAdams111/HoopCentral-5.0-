@@ -11,20 +11,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "client/src/lib/ncaa-team-logos.ts"
+MANUAL_ALIASES_PATH = ROOT / "scripts/ncaa-manual-aliases.json"
 ESPN_URL = (
     "https://site.api.espn.com/apis/site/v2/sports/basketball/"
     "mens-college-basketball/teams?limit=500"
 )
-
-MANUAL_ALIASES: dict[str, str] = {
-    "la tech": "louisiana-tech-bulldogs",
-    "la-tech": "louisiana-tech-bulldogs",
-    "louisiana tech bulldogs": "louisiana-tech-bulldogs",
-    "louisiana ragin cajuns": "louisiana-ragin-cajuns",
-    "louisiana ragin' cajuns": "louisiana-ragin-cajuns",
-    "maine black bears": "maine-black-bears",
-    "maine blackbears": "maine-black-bears",
-}
 
 
 def slugify(value: str) -> str:
@@ -67,10 +58,17 @@ def add_name_alias(by_name: dict[str, str], alias: str | None, espn_id: str) -> 
             by_name[normalized] = espn_id
 
 
+def load_manual_aliases() -> dict[str, str]:
+    if not MANUAL_ALIASES_PATH.exists():
+        return {}
+    return json.loads(MANUAL_ALIASES_PATH.read_text(encoding="utf-8"))
+
+
 def main() -> None:
     with urllib.request.urlopen(ESPN_URL) as response:
         data = json.load(response)
 
+    manual_aliases = load_manual_aliases()
     teams = data["sports"][0]["leagues"][0]["teams"]
     by_slug: dict[str, str] = {}
     by_name: dict[str, str] = {}
@@ -100,7 +98,7 @@ def main() -> None:
 
         by_abbrev[abbrev] = espn_id
 
-    for alias, canonical_slug in MANUAL_ALIASES.items():
+    for alias, canonical_slug in manual_aliases.items():
         espn_id = by_slug.get(canonical_slug)
         if not espn_id:
             continue
