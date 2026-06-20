@@ -75,10 +75,10 @@ export function PlayerSearch() {
   return (
     <div
       ref={ref}
-      className="group relative z-[100] mx-auto max-w-md animate-fade-in-up delay-300"
+      className="group/search relative z-[100] mx-auto max-w-md animate-fade-in-up delay-300"
     >
       <form onSubmit={onSubmit} className="relative">
-        <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+        <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
         <input
           value={query}
           onChange={(e) => {
