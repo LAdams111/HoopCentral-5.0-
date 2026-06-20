@@ -262,18 +262,18 @@ export function Roster() {
 
         {players.length > 0 ? (
           <div
-            className="flex flex-wrap justify-center gap-8"
+            className="grid grid-cols-3 gap-3 md:flex md:flex-wrap md:justify-center md:gap-8"
             data-testid="roster-players-grid"
           >
             {players.map((player) => (
               <Link
                 key={player.id}
                 to={`/players/${player.id}`}
-                className="group"
+                className="group w-full md:w-auto"
                 data-testid={`link-player-${player.id}`}
               >
-                <div className="flex flex-col items-center gap-4 rounded-3xl border border-transparent p-6 transition-all duration-300 hover:border-border hover:bg-muted">
-                  <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-border shadow-md transition-all duration-300 group-hover:scale-105 group-hover:border-primary">
+                <div className="flex flex-col items-center gap-2 rounded-3xl border border-transparent p-2 transition-all duration-300 md:gap-4 md:p-6 md:hover:border-border md:hover:bg-muted">
+                  <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-border shadow-md transition-all duration-300 md:h-32 md:w-32 md:border-4 md:group-hover:scale-105 md:group-hover:border-primary">
                     <img
                       src={resolvePlayerHeadshot(player.headshotUrl)}
                       alt={player.name}
@@ -283,20 +283,20 @@ export function Roster() {
                       data-testid={`img-player-${player.id}`}
                     />
                   </div>
-                  <div className="flex flex-col items-center gap-1">
+                  <div className="flex flex-col items-center gap-0.5 md:gap-1">
                     <span
-                      className="text-center font-display text-xl font-bold uppercase leading-none transition-colors group-hover:text-primary"
+                      className="text-center font-display text-[10px] font-bold uppercase leading-tight transition-colors group-hover:text-primary md:text-xl md:leading-none"
                       data-testid={`text-player-name-${player.id}`}
                     >
                       {player.name}
                     </span>
                     <span
-                      className="font-display text-2xl font-bold text-primary"
+                      className="font-display text-sm font-bold text-primary md:text-2xl"
                       data-testid={`text-player-jersey-${player.id}`}
                     >
                       #{player.jerseyNumber || "—"}
                     </span>
-                    <span className="mt-1 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                    <span className="mt-0.5 hidden font-mono text-xs uppercase tracking-widest text-muted-foreground md:mt-1 md:block">
                       View Profile
                     </span>
                   </div>
