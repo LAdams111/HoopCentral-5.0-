@@ -37,3 +37,7 @@ export const NBA_TEAMS_WITH_SLUGS = NBA_TEAMS.map((team) => ({
   ...team,
   slug: nameToSlug(team.name),
 }));
+
+export const NBA_CURRENT_TEAM_SLUGS = new Set(
+  NBA_TEAMS_WITH_SLUGS.map((team) => team.slug),
+);

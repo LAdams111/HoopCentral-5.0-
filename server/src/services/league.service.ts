@@ -1,5 +1,6 @@
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
+import { NBA_CURRENT_TEAM_SLUGS } from "../data/nba-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
@@ -15,6 +16,7 @@ import {
 import { normalizeSlugParam } from "../utils/slug.js";
 
 const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
+  nba: NBA_CURRENT_TEAM_SLUGS,
   "g-league": G_LEAGUE_CURRENT_TEAM_SLUGS,
   wnba: WNBA_CURRENT_TEAM_SLUGS,
 };
