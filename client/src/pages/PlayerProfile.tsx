@@ -277,13 +277,13 @@ export function PlayerProfile() {
         <div className="grid grid-cols-1 gap-8">
           <div className="-mb-4 flex justify-center">
             <div className="flex flex-col items-center gap-3">
-              <div className="flex w-fit items-center gap-3 rounded-2xl border border-border bg-card px-6 py-3 text-muted-foreground shadow-sm">
+              <div className="flex w-fit items-center gap-3 rounded-2xl border border-border bg-card px-6 py-3 shadow-sm">
                 <Eye className="h-6 w-6 text-primary" />
                 <span className="font-display text-2xl font-bold uppercase tracking-wider">
-                  <span className="text-black dark:text-white">
+                  <span className="text-black">
                     {player.profileViews.toLocaleString()}
                   </span>
-                  <span className="ml-3">Profile Views</span>
+                  <span className="ml-3 text-muted-foreground">Profile Views</span>
                 </span>
               </div>
             </div>
