@@ -1,4 +1,4 @@
-import { and, desc, eq, exists, ilike, isNotNull, sql } from "drizzle-orm";
+import { and, desc, eq, exists, ilike, inArray, isNotNull, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import {
   leagues,
@@ -98,6 +98,43 @@ export function toPlayerCard(
   };
 }
 
+async function getLatestTeamsForPlayers(
+  playerIds: number[],
+): Promise<Map<number, { teamName: string; teamSlug: string }>> {
+  const latestByPlayer = new Map<number, { teamName: string; teamSlug: string; seasonLabel: string }>();
+  if (playerIds.length === 0) return new Map();
+
+  const rows = await db
+    .select({
+      playerId: playerSeasonStats.playerId,
+      teamName: teams.name,
+      teamSlug: teams.slug,
+      seasonLabel: seasons.seasonLabel,
+    })
+    .from(playerSeasonStats)
+    .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
+    .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
+    .where(inArray(playerSeasonStats.playerId, playerIds));
+
+  for (const row of rows) {
+    const existing = latestByPlayer.get(row.playerId);
+    if (!existing || row.seasonLabel.localeCompare(existing.seasonLabel) > 0) {
+      latestByPlayer.set(row.playerId, {
+        teamName: row.teamName,
+        teamSlug: row.teamSlug,
+        seasonLabel: row.seasonLabel,
+      });
+    }
+  }
+
+  return new Map(
+    [...latestByPlayer.entries()].map(([playerId, { teamName, teamSlug }]) => [
+      playerId,
+      { teamName, teamSlug },
+    ]),
+  );
+}
+
 function toStatRow(
   stat: typeof playerSeasonStats.$inferSelect,
   seasonLabel: string,
@@ -187,7 +224,14 @@ export async function searchPlayers(params: {
     .limit(limit)
     .offset(offset);
 
-  return rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug));
+  const latestTeams = await getLatestTeamsForPlayers(rows.map((r) => r.player.id));
+
+  return rows.map((r) => {
+    const latestTeam = latestTeams.get(r.player.id);
+    const teamName = r.teamName ?? latestTeam?.teamName ?? "";
+    const teamSlug = r.teamSlug ?? latestTeam?.teamSlug ?? null;
+    return toPlayerCard(r.player, teamName, teamSlug);
+  });
 }
 
 export interface BirthYearCount {

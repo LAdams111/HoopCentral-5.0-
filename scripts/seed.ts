@@ -192,39 +192,6 @@ const SEED_PLAYERS: SeedPlayer[] = [
       },
     ],
   },
-  {
-    slug: "caitlin-clark",
-    name: "Caitlin Clark",
-    leagueSlug: "wnba",
-    teamAbbrev: "IND",
-    externalId: "clark-ca01w",
-    position: "Point Guard",
-    birthDate: "2002-01-22",
-    hometown: "West Des Moines, Iowa",
-    heightCm: 183,
-    weightKg: 77,
-    profileViews: 16200,
-    stats: [
-      {
-        season: "2025",
-        startDate: "2025-05-01",
-        endDate: "2025-10-31",
-        gp: 38,
-        ppg: 18.5,
-        rpg: 5.2,
-        apg: 7.9,
-      },
-      {
-        season: "2024",
-        startDate: "2024-05-01",
-        endDate: "2024-10-31",
-        gp: 40,
-        ppg: 19.2,
-        rpg: 5.7,
-        apg: 8.4,
-      },
-    ],
-  },
 ];
 
 async function seed() {
