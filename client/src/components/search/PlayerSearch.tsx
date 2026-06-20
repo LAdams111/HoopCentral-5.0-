@@ -217,9 +217,6 @@ function PlayerSearchRow({
   onSelect: (player: PlayerCard) => void;
 }) {
   const teamLabel = displayTeamName(player.team, { slug: player.teamSlug ?? undefined });
-  const subtitle = [teamLabel, player.jerseyNumber ? `#${player.jerseyNumber}` : null]
-    .filter(Boolean)
-    .join(" • ");
 
   return (
     <button
@@ -239,8 +236,14 @@ function PlayerSearchRow({
         <p className="truncate font-display font-bold text-foreground transition-colors group-hover:text-primary">
           {player.name}
         </p>
-        <p className="truncate font-mono text-xs uppercase text-muted-foreground">
-          {subtitle}
+        <p className="truncate font-mono uppercase text-muted-foreground">
+          {teamLabel && <span className="text-[10px]">{teamLabel}</span>}
+          {teamLabel && player.jerseyNumber && (
+            <span className="text-[10px]"> • </span>
+          )}
+          {player.jerseyNumber && (
+            <span className="text-xs">#{player.jerseyNumber}</span>
+          )}
         </p>
       </div>
     </button>
