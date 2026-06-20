@@ -232,11 +232,11 @@ function PlayerSearchRow({
           onError={onHeadshotError}
         />
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-display font-bold text-foreground transition-colors group-hover:text-primary">
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="truncate font-display font-bold leading-tight text-foreground transition-colors group-hover:text-primary">
           {player.name}
         </p>
-        <p className="truncate font-mono uppercase text-muted-foreground">
+        <p className="-mt-0.5 truncate font-mono uppercase leading-tight text-muted-foreground">
           {teamLabel && <span className="text-[10px]">{teamLabel}</span>}
           {teamLabel && player.jerseyNumber && (
             <span className="text-[10px]"> • </span>
