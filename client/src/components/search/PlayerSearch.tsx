@@ -1,12 +1,49 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPlayers, searchTeams, type PlayerCard, type TeamSummary } from "@/lib/api";
+import {
+  getLeagues,
+  getPlayers,
+  searchTeams,
+  type LeagueSummary,
+  type PlayerCard,
+  type TeamSummary,
+} from "@/lib/api";
 import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
 import { getLeagueDisplay } from "@/lib/leagues";
 import { teamLogoUrl, displayTeamName } from "@/lib/constants";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
+
+function filterLeaguesForSearch(
+  leagues: LeagueSummary[],
+  query: string,
+  limit = 3,
+): LeagueSummary[] {
+  const terms = query
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (terms.length === 0) return [];
+
+  return leagues
+    .filter((league) => {
+      const meta = getLeagueDisplay(league.slug, league.name);
+      const haystack = [
+        league.name,
+        league.slug,
+        league.slug.replace(/-/g, " "),
+        meta.display,
+        meta.tier,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return terms.every((term) => haystack.includes(term));
+    })
+    .slice(0, limit);
+}
 
 export function PlayerSearch() {
   const [query, setQuery] = useState("");
@@ -34,6 +71,16 @@ export function PlayerSearch() {
     enabled,
   });
 
+  const { data: allLeagues = [] } = useQuery({
+    queryKey: ["leagues"],
+    queryFn: getLeagues,
+  });
+
+  const leagueResults = useMemo(
+    () => (enabled ? filterLeaguesForSearch(allLeagues, debounced, 3) : []),
+    [allLeagues, debounced, enabled],
+  );
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -56,8 +103,18 @@ export function PlayerSearch() {
     navigate(teamRosterPath(team));
   };
 
+  const goToLeague = (league: LeagueSummary) => {
+    setOpen(false);
+    setQuery("");
+    navigate(`/leagues/${league.slug}`);
+  };
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (leagueResults[0]) {
+      goToLeague(leagueResults[0]);
+      return;
+    }
     if (playerResults[0]) {
       goToPlayer(playerResults[0]);
       return;
@@ -70,7 +127,8 @@ export function PlayerSearch() {
   };
 
   const showDropdown = open && enabled;
-  const hasResults = teamResults.length > 0 || playerResults.length > 0;
+  const hasResults =
+    leagueResults.length > 0 || teamResults.length > 0 || playerResults.length > 0;
 
   return (
     <div
@@ -86,7 +144,7 @@ export function PlayerSearch() {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Search players or teams..."
+          placeholder="Search players, teams, or leagues..."
           className="flex h-9 w-full rounded-full border-2 border-black bg-white/5 px-3 py-7 pl-12 pr-12 text-base ring-offset-background transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 md:text-sm"
         />
         <button
@@ -105,9 +163,11 @@ export function PlayerSearch() {
             aria-hidden
           />
           <SearchDropdown
+            leagues={leagueResults}
             teams={teamResults}
             players={playerResults}
             hasResults={hasResults}
+            onSelectLeague={goToLeague}
             onSelectTeam={goToTeam}
             onSelectPlayer={goToPlayer}
           />
@@ -118,15 +178,19 @@ export function PlayerSearch() {
 }
 
 function SearchDropdown({
+  leagues,
   teams,
   players,
   hasResults,
+  onSelectLeague,
   onSelectTeam,
   onSelectPlayer,
 }: {
+  leagues: LeagueSummary[];
   teams: TeamSummary[];
   players: PlayerCard[];
   hasResults: boolean;
+  onSelectLeague: (league: LeagueSummary) => void;
   onSelectTeam: (team: TeamSummary) => void;
   onSelectPlayer: (player: PlayerCard) => void;
 }) {
@@ -137,6 +201,16 @@ function SearchDropdown({
           <p className="px-4 py-3 text-sm text-muted-foreground">No results found.</p>
         ) : (
           <>
+            {leagues.length > 0 && (
+              <div className="mb-1">
+                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Leagues
+                </p>
+                {leagues.map((league) => (
+                  <LeagueSearchRow key={league.slug} league={league} onSelect={onSelectLeague} />
+                ))}
+              </div>
+            )}
             {players.length > 0 && (
               <div className="mb-1">
                 <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -161,6 +235,46 @@ function SearchDropdown({
         )}
       </div>
     </div>
+  );
+}
+
+function LeagueSearchRow({
+  league,
+  onSelect,
+}: {
+  league: LeagueSummary;
+  onSelect: (league: LeagueSummary) => void;
+}) {
+  const meta = getLeagueDisplay(league.slug, league.name);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(league)}
+      className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover-elevate"
+    >
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
+        {meta.logoUrl ? (
+          <img
+            src={meta.logoUrl}
+            alt={meta.display}
+            className="max-h-full max-w-full object-contain"
+          />
+        ) : (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-bold text-primary">
+            {meta.display.charAt(0)}
+          </div>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-display font-bold text-foreground transition-colors group-hover:text-primary">
+          {meta.display}
+        </p>
+        <p className="truncate font-mono text-xs uppercase text-muted-foreground">
+          {meta.tier} • {league.teamCount} {league.teamCount === 1 ? "team" : "teams"}
+        </p>
+      </div>
+    </button>
   );
 }
 
