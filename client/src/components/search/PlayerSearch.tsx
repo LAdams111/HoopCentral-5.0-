@@ -15,10 +15,27 @@ import { getLeagueDisplay } from "@/lib/leagues";
 import { teamLogoUrl, displayTeamName } from "@/lib/constants";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
 
+function scoreLeagueMatch(league: LeagueSummary, query: string): number {
+  const q = query.trim().toLowerCase();
+  const meta = getLeagueDisplay(league.slug, league.name);
+  const display = meta.display.toLowerCase();
+  const slug = league.slug.toLowerCase();
+  const slugSpaced = slug.replace(/-/g, " ");
+  const name = league.name.toLowerCase();
+
+  if (display === q || slug === q || slugSpaced === q) return 100;
+  if (display.startsWith(q) || slug.startsWith(q) || slugSpaced.startsWith(q)) return 80;
+  if (name.startsWith(q)) return 70;
+  if (display.includes(q) || slug.includes(q) || slugSpaced.includes(q) || name.includes(q)) {
+    return 50;
+  }
+  return 0;
+}
+
 function filterLeaguesForSearch(
   leagues: LeagueSummary[],
   query: string,
-  limit = 3,
+  limit = 2,
 ): LeagueSummary[] {
   const terms = query
     .trim()
@@ -42,6 +59,7 @@ function filterLeaguesForSearch(
 
       return terms.every((term) => haystack.includes(term));
     })
+    .sort((a, b) => scoreLeagueMatch(b, query) - scoreLeagueMatch(a, query))
     .slice(0, limit);
 }
 
@@ -77,7 +95,7 @@ export function PlayerSearch() {
   });
 
   const leagueResults = useMemo(
-    () => (enabled ? filterLeaguesForSearch(allLeagues, debounced, 3) : []),
+    () => (enabled ? filterLeaguesForSearch(allLeagues, debounced, 2) : []),
     [allLeagues, debounced, enabled],
   );
 
@@ -111,16 +129,16 @@ export function PlayerSearch() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (leagueResults[0]) {
-      goToLeague(leagueResults[0]);
-      return;
-    }
     if (playerResults[0]) {
       goToPlayer(playerResults[0]);
       return;
     }
     if (teamResults[0]) {
       goToTeam(teamResults[0]);
+      return;
+    }
+    if (leagueResults[0]) {
+      goToLeague(leagueResults[0]);
       return;
     }
     if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
@@ -201,16 +219,6 @@ function SearchDropdown({
           <p className="px-4 py-3 text-sm text-muted-foreground">No results found.</p>
         ) : (
           <>
-            {leagues.length > 0 && (
-              <div className="mb-1">
-                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  Leagues
-                </p>
-                {leagues.map((league) => (
-                  <LeagueSearchRow key={league.slug} league={league} onSelect={onSelectLeague} />
-                ))}
-              </div>
-            )}
             {players.length > 0 && (
               <div className="mb-1">
                 <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -218,6 +226,16 @@ function SearchDropdown({
                 </p>
                 {players.map((player) => (
                   <PlayerSearchRow key={player.id} player={player} onSelect={onSelectPlayer} />
+                ))}
+              </div>
+            )}
+            {leagues.length > 0 && (
+              <div className="mb-1">
+                <p className="px-4 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Leagues
+                </p>
+                {leagues.map((league) => (
+                  <LeagueSearchRow key={league.slug} league={league} onSelect={onSelectLeague} />
                 ))}
               </div>
             )}
