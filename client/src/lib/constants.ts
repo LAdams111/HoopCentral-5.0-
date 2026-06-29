@@ -7,6 +7,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { ncaaTeamLogoUrl, resolveNcaaEspnId, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
+import {
+  isUsportsLeagueSlug,
+  resolveUsportsTeamDisplayName,
+} from "./usports-team-display";
 
 export const DEFAULT_HEADSHOT =
   "https://cdn.nba.com/headshots/nba/latest/1040x760/1040x760/fallback.png";
@@ -171,6 +175,13 @@ export function displayTeamName(
     slug?: string;
   },
 ): string {
+  if (isUsportsLeagueSlug(options?.leagueSlug) || options?.slug) {
+    const usportsName = resolveUsportsTeamDisplayName(teamName, {
+      slug: options?.slug,
+    });
+    if (usportsName) return usportsName;
+  }
+
   return (
     resolveNcaaTeamDisplayName(teamName, {
       abbreviation: options?.abbreviation,

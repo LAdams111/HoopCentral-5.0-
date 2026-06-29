@@ -1,7 +1,7 @@
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
 import { NBA_CURRENT_TEAM_SLUGS } from "../data/nba-teams.js";
-import { USPORTS_CURRENT_TEAM_SLUGS } from "../data/usports-teams.js";
+import { USPORTS_CURRENT_TEAM_SLUGS, resolveUsportsTeamDisplayName } from "../data/usports-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
@@ -163,7 +163,11 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
     .where(eq(teams.leagueId, league.id))
     .orderBy(teams.name);
 
-  const visibleTeams = filterLeagueTeams(responseSlug, leagueTeams);
+  const visibleTeams = filterLeagueTeams(responseSlug, leagueTeams).map((team) => {
+    if (responseSlug !== "u-sports") return team;
+    const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);
+    return displayName ? { ...team, name: displayName } : team;
+  });
 
   return {
     id: league.id,
