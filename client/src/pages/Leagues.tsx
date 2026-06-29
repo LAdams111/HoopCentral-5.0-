@@ -9,7 +9,7 @@ export function Leagues() {
     queryFn: getLeagues,
   });
 
-  const { domestic, international } = groupLeaguesForDisplay(leagues);
+  const { domestic, international, other } = groupLeaguesForDisplay(leagues);
 
   if (isLoading) {
     return (
@@ -57,6 +57,25 @@ export function Leagues() {
 
           <div className="space-y-3 md:space-y-6">
             {international.map((league) => (
+              <LeagueCard key={league.slug} league={league} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {other.length > 0 && (
+        <>
+          <div className="mb-6 mt-10 md:mb-12 md:mt-16">
+            <h2 className="mb-2 font-display text-2xl font-bold md:mb-4 md:text-4xl">
+              Other Leagues
+            </h2>
+            <p className="text-sm text-muted-foreground md:text-lg">
+              Additional leagues discovered from player career data.
+            </p>
+          </div>
+
+          <div className="space-y-3 md:space-y-6">
+            {other.map((league) => (
               <LeagueCard key={league.slug} league={league} />
             ))}
           </div>

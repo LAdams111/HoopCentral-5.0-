@@ -217,6 +217,7 @@ export function getLeagueDisplay(slug: string, name: string) {
 export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
   domestic: LeagueCardData[];
   international: LeagueCardData[];
+  other: LeagueCardData[];
 } {
   const domesticOrder = [
     "nba",
@@ -250,6 +251,9 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
 
   const known = new Set([...domesticOrder, ...internationalOrder]);
   const rest = enriched.filter((league) => !known.has(league.slug));
+  const other = rest
+    .filter((l) => !LEAGUE_DISPLAY[l.slug]?.category)
+    .sort((a, b) => b.teamCount - a.teamCount || a.name.localeCompare(b.name));
 
   return {
     domestic: [
@@ -260,5 +264,6 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
       ...orderBySlugList(internationalOrder),
       ...rest.filter((l) => LEAGUE_DISPLAY[l.slug]?.category === "international"),
     ],
+    other,
   };
 }
