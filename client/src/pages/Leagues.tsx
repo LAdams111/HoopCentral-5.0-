@@ -51,7 +51,8 @@ export function Leagues() {
               International
             </h2>
             <p className="text-sm text-muted-foreground md:text-lg">
-              Professional basketball leagues from around the globe.
+              Professional basketball leagues from around the globe, including
+              leagues discovered from player careers.
             </p>
           </div>
 

@@ -251,9 +251,13 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
 
   const known = new Set([...domesticOrder, ...internationalOrder]);
   const rest = enriched.filter((league) => !known.has(league.slug));
-  const other = rest
-    .filter((l) => !LEAGUE_DISPLAY[l.slug]?.category)
+  const discovered = rest.filter((l) => !LEAGUE_DISPLAY[l.slug]?.category);
+  const discoveredWithTeams = discovered
+    .filter((l) => l.teamCount > 0)
     .sort((a, b) => b.teamCount - a.teamCount || a.name.localeCompare(b.name));
+  const other = discovered
+    .filter((l) => l.teamCount === 0)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return {
     domestic: [
@@ -263,6 +267,7 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
     international: [
       ...orderBySlugList(internationalOrder),
       ...rest.filter((l) => LEAGUE_DISPLAY[l.slug]?.category === "international"),
+      ...discoveredWithTeams,
     ],
     other,
   };
