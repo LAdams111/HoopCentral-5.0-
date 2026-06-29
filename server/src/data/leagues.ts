@@ -16,4 +16,6 @@ export const SEED_LEAGUES = [
   { slug: "bal", name: "Basketball Africa League" },
   { slug: "cba", name: "Chinese Basketball Association" },
   { slug: "b-league", name: "B.League (Japan)" },
+  { slug: "lnb-pro-a", name: "LNB Pro A" },
+  { slug: "lnb-u21", name: "LNB Pro A U21" },
 ] as const;

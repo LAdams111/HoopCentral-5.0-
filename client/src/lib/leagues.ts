@@ -179,6 +179,21 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     regions: ["JP"],
     category: "international",
   },
+  "lnb-pro-a": {
+    display: "LNB Pro A",
+    tier: "Professional",
+    description:
+      "France's top professional basketball league, including Jeep and Betclic sponsorship eras.",
+    regions: ["FR"],
+    category: "international",
+  },
+  "lnb-u21": {
+    display: "LNB Pro A U21",
+    tier: "Professional",
+    description: "French professional under-21 development league.",
+    regions: ["FR"],
+    category: "international",
+  },
 };
 
 export interface LeagueCardData {
@@ -235,6 +250,8 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
   const internationalOrder = [
     "euroleague",
     "acb",
+    "lnb-pro-a",
+    "lnb-u21",
     "nbl",
     "bal",
     "cba",
