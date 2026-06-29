@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
-"""Regenerate client/src/lib/ncaa-team-logos.ts from ESPN's NCAA team list."""
+"""Regenerate client/src/lib/ncaa-team-logos.ts from ESPN core MBB teams (D1 + D2)."""
 
 from __future__ import annotations
 
 import json
 import re
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "client/src/lib/ncaa-team-logos.ts"
 MANUAL_ALIASES_PATH = ROOT / "scripts/ncaa-manual-aliases.json"
-ESPN_URL = (
-    "https://site.api.espn.com/apis/site/v2/sports/basketball/"
-    "mens-college-basketball/teams?limit=500"
+D2_ALIASES_PATH = ROOT / "scripts/ncaa-d2-db-aliases.json"
+CORE_LIST_URL = (
+    "https://sports.core.api.espn.com/v2/sports/basketball/leagues/"
+    "mens-college-basketball/teams?limit=1000&page={page}"
+)
+CORE_TEAM_URL = (
+    "https://sports.core.api.espn.com/v2/sports/basketball/leagues/"
+    "mens-college-basketball/teams/{team_id}"
 )
 
 
@@ -64,30 +70,78 @@ def load_manual_aliases() -> dict[str, str]:
     return json.loads(MANUAL_ALIASES_PATH.read_text(encoding="utf-8"))
 
 
-def main() -> None:
-    with urllib.request.urlopen(ESPN_URL) as response:
-        data = json.load(response)
+def load_d2_aliases() -> dict[str, str]:
+    if not D2_ALIASES_PATH.exists():
+        return {}
+    payload = json.loads(D2_ALIASES_PATH.read_text(encoding="utf-8"))
+    return {
+        str(key).strip().lower(): str(value).strip().lower()
+        for key, value in payload.get("aliases", {}).items()
+    }
 
+
+def fetch_json(url: str) -> dict:
+    with urllib.request.urlopen(url) as response:
+        return json.load(response)
+
+
+def fetch_team(team_id: str) -> dict:
+    return fetch_json(CORE_TEAM_URL.format(team_id=team_id))
+
+
+def list_team_ids() -> list[str]:
+    team_ids: list[str] = []
+    page = 1
+    while True:
+        data = fetch_json(CORE_LIST_URL.format(page=page))
+        for item in data.get("items", []):
+            ref = item.get("$ref", "")
+            match = re.search(r"/teams/(\d+)", ref)
+            if match:
+                team_ids.append(match.group(1))
+        page_count = data.get("pageCount", page)
+        if page >= page_count:
+            break
+        page += 1
+    return team_ids
+
+
+def resolve_espn_id(by_slug: dict[str, str], canonical_slug: str) -> str | None:
+    if canonical_slug in by_slug:
+        return by_slug[canonical_slug]
+    for slug, espn_id in by_slug.items():
+        if slug.startswith(f"{canonical_slug}-") or canonical_slug.startswith(f"{slug}-"):
+            return espn_id
+    return None
+
+
+def main() -> None:
     manual_aliases = load_manual_aliases()
-    teams = data["sports"][0]["leagues"][0]["teams"]
+    d2_aliases = load_d2_aliases()
+    team_ids = list_team_ids()
+
+    teams: list[dict] = []
+    with ThreadPoolExecutor(max_workers=24) as pool:
+        futures = {pool.submit(fetch_team, team_id): team_id for team_id in team_ids}
+        for future in as_completed(futures):
+            teams.append(future.result())
+
     by_slug: dict[str, str] = {}
     by_name: dict[str, str] = {}
     by_abbrev: dict[str, str] = {}
     display_name_by_id: dict[str, str] = {}
-    slug_to_canonical: dict[str, str] = {}
 
-    for entry in teams:
-        team = entry["team"]
-        espn_id = team["id"]
-        slug = team["slug"].strip().lower()
-        display_name = team["displayName"].strip()
+    for team in teams:
+        espn_id = str(team["id"])
+        slug = team.get("slug", "").strip().lower()
+        display_name = team.get("displayName", "").strip()
         short_name = team.get("shortDisplayName", "").strip()
         location = team.get("location", "").strip()
-        nickname = team.get("nickname", "").strip()
-        abbrev = team["abbreviation"].upper()
+        nickname = team.get("name", team.get("nickname", "")).strip()
+        abbrev = team.get("abbreviation", "").upper()
 
-        display_name_by_id[espn_id] = display_name
-        slug_to_canonical[slug] = slug
+        if display_name:
+            display_name_by_id[espn_id] = display_name
 
         for alias in (slug, school_slug(slug), slugify(display_name)):
             add_slug_alias(by_slug, alias, espn_id)
@@ -96,17 +150,26 @@ def main() -> None:
             add_name_alias(by_name, label, espn_id)
             add_slug_alias(by_slug, slugify(label), espn_id)
 
-        by_abbrev[abbrev] = espn_id
+        if abbrev:
+            by_abbrev[abbrev] = espn_id
 
     for alias, canonical_slug in manual_aliases.items():
-        espn_id = by_slug.get(canonical_slug)
+        espn_id = resolve_espn_id(by_slug, canonical_slug)
         if not espn_id:
             continue
         add_slug_alias(by_slug, alias, espn_id)
         add_slug_alias(by_slug, slugify(alias), espn_id)
         add_name_alias(by_name, alias, espn_id)
 
-    content = f"""// Auto-generated from ESPN men's college basketball teams API.
+    for alias, canonical_slug in d2_aliases.items():
+        espn_id = resolve_espn_id(by_slug, canonical_slug)
+        if not espn_id:
+            continue
+        add_slug_alias(by_slug, alias, espn_id)
+        add_slug_alias(by_slug, slugify(alias), espn_id)
+        add_name_alias(by_name, alias, espn_id)
+
+    content = f"""// Auto-generated from ESPN core men's college basketball teams API (D1 + D2).
 // Regenerate with: python3 scripts/generate-ncaa-team-logos.py
 // Generated: {date.today().isoformat()}
 
@@ -189,7 +252,10 @@ export function ncaaTeamLogoUrl(
 """
 
     OUTPUT.write_text(content, encoding="utf-8")
-    print(f"Wrote {len(teams)} teams to {OUTPUT}")
+    print(
+        f"Wrote {len(teams)} teams "
+        f"({len(by_slug)} slug aliases, {len(d2_aliases)} D2 DB aliases) to {OUTPUT}"
+    )
 
 
 if __name__ == "__main__":

@@ -194,7 +194,12 @@ export function teamLogoUrl(
     slug: options?.slug,
   };
 
-  if (leagueSlug === "ncaa" || leagueSlug === "ncaa-m" || leagueSlug === "ncaa-w") {
+  if (
+    leagueSlug === "ncaa" ||
+    leagueSlug === "ncaa-m" ||
+    leagueSlug === "ncaa-w" ||
+    leagueSlug === "ncaa-d2"
+  ) {
     return ncaaTeamLogoUrl(teamName, ncaaOptions);
   }
   if (leagueSlug === "g-league" || G_LEAGUE_TEAM_IDS[teamName]) {
@@ -211,6 +216,9 @@ export function teamLogoUrl(
     return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
   }
   if (resolveNcaaEspnId(teamName, ncaaOptions)) {
+    return ncaaTeamLogoUrl(teamName, ncaaOptions);
+  }
+  if (leagueSlug?.startsWith("ncaa")) {
     return ncaaTeamLogoUrl(teamName, ncaaOptions);
   }
   return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
