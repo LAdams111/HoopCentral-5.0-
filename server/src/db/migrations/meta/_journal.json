@@ -85,6 +85,13 @@
       "when": 1750608000000,
       "tag": "0012_add_ccaa_league",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1750694400000,
+      "tag": "0013_extended_shooting_and_playoffs",
+      "breakpoints": true
     }
   ]
 }

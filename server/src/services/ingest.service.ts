@@ -1,7 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { db, type DbClient } from "../db/index.js";
 import {
   leagues,
+  playerSeasonPlayoffStats,
   playerSeasonStats,
   playerStints,
   players,
@@ -10,7 +11,11 @@ import {
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { resolveOperationalIngestLeague } from "../utils/league-resolution.js";
-import { MENS_NCAA_SOURCES, USPORTS_SOURCES } from "../utils/league-slug.js";
+import {
+  MENS_NCAA_SOURCES,
+  USPORTS_SOURCES,
+  WOMENS_NCAA_SOURCES,
+} from "../utils/league-slug.js";
 import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
 import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../utils/usports-team-aliases.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
@@ -19,6 +24,18 @@ import {
   isPostgresTransientError,
   isPostgresUniqueViolation,
 } from "../utils/postgres.js";
+
+export interface IngestSeasonStatFields {
+  gamesPlayed: number;
+  pointsPerGame: number;
+  reboundsPerGame: number;
+  assistsPerGame: number;
+  stealsPerGame?: number | null;
+  blocksPerGame?: number | null;
+  fieldGoalPct?: number | null;
+  threePointPct?: number | null;
+  freeThrowPct?: number | null;
+}
 
 export interface IngestPlayerSeasonInput {
   source: string;
@@ -44,15 +61,8 @@ export interface IngestPlayerSeasonInput {
   season: {
     label: string;
   };
-  stats: {
-    gamesPlayed: number;
-    pointsPerGame: number;
-    reboundsPerGame: number;
-    assistsPerGame: number;
-    stealsPerGame?: number | null;
-    blocksPerGame?: number | null;
-    fieldGoalPct?: number | null;
-  };
+  stats: IngestSeasonStatFields;
+  playoffs?: IngestSeasonStatFields | null;
 }
 
 export interface IngestPlayerSeasonResult {
@@ -65,6 +75,7 @@ export interface IngestPlayerSeasonResult {
     season: boolean;
     stint: boolean;
     stats: boolean;
+    playoffs: boolean;
   };
 }
 
@@ -73,6 +84,51 @@ export class IngestValidationError extends Error {
     super(message);
     this.name = "IngestValidationError";
   }
+}
+
+const CAREER_PROFILE_SOURCE = "usbasket-profile";
+
+const OPERATIONAL_NCAA_LEAGUE_SLUGS = new Set([
+  "ncaa",
+  "ncaa-m",
+  "ncaa-w",
+  "ncaa-d2",
+  "ncaa-d3",
+]);
+
+function shouldNormalizeNcaaTeamForIngest(source: string, leagueSlug: string): boolean {
+  if (MENS_NCAA_SOURCES.has(source) || WOMENS_NCAA_SOURCES.has(source)) {
+    return true;
+  }
+  if (source === CAREER_PROFILE_SOURCE) {
+    return OPERATIONAL_NCAA_LEAGUE_SLUGS.has(normalizeSlugParam(leagueSlug));
+  }
+  return false;
+}
+
+/** When a player already has stats for this league+season, reuse that team (any source). */
+async function findExistingPlayerSeasonStat(
+  database: DbClient,
+  params: {
+    playerId: number;
+    leagueId: number;
+    seasonId: number;
+  },
+): Promise<{ teamId: number } | null> {
+  const [row] = await database
+    .select({ teamId: playerSeasonStats.teamId })
+    .from(playerSeasonStats)
+    .where(
+      and(
+        eq(playerSeasonStats.playerId, params.playerId),
+        eq(playerSeasonStats.leagueId, params.leagueId),
+        eq(playerSeasonStats.seasonId, params.seasonId),
+      ),
+    )
+    .orderBy(desc(playerSeasonStats.gamesPlayed), asc(playerSeasonStats.id))
+    .limit(1);
+
+  return row ?? null;
 }
 
 function requireString(value: unknown, field: string): string {
@@ -104,6 +160,23 @@ function requireNumber(value: unknown, field: string): number {
     throw new IngestValidationError(`${field} is required and must be a number`);
   }
   return value;
+}
+
+function parseSeasonStatFields(
+  statsObj: Record<string, unknown>,
+  prefix: string,
+): IngestSeasonStatFields {
+  return {
+    gamesPlayed: requireNumber(statsObj.gamesPlayed, `${prefix}.gamesPlayed`),
+    pointsPerGame: requireNumber(statsObj.pointsPerGame, `${prefix}.pointsPerGame`),
+    reboundsPerGame: requireNumber(statsObj.reboundsPerGame, `${prefix}.reboundsPerGame`),
+    assistsPerGame: requireNumber(statsObj.assistsPerGame, `${prefix}.assistsPerGame`),
+    stealsPerGame: optionalNumber(statsObj.stealsPerGame, `${prefix}.stealsPerGame`),
+    blocksPerGame: optionalNumber(statsObj.blocksPerGame, `${prefix}.blocksPerGame`),
+    fieldGoalPct: optionalNumber(statsObj.fieldGoalPct, `${prefix}.fieldGoalPct`),
+    threePointPct: optionalNumber(statsObj.threePointPct, `${prefix}.threePointPct`),
+    freeThrowPct: optionalNumber(statsObj.freeThrowPct, `${prefix}.freeThrowPct`),
+  };
 }
 
 export function parseIngestPlayerSeasonBody(body: unknown): IngestPlayerSeasonInput {
@@ -164,15 +237,11 @@ export function parseIngestPlayerSeasonBody(body: unknown): IngestPlayerSeasonIn
     season: {
       label: requireString(seasonObj.label, "season.label"),
     },
-    stats: {
-      gamesPlayed: requireNumber(statsObj.gamesPlayed, "stats.gamesPlayed"),
-      pointsPerGame: requireNumber(statsObj.pointsPerGame, "stats.pointsPerGame"),
-      reboundsPerGame: requireNumber(statsObj.reboundsPerGame, "stats.reboundsPerGame"),
-      assistsPerGame: requireNumber(statsObj.assistsPerGame, "stats.assistsPerGame"),
-      stealsPerGame: optionalNumber(statsObj.stealsPerGame, "stats.stealsPerGame"),
-      blocksPerGame: optionalNumber(statsObj.blocksPerGame, "stats.blocksPerGame"),
-      fieldGoalPct: optionalNumber(statsObj.fieldGoalPct, "stats.fieldGoalPct"),
-    },
+    stats: parseSeasonStatFields(statsObj, "stats"),
+    playoffs:
+      payload.playoffs === undefined || payload.playoffs === null
+        ? undefined
+        : parseSeasonStatFields(payload.playoffs as Record<string, unknown>, "playoffs"),
   };
 }
 
@@ -324,37 +393,23 @@ async function upsertSeasonStats(
     teamId: number;
     leagueId: number;
     seasonId: number;
-    gamesPlayed: number;
-    pointsPerGame: number;
-    reboundsPerGame: number;
-    assistsPerGame: number;
-    stealsPerGame?: number | null;
-    blocksPerGame?: number | null;
-    fieldGoalPct?: number | null;
-  },
+  } & IngestSeasonStatFields,
+  table: typeof playerSeasonStats | typeof playerSeasonPlayoffStats = playerSeasonStats,
 ): Promise<boolean> {
   const [existing] = await database
-    .select({ id: playerSeasonStats.id })
-    .from(playerSeasonStats)
+    .select({ id: table.id })
+    .from(table)
     .where(
       and(
-        eq(playerSeasonStats.playerId, params.playerId),
-        eq(playerSeasonStats.teamId, params.teamId),
-        eq(playerSeasonStats.leagueId, params.leagueId),
-        eq(playerSeasonStats.seasonId, params.seasonId),
+        eq(table.playerId, params.playerId),
+        eq(table.teamId, params.teamId),
+        eq(table.leagueId, params.leagueId),
+        eq(table.seasonId, params.seasonId),
       ),
     )
     .limit(1);
 
-  const values: {
-    gamesPlayed: number;
-    pointsPerGame: string;
-    reboundsPerGame: string;
-    assistsPerGame: string;
-    stealsPerGame?: string;
-    blocksPerGame?: string;
-    fieldGoalPct?: string;
-  } = {
+  const values: Record<string, string | number> = {
     gamesPlayed: params.gamesPlayed,
     pointsPerGame: String(params.pointsPerGame),
     reboundsPerGame: String(params.reboundsPerGame),
@@ -370,17 +425,23 @@ async function upsertSeasonStats(
   if (params.fieldGoalPct != null) {
     values.fieldGoalPct = String(params.fieldGoalPct);
   }
+  if (params.threePointPct != null) {
+    values.threePointPct = String(params.threePointPct);
+  }
+  if (params.freeThrowPct != null) {
+    values.freeThrowPct = String(params.freeThrowPct);
+  }
 
   if (existing) {
     await database
-      .update(playerSeasonStats)
+      .update(table)
       .set(values)
-      .where(eq(playerSeasonStats.id, existing.id));
+      .where(eq(table.id, existing.id));
     return false;
   }
 
   try {
-    await database.insert(playerSeasonStats).values({
+    await database.insert(table).values({
       playerId: params.playerId,
       teamId: params.teamId,
       leagueId: params.leagueId,
@@ -391,22 +452,22 @@ async function upsertSeasonStats(
   } catch (err) {
     if (!isPostgresUniqueViolation(err)) throw err;
     const [raceExisting] = await database
-      .select({ id: playerSeasonStats.id })
-      .from(playerSeasonStats)
+      .select({ id: table.id })
+      .from(table)
       .where(
         and(
-          eq(playerSeasonStats.playerId, params.playerId),
-          eq(playerSeasonStats.teamId, params.teamId),
-          eq(playerSeasonStats.leagueId, params.leagueId),
-          eq(playerSeasonStats.seasonId, params.seasonId),
+          eq(table.playerId, params.playerId),
+          eq(table.teamId, params.teamId),
+          eq(table.leagueId, params.leagueId),
+          eq(table.seasonId, params.seasonId),
         ),
       )
       .limit(1);
     if (!raceExisting) throw err;
     await database
-      .update(playerSeasonStats)
+      .update(table)
       .set(values)
-      .where(eq(playerSeasonStats.id, raceExisting.id));
+      .where(eq(table.id, raceExisting.id));
     return false;
   }
 }
@@ -469,13 +530,15 @@ async function ingestPlayerSeasonOnce(
       resolvedLeague.gender,
     );
 
-    let teamPayload = MENS_NCAA_SOURCES.has(input.source)
-      ? normalizeNcaaTeamForIngest(input.team)
-      : input.team;
+    let teamPayload = input.team;
+
+    if (shouldNormalizeNcaaTeamForIngest(input.source, resolvedLeague.slug)) {
+      teamPayload = normalizeNcaaTeamForIngest(teamPayload);
+    }
 
     if (USPORTS_SOURCES.has(input.source)) {
       try {
-        teamPayload = normalizeUsportsTeamForIngest(input.team);
+        teamPayload = normalizeUsportsTeamForIngest(teamPayload);
       } catch (error) {
         if (error instanceof UsportsTeamRejectedError) {
           throw new IngestValidationError(error.message);
@@ -484,14 +547,23 @@ async function ingestPlayerSeasonOnce(
       }
     }
 
-    const teamResult = await findOrCreateTeam(
-      tx,
-      leagueResult.id,
-      teamPayload.slug,
-      teamPayload.name,
-      teamPayload.abbreviation,
-    );
     const seasonResult = await findOrCreateSeason(tx, leagueResult.id, input.season.label);
+
+    const existingSeasonStat = await findExistingPlayerSeasonStat(tx, {
+      playerId: identityResult.player.id,
+      leagueId: leagueResult.id,
+      seasonId: seasonResult.id,
+    });
+
+    const teamResult = existingSeasonStat
+      ? { id: existingSeasonStat.teamId, created: false }
+      : await findOrCreateTeam(
+          tx,
+          leagueResult.id,
+          teamPayload.slug,
+          teamPayload.name,
+          teamPayload.abbreviation,
+        );
 
     const stintCreated = await upsertStint(tx, {
       playerId: identityResult.player.id,
@@ -505,14 +577,23 @@ async function ingestPlayerSeasonOnce(
       teamId: teamResult.id,
       leagueId: leagueResult.id,
       seasonId: seasonResult.id,
-      gamesPlayed: input.stats.gamesPlayed,
-      pointsPerGame: input.stats.pointsPerGame,
-      reboundsPerGame: input.stats.reboundsPerGame,
-      assistsPerGame: input.stats.assistsPerGame,
-      stealsPerGame: input.stats.stealsPerGame,
-      blocksPerGame: input.stats.blocksPerGame,
-      fieldGoalPct: input.stats.fieldGoalPct,
+      ...input.stats,
     });
+
+    let playoffsCreated = false;
+    if (input.playoffs) {
+      playoffsCreated = await upsertSeasonStats(
+        tx,
+        {
+          playerId: identityResult.player.id,
+          teamId: teamResult.id,
+          leagueId: leagueResult.id,
+          seasonId: seasonResult.id,
+          ...input.playoffs,
+        },
+        playerSeasonPlayoffStats,
+      );
+    }
 
     return {
       ok: true,
@@ -524,6 +605,7 @@ async function ingestPlayerSeasonOnce(
         season: seasonResult.created,
         stint: stintCreated,
         stats: statsCreated,
+        playoffs: playoffsCreated,
       },
     };
   });

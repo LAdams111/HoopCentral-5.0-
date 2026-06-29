@@ -1,4 +1,5 @@
 import type { PlayerStat } from "@/lib/api";
+import { formatGamesPlayed } from "@/lib/api";
 import { displayTeamName } from "@/lib/constants";
 
 export function StatsTable({ stats }: { stats: PlayerStat[] }) {
@@ -42,7 +43,7 @@ export function StatsTable({ stats }: { stats: PlayerStat[] }) {
                   {stat.league}
                 </span>
               </td>
-              <td className="px-4 py-3 text-right font-mono tabular-nums">{stat.games_played ?? "—"}</td>
+              <td className="px-4 py-3 text-right font-mono tabular-nums">{formatGamesPlayed(stat.games_played)}</td>
               <td className="px-4 py-3 text-right font-mono tabular-nums text-primary">{stat.pts_per_g}</td>
               <td className="px-4 py-3 text-right font-mono tabular-nums">{stat.trb_per_g}</td>
               <td className="px-4 py-3 text-right font-mono tabular-nums">{stat.ast_per_g}</td>

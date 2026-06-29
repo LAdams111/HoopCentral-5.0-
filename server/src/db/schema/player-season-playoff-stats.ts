@@ -4,8 +4,8 @@ import { players } from "./players.js";
 import { seasons } from "./seasons.js";
 import { teams } from "./teams.js";
 
-export const playerSeasonStats = pgTable(
-  "player_season_stats",
+export const playerSeasonPlayoffStats = pgTable(
+  "player_season_playoff_stats",
   {
     id: serial("id").primaryKey(),
     playerId: integer("player_id")

@@ -5,4 +5,5 @@ export * from "./players.js";
 export * from "./player-identities.js";
 export * from "./player-stints.js";
 export * from "./player-season-stats.js";
+export * from "./player-season-playoff-stats.js";
 export * from "./team-season-records.js";

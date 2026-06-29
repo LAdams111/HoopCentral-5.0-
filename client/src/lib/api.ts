@@ -39,6 +39,12 @@ export interface PlayerStat {
   fieldGoalPct: string;
 }
 
+/** Unknown or missing game counts are stored as 0 and shown as an em dash. */
+export function formatGamesPlayed(games: number | null | undefined): string {
+  if (games == null || games === 0) return "—";
+  return String(games);
+}
+
 export interface CareerEntry {
   id: number;
   team: string;

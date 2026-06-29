@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { PlayerStat } from "@/lib/api";
+import { formatGamesPlayed } from "@/lib/api";
 import { rosterPath, displayTeamName } from "@/lib/constants";
 
 export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
@@ -61,7 +62,7 @@ export function SeasonHistoryTable({ stats }: { stats: PlayerStat[] }) {
                   </Link>
                 </td>
                 <td className="px-6 py-4 text-base text-muted-foreground">
-                  {stat.games_played ?? "—"}
+                  {formatGamesPlayed(stat.games_played)}
                 </td>
                 <td className="px-6 py-4 text-base font-bold text-foreground">
                   {stat.pts_per_g}

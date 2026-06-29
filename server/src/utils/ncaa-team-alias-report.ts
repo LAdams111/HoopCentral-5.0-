@@ -342,6 +342,14 @@ export function buildNcaaIngestSlugToCanonicalMap(
     slugToCanonical.set(alias, canonical);
   }
 
+  const manual = JSON.parse(readFileSync(MANUAL_ALIASES_PATH, "utf8")) as Record<string, string>;
+  for (const [aliasSlug, canonicalSlug] of Object.entries(manual)) {
+    const alias = normalizeSlugParam(aliasSlug);
+    const canonical = normalizeSlugParam(canonicalSlug);
+    if (!alias || !canonical || slugToCanonical.has(alias)) continue;
+    slugToCanonical.set(alias, canonical);
+  }
+
   return slugToCanonical;
 }
 

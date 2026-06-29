@@ -56,7 +56,20 @@ If `INGEST_API_KEY` is not set, the endpoint is open (intended for local develop
     "assistsPerGame": 8.2,
     "stealsPerGame": 1.0,
     "blocksPerGame": 0.6,
-    "fieldGoalPct": 51.3
+    "fieldGoalPct": 51.3,
+    "threePointPct": 35.2,
+    "freeThrowPct": 75.4
+  },
+  "playoffs": {
+    "gamesPlayed": 16,
+    "pointsPerGame": 28.9,
+    "reboundsPerGame": 8.3,
+    "assistsPerGame": 7.2,
+    "stealsPerGame": 1.3,
+    "blocksPerGame": 0.8,
+    "fieldGoalPct": 56.5,
+    "threePointPct": 40.6,
+    "freeThrowPct": 76.0
   }
 }
 ```
@@ -74,14 +87,16 @@ If `INGEST_API_KEY` is not set, the endpoint is open (intended for local develop
 | `team.name` | string | Team name |
 | `team.abbreviation` | string | Team abbreviation |
 | `season.label` | string | Season label (e.g. `2024-25`, `2024`) |
-| `stats.gamesPlayed` | number | Games played |
+| `stats.gamesPlayed` | number | Games played; `0` when unknown on career lines |
 | `stats.pointsPerGame` | number | Points per game |
 | `stats.reboundsPerGame` | number | Rebounds per game |
 | `stats.assistsPerGame` | number | Assists per game |
 
 Optional player fields: `birthDate`, `position`, `heightCm`, `weightKg`, `hometown`, `headshotUrl`.
 
-Optional stats fields: `stealsPerGame`, `blocksPerGame`, `fieldGoalPct`. Older scraper payloads without these fields remain valid; existing steals, blocks, and FG% values are left unchanged on update when omitted.
+Optional stats fields: `stealsPerGame`, `blocksPerGame`, `fieldGoalPct`, `threePointPct`, `freeThrowPct`. Older scraper payloads without these fields remain valid; existing values are left unchanged on update when omitted.
+
+Optional `playoffs` object: same shape as `stats`. Stored in `player_season_playoff_stats` and **not exposed** by the public player API yet. Omit when no playoff data is available.
 
 ### NCAA Division I league slugs
 
@@ -117,7 +132,8 @@ Optional `league` query param filters returned season rows to a specific league 
     "team": false,
     "season": false,
     "stint": false,
-    "stats": false
+    "stats": false,
+    "playoffs": false
   }
 }
 ```
@@ -134,6 +150,7 @@ Each `created.*` flag is `true` when a new row was inserted for that entity, `fa
 6. Find or create season by `league_id` + `season.label`.
 7. Upsert `player_stints` for `(player_id, team_id, league_id, season_id)`.
 8. Upsert `player_season_stats` for `(player_id, team_id, league_id, season_id)`.
+9. When `playoffs` is present, upsert `player_season_playoff_stats` for the same keys.
 
 All steps run in a single database transaction.
 
@@ -147,6 +164,7 @@ All steps run in a single database transaction.
 | Season | `(league_id, season_label)` | Returns existing season |
 | Stint | `(player_id, team_id, league_id, season_id)` | No duplicate inserted |
 | Season stats | `(player_id, team_id, league_id, season_id)` | Updates stat values |
+| Playoff stats | `(player_id, team_id, league_id, season_id)` | Updates playoff stat values |
 
 Sending the same payload twice should not create duplicate rows. The second call returns `created` flags mostly `false` and updates stats if values changed.
 
