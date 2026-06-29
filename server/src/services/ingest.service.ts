@@ -15,6 +15,8 @@ import {
   MENS_NCAA_SOURCES,
   USPORTS_SOURCES,
   WOMENS_NCAA_SOURCES,
+  canonicalLeagueName,
+  resolveCanonicalLeagueSlug,
 } from "../utils/league-slug.js";
 import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
 import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../utils/usports-team-aliases.js";
@@ -251,10 +253,15 @@ async function findOrCreateLeague(
   name: string,
   gender: string | null = null,
 ): Promise<{ id: number; created: boolean }> {
+  const normalized = normalizeSlugParam(slug);
+  const canonical = resolveCanonicalLeagueSlug(normalized);
+  const leagueSlug = canonical;
+  const leagueName = canonical !== normalized ? canonicalLeagueName(canonical, name) : name;
+
   const [existing] = await database
     .select()
     .from(leagues)
-    .where(eq(leagues.slug, slug))
+    .where(eq(leagues.slug, leagueSlug))
     .limit(1);
 
   if (existing) return { id: existing.id, created: false };
@@ -262,7 +269,7 @@ async function findOrCreateLeague(
   try {
     const [created] = await database
       .insert(leagues)
-      .values({ slug, name, gender })
+      .values({ slug: leagueSlug, name: leagueName, gender })
       .returning();
     return { id: created.id, created: true };
   } catch (err) {
@@ -270,7 +277,7 @@ async function findOrCreateLeague(
     const [again] = await database
       .select()
       .from(leagues)
-      .where(eq(leagues.slug, slug))
+      .where(eq(leagues.slug, leagueSlug))
       .limit(1);
     if (!again) throw err;
     return { id: again.id, created: false };

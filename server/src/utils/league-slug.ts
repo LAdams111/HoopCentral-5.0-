@@ -23,7 +23,14 @@ export const INGEST_LEAGUE_SLUG_ALIASES: Record<string, string> = {
   proa: "lnb-pro-a",
   "jeep-elite-proa": "lnb-pro-a",
   "betclic-elite-proa": "lnb-pro-a",
+  "spain-liga-endesa": "acb",
+  "liga-endesa": "acb",
+  "liga-acb": "acb",
+  "esp-1": "acb",
 };
+
+/** Slugs that must never be stored — always resolve to canonical first. */
+export const BLOCKED_INGEST_LEAGUE_SLUGS = new Set(Object.keys(INGEST_LEAGUE_SLUG_ALIASES));
 
 /** Preferred display names for pre-seeded leagues when ingesting. */
 export const CANONICAL_LEAGUE_NAMES: Record<string, string> = {

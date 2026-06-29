@@ -113,6 +113,20 @@
       "when": 1750953600000,
       "tag": "0016_cleanup_career_transaction_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1751040000000,
+      "tag": "0017_cleanup_narrative_career_teams",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1751126400000,
+      "tag": "0018_consolidate_liga_acb",
+      "breakpoints": true
     }
   ]
 }
