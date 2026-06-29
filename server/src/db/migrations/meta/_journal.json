@@ -106,6 +106,13 @@
       "when": 1750867200000,
       "tag": "0015_consolidate_lnb_pro_a",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1750953600000,
+      "tag": "0016_cleanup_career_transaction_stats",
+      "breakpoints": true
     }
   ]
 }
