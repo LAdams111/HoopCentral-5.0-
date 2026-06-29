@@ -8,6 +8,7 @@ import {
   DEPRECATED_PUBLIC_LEAGUE_SLUGS,
   resolvePublicLeagueSlug,
 } from "../utils/league-slug.js";
+import { USPORTS_EXCLUDED_TEAM_SLUGS } from "../utils/usports-team-aliases.js";
 import {
   displaySlugForLeagueRow,
   findLeagueRowBySlug,
@@ -26,8 +27,13 @@ function filterLeagueTeams<T extends { slug: string }>(
   teams: T[],
 ): T[] {
   const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[leagueSlug];
-  if (!canonicalSlugs) return teams;
-  return teams.filter((team) => canonicalSlugs.has(team.slug));
+  if (canonicalSlugs) {
+    return teams.filter((team) => canonicalSlugs.has(team.slug));
+  }
+  if (leagueSlug === "u-sports") {
+    return teams.filter((team) => !USPORTS_EXCLUDED_TEAM_SLUGS.has(team.slug));
+  }
+  return teams;
 }
 
 export interface LeagueSummary {

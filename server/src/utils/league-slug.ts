@@ -5,6 +5,9 @@ export type LeagueGender = "male" | "female";
 /** Sources that ingest men's NCAA D1 data. */
 export const MENS_NCAA_SOURCES = new Set(["usbasket-ncaa-d1"]);
 
+/** Sources that ingest U Sports data. */
+export const USPORTS_SOURCES = new Set(["usbasket-u-sports"]);
+
 /** Sources that ingest women's NCAA D1 data. */
 export const WOMENS_NCAA_SOURCES = new Set(["usbasket-ncaa-d1-w"]);
 

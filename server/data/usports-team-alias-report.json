@@ -1,0 +1,1333 @@
+{
+  "generatedAt": "2026-06-29T12:20:48.172Z",
+  "aliasMap": {
+    "the-island-s": "island-s",
+    "university-of-calgary": "calgary",
+    "university-of-windsor": "windsor",
+    "university-of-ottawa": "ottawa",
+    "carleton-university": "carleton",
+    "university-of-saskatchewan": "saskatchewan",
+    "university-of-laval": "laval",
+    "cape-breton-university": "cape-breton",
+    "st-mary-s-university-college": "st-mary-s",
+    "dalhousie-university": "dalhousie",
+    "bishop-s-university": "bishop-s",
+    "regina-university": "regina",
+    "laurentian-university": "laurentian",
+    "university-of-winnipeg": "winnipeg",
+    "university-of-victoria": "victoria",
+    "ryerson-college": "ryerson",
+    "mcmaster-university": "mcmaster",
+    "york-university": "york",
+    "university-of-toronto": "toronto",
+    "toronto-univ": "toronto",
+    "university-of-guelph": "guelph",
+    "queen-s-college": "queen-s",
+    "brock-university": "brock",
+    "concordia-university": "concordia",
+    "concordia-university-college": "concordia",
+    "mcgill-university": "mcgill",
+    "the-university-of-alberta": "alberta",
+    "brandon-university": "brandon",
+    "acadia-university": "acadia",
+    "laurier-university": "laurier",
+    "lakehead-university": "lakehead",
+    "manitoba-university": "manitoba",
+    "lethbridge-university": "lethbridge",
+    "waterloo-university": "waterloo",
+    "st-francis-xavier": "st-francis-x",
+    "stfx": "st-francis-x",
+    "thompson-rivers-university": "tru",
+    "trinity-western-university": "twu",
+    "royal-military-college": "rmc",
+    "memorial-university-of-new-foundland": "memorial",
+    "university-of-british-columbia": "ubc",
+    "university-of-new-brunswick": "unb",
+    "new-brunsw": "unb",
+    "university-of-prince-edward-island": "upei",
+    "university-of-the-fraser-vally": "ufv",
+    "universite-de-quebec-a-montreal": "uqam",
+    "grant-macewan-university": "macewan",
+    "dalhousie-agricultural-campus": "dalhousie"
+  },
+  "allTeams": [
+    {
+      "teamName": "Academie Alma",
+      "teamAbbreviation": "AA",
+      "slug": "academie-alma",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Acadia",
+      "teamAbbreviation": "ACADIA",
+      "slug": "acadia",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 79
+    },
+    {
+      "teamName": "Alberta",
+      "teamAbbreviation": "ALBERT",
+      "slug": "alberta",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 64
+    },
+    {
+      "teamName": "Algoma",
+      "teamAbbreviation": "ALGOMA",
+      "slug": "algoma",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 69
+    },
+    {
+      "teamName": "Algonquin College",
+      "teamAbbreviation": "AC",
+      "slug": "algonquin-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 5
+    },
+    {
+      "teamName": "Austin S.",
+      "teamAbbreviation": "AS",
+      "slug": "austin-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Barako Bull",
+      "teamAbbreviation": "BB",
+      "slug": "barako-bull",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Barreteros",
+      "teamAbbreviation": "BARRET",
+      "slug": "barreteros",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Belfast Star",
+      "teamAbbreviation": "BS",
+      "slug": "belfast-star",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Bishop'S",
+      "teamAbbreviation": "BISHOP",
+      "slug": "bishop-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 94
+    },
+    {
+      "teamName": "Brampton A'S",
+      "teamAbbreviation": "BA",
+      "slug": "brampton-a-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 10
+    },
+    {
+      "teamName": "Brandon",
+      "teamAbbreviation": "BRANDO",
+      "slug": "brandon",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 73
+    },
+    {
+      "teamName": "Brock",
+      "teamAbbreviation": "BROCK",
+      "slug": "brock",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 90
+    },
+    {
+      "teamName": "Calgary",
+      "teamAbbreviation": "CALGAR",
+      "slug": "calgary",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 93
+    },
+    {
+      "teamName": "Cambrian College",
+      "teamAbbreviation": "CC",
+      "slug": "cambrian-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Canadore",
+      "teamAbbreviation": "CANADO",
+      "slug": "canadore",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Cape Breton",
+      "teamAbbreviation": "CB",
+      "slug": "cape-breton",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 78
+    },
+    {
+      "teamName": "Cape Breton H.",
+      "teamAbbreviation": "CBH",
+      "slug": "cape-breton-h",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Carleton",
+      "teamAbbreviation": "CARLET",
+      "slug": "carleton",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 77
+    },
+    {
+      "teamName": "Centennial College",
+      "teamAbbreviation": "CC",
+      "slug": "centennial-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 5
+    },
+    {
+      "teamName": "Chicago R.",
+      "teamAbbreviation": "CR",
+      "slug": "chicago-r",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Chomutov",
+      "teamAbbreviation": "CHOMUT",
+      "slug": "chomutov",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Concordia",
+      "teamAbbreviation": "CONCOR",
+      "slug": "concordia",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 97
+    },
+    {
+      "teamName": "Crandall University",
+      "teamAbbreviation": "CU",
+      "slug": "crandall-university",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Dalhousie",
+      "teamAbbreviation": "DALHOU",
+      "slug": "dalhousie",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 91
+    },
+    {
+      "teamName": "Dalhousie Agricultural Campus",
+      "teamAbbreviation": "DAC",
+      "slug": "dalhousie-agricultural-campus",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Durham College",
+      "teamAbbreviation": "DC",
+      "slug": "durham-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Fanshawe College",
+      "teamAbbreviation": "FC",
+      "slug": "fanshawe-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Fleming College",
+      "teamAbbreviation": "FC",
+      "slug": "fleming-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "George Brown",
+      "teamAbbreviation": "GB",
+      "slug": "george-brown",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 5
+    },
+    {
+      "teamName": "Georgian College",
+      "teamAbbreviation": "GC",
+      "slug": "georgian-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Grande Prairie Regional College",
+      "teamAbbreviation": "GPRC",
+      "slug": "grande-prairie-regional-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Grant Macewan University",
+      "teamAbbreviation": "GMU",
+      "slug": "grant-macewan-university",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Guelph",
+      "teamAbbreviation": "GUELPH",
+      "slug": "guelph",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 97
+    },
+    {
+      "teamName": "Halifax H.",
+      "teamAbbreviation": "HH",
+      "slug": "halifax-h",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 7
+    },
+    {
+      "teamName": "Halifax R.",
+      "teamAbbreviation": "HR",
+      "slug": "halifax-r",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 9
+    },
+    {
+      "teamName": "Holland College",
+      "teamAbbreviation": "HC",
+      "slug": "holland-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Hoops",
+      "teamAbbreviation": "HOOPS",
+      "slug": "hoops",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Humber College",
+      "teamAbbreviation": "HC",
+      "slug": "humber-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 6
+    },
+    {
+      "teamName": "Island S.",
+      "teamAbbreviation": "IS",
+      "slug": "island-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 20
+    },
+    {
+      "teamName": "Jamestown J.",
+      "teamAbbreviation": "JJ",
+      "slug": "jamestown-j",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Keyano College",
+      "teamAbbreviation": "KC",
+      "slug": "keyano-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Kw Titans",
+      "teamAbbreviation": "KT",
+      "slug": "kw-titans",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Lakehead",
+      "teamAbbreviation": "LAKEHE",
+      "slug": "lakehead",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 75
+    },
+    {
+      "teamName": "Lakeland College",
+      "teamAbbreviation": "LC",
+      "slug": "lakeland-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Lambton",
+      "teamAbbreviation": "LAMBTO",
+      "slug": "lambton",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Laurentian",
+      "teamAbbreviation": "LAUREN",
+      "slug": "laurentian",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 86
+    },
+    {
+      "teamName": "Laurier",
+      "teamAbbreviation": "LAURIE",
+      "slug": "laurier",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 85
+    },
+    {
+      "teamName": "Laval",
+      "teamAbbreviation": "LAVAL",
+      "slug": "laval",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 88
+    },
+    {
+      "teamName": "Lethbridge",
+      "teamAbbreviation": "LETHBR",
+      "slug": "lethbridge",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 85
+    },
+    {
+      "teamName": "London L.",
+      "teamAbbreviation": "LL",
+      "slug": "london-l",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 25
+    },
+    {
+      "teamName": "Loyalist",
+      "teamAbbreviation": "LOYALI",
+      "slug": "loyalist",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Macewan",
+      "teamAbbreviation": "MACEWA",
+      "slug": "macewan",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 70
+    },
+    {
+      "teamName": "Maine Rc",
+      "teamAbbreviation": "MR",
+      "slug": "maine-rc",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Manitoba",
+      "teamAbbreviation": "MANITO",
+      "slug": "manitoba",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 66
+    },
+    {
+      "teamName": "Mbc",
+      "teamAbbreviation": "MBC",
+      "slug": "mbc",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Mcgill",
+      "teamAbbreviation": "MCGILL",
+      "slug": "mcgill",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 95
+    },
+    {
+      "teamName": "Mcmaster",
+      "teamAbbreviation": "MCMAST",
+      "slug": "mcmaster",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 89
+    },
+    {
+      "teamName": "Medicine Hat College",
+      "teamAbbreviation": "MHC",
+      "slug": "medicine-hat-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Memorial",
+      "teamAbbreviation": "MEMORI",
+      "slug": "memorial",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 77
+    },
+    {
+      "teamName": "Memorial University Of New Foundland",
+      "teamAbbreviation": "MUONF",
+      "slug": "memorial-university-of-new-foundland",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Mississauga P.",
+      "teamAbbreviation": "MP",
+      "slug": "mississauga-p",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 8
+    },
+    {
+      "teamName": "Mohawk",
+      "teamAbbreviation": "MOHAWK",
+      "slug": "mohawk",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "Moncton M.",
+      "teamAbbreviation": "MM",
+      "slug": "moncton-m",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 21
+    },
+    {
+      "teamName": "Montreal J.",
+      "teamAbbreviation": "MJ",
+      "slug": "montreal-j",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 6
+    },
+    {
+      "teamName": "Mount Allison University",
+      "teamAbbreviation": "MAU",
+      "slug": "mount-allison-university",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Mount Royal",
+      "teamAbbreviation": "MR",
+      "slug": "mount-royal",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 69
+    },
+    {
+      "teamName": "Mount St.Vincent University In Halifax",
+      "teamAbbreviation": "MSUIH",
+      "slug": "mount-st-vincent-university-in-halifax",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "New Brunsw.",
+      "teamAbbreviation": "NB",
+      "slug": "new-brunsw",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 9
+    },
+    {
+      "teamName": "Niagara College",
+      "teamAbbreviation": "NC",
+      "slug": "niagara-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "Niagara Rl",
+      "teamAbbreviation": "NR",
+      "slug": "niagara-rl",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Nipissing",
+      "teamAbbreviation": "NIPISS",
+      "slug": "nipissing",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 74
+    },
+    {
+      "teamName": "Northern Alberta Institute Of Technology",
+      "teamAbbreviation": "NAIOT",
+      "slug": "northern-alberta-institute-of-technology",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "Oettinger R.",
+      "teamAbbreviation": "OR",
+      "slug": "oettinger-r",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Olds College",
+      "teamAbbreviation": "OC",
+      "slug": "olds-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Ontario Tech",
+      "teamAbbreviation": "OT",
+      "slug": "ontario-tech",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 49
+    },
+    {
+      "teamName": "Orangeville A'S",
+      "teamAbbreviation": "OA",
+      "slug": "orangeville-a-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 5
+    },
+    {
+      "teamName": "Oshawa P.",
+      "teamAbbreviation": "OP",
+      "slug": "oshawa-p",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 12
+    },
+    {
+      "teamName": "Ottawa",
+      "teamAbbreviation": "OTTAWA",
+      "slug": "ottawa",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 81
+    },
+    {
+      "teamName": "Ottawa S.",
+      "teamAbbreviation": "OS",
+      "slug": "ottawa-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Peja",
+      "teamAbbreviation": "PEJA",
+      "slug": "peja",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Queen'S",
+      "teamAbbreviation": "QUEEN'",
+      "slug": "queen-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 88
+    },
+    {
+      "teamName": "Quilmes Mp",
+      "teamAbbreviation": "QM",
+      "slug": "quilmes-mp",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Red Deer College",
+      "teamAbbreviation": "RDC",
+      "slug": "red-deer-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "Redeemer",
+      "teamAbbreviation": "REDEEM",
+      "slug": "redeemer",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Regina",
+      "teamAbbreviation": "REGINA",
+      "slug": "regina",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 80
+    },
+    {
+      "teamName": "Reno B.",
+      "teamAbbreviation": "RB",
+      "slug": "reno-b",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "River Lions",
+      "teamAbbreviation": "RL",
+      "slug": "river-lions",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Rmc",
+      "teamAbbreviation": "RMC",
+      "slug": "rmc",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 8
+    },
+    {
+      "teamName": "Royal Military College",
+      "teamAbbreviation": "RMC",
+      "slug": "royal-military-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 5
+    },
+    {
+      "teamName": "Ryerson",
+      "teamAbbreviation": "RYERSO",
+      "slug": "ryerson",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 17
+    },
+    {
+      "teamName": "Saskatchewan",
+      "teamAbbreviation": "SASKAT",
+      "slug": "saskatchewan",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 69
+    },
+    {
+      "teamName": "Sault College",
+      "teamAbbreviation": "SC",
+      "slug": "sault-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Seneca College",
+      "teamAbbreviation": "SC",
+      "slug": "seneca-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Sheridan College",
+      "teamAbbreviation": "SC",
+      "slug": "sheridan-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "South Alberta Institute Of Technology",
+      "teamAbbreviation": "SAIOT",
+      "slug": "south-alberta-institute-of-technology",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "St.Clair College",
+      "teamAbbreviation": "SC",
+      "slug": "st-clair-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "St.Francis X.",
+      "teamAbbreviation": "SX",
+      "slug": "st-francis-x",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 72
+    },
+    {
+      "teamName": "St.Francis Xavier",
+      "teamAbbreviation": "SX",
+      "slug": "st-francis-xavier",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "St.John M.R.",
+      "teamAbbreviation": "SM",
+      "slug": "st-john-m-r",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 24
+    },
+    {
+      "teamName": "St.John R.",
+      "teamAbbreviation": "SR",
+      "slug": "st-john-r",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 6
+    },
+    {
+      "teamName": "St.Lawrence, K",
+      "teamAbbreviation": "SK",
+      "slug": "st-lawrence-k",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "St.Mary'S",
+      "teamAbbreviation": "ST.MAR",
+      "slug": "st-mary-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 78
+    },
+    {
+      "teamName": "St.Thomas University",
+      "teamAbbreviation": "SU",
+      "slug": "st-thomas-university",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Stfx",
+      "teamAbbreviation": "STFX",
+      "slug": "stfx",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Sudbury F.",
+      "teamAbbreviation": "SF",
+      "slug": "sudbury-f",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Summerside S.",
+      "teamAbbreviation": "SS",
+      "slug": "summerside-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 7
+    },
+    {
+      "teamName": "Thailand S.",
+      "teamAbbreviation": "TS",
+      "slug": "thailand-s",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Thompson Rivers University",
+      "teamAbbreviation": "TRU",
+      "slug": "thompson-rivers-university",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "Tmu",
+      "teamAbbreviation": "TMU",
+      "slug": "tmu",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 64
+    },
+    {
+      "teamName": "Toronto",
+      "teamAbbreviation": "TORONT",
+      "slug": "toronto",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 89
+    },
+    {
+      "teamName": "Trinity Western University",
+      "teamAbbreviation": "TWU",
+      "slug": "trinity-western-university",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Tru",
+      "teamAbbreviation": "TRU",
+      "slug": "tru",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 62
+    },
+    {
+      "teamName": "Twu",
+      "teamAbbreviation": "TWU",
+      "slug": "twu",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 69
+    },
+    {
+      "teamName": "Ubc",
+      "teamAbbreviation": "UBC",
+      "slug": "ubc",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 69
+    },
+    {
+      "teamName": "Ubc Okanagan",
+      "teamAbbreviation": "UO",
+      "slug": "ubc-okanagan",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 69
+    },
+    {
+      "teamName": "Ufv",
+      "teamAbbreviation": "UFV",
+      "slug": "ufv",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 63
+    },
+    {
+      "teamName": "Unb",
+      "teamAbbreviation": "UNB",
+      "slug": "unb",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 66
+    },
+    {
+      "teamName": "Unb Saint John",
+      "teamAbbreviation": "USJ",
+      "slug": "unb-saint-john",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "Unbc",
+      "teamAbbreviation": "UNBC",
+      "slug": "unbc",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 67
+    },
+    {
+      "teamName": "Universite De Quebec A Montreal",
+      "teamAbbreviation": "UDQAM",
+      "slug": "universite-de-quebec-a-montreal",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "University Of British Columbia",
+      "teamAbbreviation": "UOBC",
+      "slug": "university-of-british-columbia",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "University Of King`S College",
+      "teamAbbreviation": "UOKC",
+      "slug": "university-of-king-s-college",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "University Of New Brunswick",
+      "teamAbbreviation": "UONB",
+      "slug": "university-of-new-brunswick",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "University Of Prince Edward Island",
+      "teamAbbreviation": "UOPEI",
+      "slug": "university-of-prince-edward-island",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 2
+    },
+    {
+      "teamName": "University Of The Fraser Vally",
+      "teamAbbreviation": "UOTFV",
+      "slug": "university-of-the-fraser-vally",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Uofa-Augustana",
+      "teamAbbreviation": "UOFA-A",
+      "slug": "uofa-augustana",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 4
+    },
+    {
+      "teamName": "Upei",
+      "teamAbbreviation": "UPEI",
+      "slug": "upei",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 82
+    },
+    {
+      "teamName": "Uqam",
+      "teamAbbreviation": "UQAM",
+      "slug": "uqam",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 70
+    },
+    {
+      "teamName": "Usti N/Labem",
+      "teamAbbreviation": "UN",
+      "slug": "usti-n-labem",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Valur",
+      "teamAbbreviation": "VALUR",
+      "slug": "valur",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Victoria",
+      "teamAbbreviation": "VICTOR",
+      "slug": "victoria",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 74
+    },
+    {
+      "teamName": "Waterloo",
+      "teamAbbreviation": "WATERL",
+      "slug": "waterloo",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 80
+    },
+    {
+      "teamName": "Wels",
+      "teamAbbreviation": "WELS",
+      "slug": "wels",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "Western",
+      "teamAbbreviation": "WESTER",
+      "slug": "western",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 68
+    },
+    {
+      "teamName": "Western Ontario",
+      "teamAbbreviation": "WO",
+      "slug": "western-ontario",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 3
+    },
+    {
+      "teamName": "Windsor",
+      "teamAbbreviation": "WINDSO",
+      "slug": "windsor",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 76
+    },
+    {
+      "teamName": "Windsor Exp.",
+      "teamAbbreviation": "WE",
+      "slug": "windsor-exp",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 21
+    },
+    {
+      "teamName": "Winnipeg",
+      "teamAbbreviation": "WINNIP",
+      "slug": "winnipeg",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 67
+    },
+    {
+      "teamName": "Winterthur",
+      "teamAbbreviation": "WINTER",
+      "slug": "winterthur",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    },
+    {
+      "teamName": "York",
+      "teamAbbreviation": "YORK",
+      "slug": "york",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 87
+    },
+    {
+      "teamName": "Z*Kebs De Laval",
+      "teamAbbreviation": "ZDL",
+      "slug": "z-kebs-de-laval",
+      "seasonMin": "",
+      "seasonMax": "",
+      "seasonCount": 0,
+      "playerSeasonRows": 1
+    }
+  ]
+}
