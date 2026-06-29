@@ -1,6 +1,7 @@
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
 import { NBA_CURRENT_TEAM_SLUGS } from "../data/nba-teams.js";
+import { USPORTS_CURRENT_TEAM_SLUGS } from "../data/usports-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
@@ -8,7 +9,6 @@ import {
   DEPRECATED_PUBLIC_LEAGUE_SLUGS,
   resolvePublicLeagueSlug,
 } from "../utils/league-slug.js";
-import { USPORTS_EXCLUDED_TEAM_SLUGS } from "../utils/usports-team-aliases.js";
 import {
   displaySlugForLeagueRow,
   findLeagueRowBySlug,
@@ -20,6 +20,7 @@ const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
   nba: NBA_CURRENT_TEAM_SLUGS,
   "g-league": G_LEAGUE_CURRENT_TEAM_SLUGS,
   wnba: WNBA_CURRENT_TEAM_SLUGS,
+  "u-sports": USPORTS_CURRENT_TEAM_SLUGS,
 };
 
 function filterLeagueTeams<T extends { slug: string }>(
@@ -29,9 +30,6 @@ function filterLeagueTeams<T extends { slug: string }>(
   const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[leagueSlug];
   if (canonicalSlugs) {
     return teams.filter((team) => canonicalSlugs.has(team.slug));
-  }
-  if (leagueSlug === "u-sports") {
-    return teams.filter((team) => !USPORTS_EXCLUDED_TEAM_SLUGS.has(team.slug));
   }
   return teams;
 }

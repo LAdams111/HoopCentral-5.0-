@@ -12,7 +12,7 @@ import { normalizeSlugParam } from "../utils/slug.js";
 import { resolveOperationalIngestLeague } from "../utils/league-resolution.js";
 import { MENS_NCAA_SOURCES, USPORTS_SOURCES } from "../utils/league-slug.js";
 import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
-import { normalizeUsportsTeamForIngest } from "../utils/usports-team-aliases.js";
+import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../utils/usports-team-aliases.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -469,11 +469,20 @@ async function ingestPlayerSeasonOnce(
       resolvedLeague.gender,
     );
 
-    const teamPayload = MENS_NCAA_SOURCES.has(input.source)
+    let teamPayload = MENS_NCAA_SOURCES.has(input.source)
       ? normalizeNcaaTeamForIngest(input.team)
-      : USPORTS_SOURCES.has(input.source)
-        ? normalizeUsportsTeamForIngest(input.team)
-        : input.team;
+      : input.team;
+
+    if (USPORTS_SOURCES.has(input.source)) {
+      try {
+        teamPayload = normalizeUsportsTeamForIngest(input.team);
+      } catch (error) {
+        if (error instanceof UsportsTeamRejectedError) {
+          throw new IngestValidationError(error.message);
+        }
+        throw error;
+      }
+    }
 
     const teamResult = await findOrCreateTeam(
       tx,

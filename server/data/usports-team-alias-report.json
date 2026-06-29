@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T12:20:48.172Z",
+  "generatedAt": "2026-06-29T12:41:35.649Z",
   "aliasMap": {
     "the-island-s": "island-s",
     "university-of-calgary": "calgary",
@@ -34,21 +34,7 @@
     "lakehead-university": "lakehead",
     "manitoba-university": "manitoba",
     "lethbridge-university": "lethbridge",
-    "waterloo-university": "waterloo",
-    "st-francis-xavier": "st-francis-x",
-    "stfx": "st-francis-x",
-    "thompson-rivers-university": "tru",
-    "trinity-western-university": "twu",
-    "royal-military-college": "rmc",
-    "memorial-university-of-new-foundland": "memorial",
-    "university-of-british-columbia": "ubc",
-    "university-of-new-brunswick": "unb",
-    "new-brunsw": "unb",
-    "university-of-prince-edward-island": "upei",
-    "university-of-the-fraser-vally": "ufv",
-    "universite-de-quebec-a-montreal": "uqam",
-    "grant-macewan-university": "macewan",
-    "dalhousie-agricultural-campus": "dalhousie"
+    "waterloo-university": "waterloo"
   },
   "allTeams": [
     {
@@ -106,27 +92,9 @@
       "playerSeasonRows": 1
     },
     {
-      "teamName": "Barako Bull",
-      "teamAbbreviation": "BB",
-      "slug": "barako-bull",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
-    },
-    {
       "teamName": "Barreteros",
       "teamAbbreviation": "BARRET",
       "slug": "barreteros",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
-    },
-    {
-      "teamName": "Belfast Star",
-      "teamAbbreviation": "BS",
-      "slug": "belfast-star",
       "seasonMin": "",
       "seasonMax": "",
       "seasonCount": 0,
@@ -230,24 +198,6 @@
       "seasonMax": "",
       "seasonCount": 0,
       "playerSeasonRows": 5
-    },
-    {
-      "teamName": "Chicago R.",
-      "teamAbbreviation": "CR",
-      "slug": "chicago-r",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
-    },
-    {
-      "teamName": "Chomutov",
-      "teamAbbreviation": "CHOMUT",
-      "slug": "chomutov",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
     },
     {
       "teamName": "Concordia",
@@ -385,15 +335,6 @@
       "playerSeasonRows": 4
     },
     {
-      "teamName": "Hoops",
-      "teamAbbreviation": "HOOPS",
-      "slug": "hoops",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
-    },
-    {
       "teamName": "Humber College",
       "teamAbbreviation": "HC",
       "slug": "humber-college",
@@ -410,15 +351,6 @@
       "seasonMax": "",
       "seasonCount": 0,
       "playerSeasonRows": 20
-    },
-    {
-      "teamName": "Jamestown J.",
-      "teamAbbreviation": "JJ",
-      "slug": "jamestown-j",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
     },
     {
       "teamName": "Keyano College",
@@ -527,15 +459,6 @@
       "seasonMax": "",
       "seasonCount": 0,
       "playerSeasonRows": 70
-    },
-    {
-      "teamName": "Maine Rc",
-      "teamAbbreviation": "MR",
-      "slug": "maine-rc",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
     },
     {
       "teamName": "Manitoba",
@@ -772,15 +695,6 @@
       "playerSeasonRows": 1
     },
     {
-      "teamName": "Peja",
-      "teamAbbreviation": "PEJA",
-      "slug": "peja",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
-    },
-    {
       "teamName": "Queen'S",
       "teamAbbreviation": "QUEEN'",
       "slug": "queen-s",
@@ -824,15 +738,6 @@
       "seasonMax": "",
       "seasonCount": 0,
       "playerSeasonRows": 80
-    },
-    {
-      "teamName": "Reno B.",
-      "teamAbbreviation": "RB",
-      "slug": "reno-b",
-      "seasonMin": "",
-      "seasonMax": "",
-      "seasonCount": 0,
-      "playerSeasonRows": 1
     },
     {
       "teamName": "River Lions",
@@ -895,7 +800,7 @@
       "seasonMin": "",
       "seasonMax": "",
       "seasonCount": 0,
-      "playerSeasonRows": 4
+      "playerSeasonRows": 5
     },
     {
       "teamName": "Sheridan College",

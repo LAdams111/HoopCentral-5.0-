@@ -164,6 +164,19 @@ export function normalizeUsportsTeamForIngest(
   const slugKey = normalizeSlugParam(team.slug);
   const canonicalSlug = normalizeSlugParam(report.aliasMap[slugKey] ?? slugKey);
 
+  if (USPORTS_EXCLUDED_TEAM_SLUGS.has(canonicalSlug) || USPORTS_EXCLUDED_TEAM_SLUGS.has(slugKey)) {
+    throw new UsportsTeamRejectedError(team.name || slugKey);
+  }
+
+  const allowed = new Set(
+    report.allTeams
+      .map((entry) => normalizeSlugParam(entry.slug))
+      .filter((slug) => !USPORTS_EXCLUDED_TEAM_SLUGS.has(slug)),
+  );
+  if (!allowed.has(canonicalSlug)) {
+    throw new UsportsTeamRejectedError(team.name || slugKey);
+  }
+
   if (canonicalSlug === slugKey) {
     return {
       slug: slugKey,
@@ -173,4 +186,24 @@ export function normalizeUsportsTeamForIngest(
   }
 
   return resolveCanonicalIdentity(canonicalSlug, report);
+}
+
+export class UsportsTeamRejectedError extends Error {
+  constructor(teamLabel: string) {
+    super(`Team is not a U Sports school: ${teamLabel}`);
+    this.name = "UsportsTeamRejectedError";
+  }
+}
+
+export function isUsportsTeamAllowed(
+  team: UsportsTeamIdentity,
+  report: UsportsTeamAliasReport = loadUsportsTeamAliasReport(),
+): boolean {
+  try {
+    normalizeUsportsTeamForIngest(team, report);
+    return true;
+  } catch (error) {
+    if (error instanceof UsportsTeamRejectedError) return false;
+    throw error;
+  }
 }
