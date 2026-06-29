@@ -82,6 +82,16 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     regions: ["CA"],
     category: "domestic",
   },
+  ccaa: {
+    display: "CCAA",
+    tier: "Collegiate",
+    description:
+      "The Canadian Collegiate Athletic Association — national governing body for college sport in Canada.",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/8/88/Canadian_collegiate_athl_logo.svg",
+    regions: ["CA"],
+    category: "domestic",
+  },
   ote: {
     display: "Overtime Elite (OTE)",
     tier: "Professional",
@@ -214,6 +224,7 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
     "g-league",
     "ncaa-m",
     "u-sports",
+    "ccaa",
     "ncaa-w",
     "ncaa-d2",
     "ote",

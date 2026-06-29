@@ -6,6 +6,7 @@ export const SEED_LEAGUES = [
   { slug: "ncaa-w", name: "NCAA Division I (Women)", gender: "female" },
   { slug: "ncaa-d2", name: "NCAA Division II" },
   { slug: "u-sports", name: "U Sports" },
+  { slug: "ccaa", name: "CCAA" },
   { slug: "ote", name: "Overtime Elite (OTE)" },
   { slug: "high-school", name: "High School" },
   { slug: "aau", name: "AAU" },

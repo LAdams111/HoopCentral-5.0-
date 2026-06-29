@@ -78,6 +78,13 @@
       "when": 1750521600000,
       "tag": "0011_league_gender_and_ncaa_w",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1750608000000,
+      "tag": "0012_add_ccaa_league",
+      "breakpoints": true
     }
   ]
 }
