@@ -17,6 +17,9 @@ export interface IngestedSeasonStat {
   pointsPerGame: number;
   reboundsPerGame: number;
   assistsPerGame: number;
+  stealsPerGame: number | null;
+  blocksPerGame: number | null;
+  fieldGoalPct: number | null;
 }
 
 export interface IngestedPlayerStatus {
@@ -49,6 +52,9 @@ export async function getCompletionStatusBySource(
       pointsPerGame: playerSeasonStats.pointsPerGame,
       reboundsPerGame: playerSeasonStats.reboundsPerGame,
       assistsPerGame: playerSeasonStats.assistsPerGame,
+      stealsPerGame: playerSeasonStats.stealsPerGame,
+      blocksPerGame: playerSeasonStats.blocksPerGame,
+      fieldGoalPct: playerSeasonStats.fieldGoalPct,
       leagueSlug: leagues.slug,
     })
     .from(playerIdentities)
@@ -82,6 +88,12 @@ export async function getCompletionStatusBySource(
       pointsPerGame: Number(row.pointsPerGame ?? 0),
       reboundsPerGame: Number(row.reboundsPerGame ?? 0),
       assistsPerGame: Number(row.assistsPerGame ?? 0),
+      stealsPerGame:
+        row.stealsPerGame != null ? Number(row.stealsPerGame) : null,
+      blocksPerGame:
+        row.blocksPerGame != null ? Number(row.blocksPerGame) : null,
+      fieldGoalPct:
+        row.fieldGoalPct != null ? Number(row.fieldGoalPct) : null,
     });
   }
 

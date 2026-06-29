@@ -1,0 +1,1700 @@
+[
+  {
+    "school": "Adams State",
+    "nickname": "Grizzlies",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Alamosa, CO"
+  },
+  {
+    "school": "Adelphi",
+    "nickname": "Panthers",
+    "conference": "Northeast-10 Conference",
+    "location": "Garden City, NY"
+  },
+  {
+    "school": "Alabama-Huntsville",
+    "nickname": "Chargers",
+    "conference": "Gulf South Conference",
+    "location": "Huntsville, AL"
+  },
+  {
+    "school": "Alaska - Anchorage",
+    "nickname": "Seawolves",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Anchorage, AK"
+  },
+  {
+    "school": "Alaska - Fairbanks",
+    "nickname": "Nanooks",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Fairbanks, AK"
+  },
+  {
+    "school": "Albany State (GA)",
+    "nickname": "Golden Rams",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Albany, GA"
+  },
+  {
+    "school": "American International",
+    "nickname": "Yellow Jackets",
+    "conference": "Northeast-10 Conference",
+    "location": "Springfield, MA"
+  },
+  {
+    "school": "Anderson (SC)",
+    "nickname": "Trojans",
+    "conference": "South Atlantic Conference",
+    "location": "Anderson, SC"
+  },
+  {
+    "school": "Angelo State",
+    "nickname": "Rams",
+    "conference": "Lone Star Conference",
+    "location": "San Angelo, TX"
+  },
+  {
+    "school": "Arkansas Tech",
+    "nickname": "Wonder Boys",
+    "conference": "Great American Conference",
+    "location": "Russellville, AR"
+  },
+  {
+    "school": "Arkansas-Fort Smith",
+    "nickname": "Lions",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Fort Smith, AR"
+  },
+  {
+    "school": "Arkansas-Monticello",
+    "nickname": "Boll Weevils",
+    "conference": "Great American Conference",
+    "location": "Monticello, AR"
+  },
+  {
+    "school": "Ashland",
+    "nickname": "Eagles",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Ashland, OH"
+  },
+  {
+    "school": "Assumption College",
+    "nickname": "Greyhounds",
+    "conference": "Northeast-10 Conference",
+    "location": "Worcester, MA"
+  },
+  {
+    "school": "Auburn-Montgomery",
+    "nickname": "Warhawks",
+    "conference": "Gulf South Conference",
+    "location": "Montgomery, AL"
+  },
+  {
+    "school": "Augusta University",
+    "nickname": "Jaguars",
+    "conference": "Peach Belt Conference",
+    "location": "Augusta, GA"
+  },
+  {
+    "school": "Augustana College",
+    "nickname": "Vikings",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Sioux Falls, SD"
+  },
+  {
+    "school": "Azusa Pacific",
+    "nickname": "Cougars",
+    "conference": "Pacific West Conference",
+    "location": "Azusa, CA"
+  },
+  {
+    "school": "Barry",
+    "nickname": "Buccaneers",
+    "conference": "Sunshine State Conference",
+    "location": "Miami Shores, FL"
+  },
+  {
+    "school": "Barton",
+    "nickname": "Bulldogs",
+    "conference": "Conference Carolinas",
+    "location": "Wilson, KS"
+  },
+  {
+    "school": "Belmont Abbey",
+    "nickname": "Crusaders",
+    "conference": "Conference Carolinas",
+    "location": "Belmont, NC"
+  },
+  {
+    "school": "Bemidji State",
+    "nickname": "Beavers",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Bemidji, MN"
+  },
+  {
+    "school": "Benedict College",
+    "nickname": "Tigers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Columbia, SC"
+  },
+  {
+    "school": "Bentley",
+    "nickname": "Falcons",
+    "conference": "Northeast-10 Conference",
+    "location": "Waltham, MA"
+  },
+  {
+    "school": "Biola",
+    "nickname": "Eagles",
+    "conference": "Pacific West Conference",
+    "location": "La Mirada, CA"
+  },
+  {
+    "school": "Black Hills State",
+    "nickname": "Yellow Jackets",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Spearfish, SD"
+  },
+  {
+    "school": "Bloomsburg",
+    "nickname": "Huskies",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Bloomsburg, PA"
+  },
+  {
+    "school": "Bluefield State",
+    "nickname": "Big Blues",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Bluefield, WV"
+  },
+  {
+    "school": "Bowie State",
+    "nickname": "Bulldogs",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Bowie, MD"
+  },
+  {
+    "school": "Bridgeport",
+    "nickname": "Purple Knights",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Bridgeport, CT"
+  },
+  {
+    "school": "Cal Poly - Pomona",
+    "nickname": "Broncos",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Pomona, CA"
+  },
+  {
+    "school": "Cal Poly Humboldt",
+    "nickname": "Lumberjacks",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Arcata, CA"
+  },
+  {
+    "school": "Cal State Dominguez Hills",
+    "nickname": "Toros",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Carson, CA"
+  },
+  {
+    "school": "Cal State East Bay",
+    "nickname": "Pioneers",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Hayward, CA"
+  },
+  {
+    "school": "Cal State Los Angeles",
+    "nickname": "Golden Eagles",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Los Angeles, CA"
+  },
+  {
+    "school": "Cal State Monterey Bay",
+    "nickname": "Otters",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Seaside, CA"
+  },
+  {
+    "school": "Cal State San Bernardino",
+    "nickname": "Coyotes",
+    "conference": "California Collegiate Athletic Association",
+    "location": "San Bernardino, CA"
+  },
+  {
+    "school": "Cal State San Marcos",
+    "nickname": "Cougars",
+    "conference": "California Collegiate Athletic Association",
+    "location": "San Marcos, CA"
+  },
+  {
+    "school": "Caldwell",
+    "nickname": "Cougars",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Caldwell, NJ"
+  },
+  {
+    "school": "California (PA)",
+    "nickname": "Vulcans",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "California, PA"
+  },
+  {
+    "school": "Cameron",
+    "nickname": "Aggies",
+    "conference": "Lone Star Conference",
+    "location": "Lawton, OK"
+  },
+  {
+    "school": "Carson-Newman",
+    "nickname": "Eagles",
+    "conference": "South Atlantic Conference",
+    "location": "Jefferson City, TN"
+  },
+  {
+    "school": "Catawba",
+    "nickname": "Indians",
+    "conference": "South Atlantic Conference",
+    "location": "Salisbury, NC"
+  },
+  {
+    "school": "Cedarville",
+    "nickname": "Yellow Jackets",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Cedarville, OH"
+  },
+  {
+    "school": "Central Missouri",
+    "nickname": "Mules",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Warrensburg, MO"
+  },
+  {
+    "school": "Central Oklahoma",
+    "nickname": "Broncos",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Edmond, OK"
+  },
+  {
+    "school": "Central State (OH)",
+    "nickname": "Marauders",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Wilberforce, OH"
+  },
+  {
+    "school": "Central Washington",
+    "nickname": "Wildcats",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Ellensburg, WA"
+  },
+  {
+    "school": "Chadron State",
+    "nickname": "Eagles",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Chadron, NE"
+  },
+  {
+    "school": "Chaminade",
+    "nickname": "Silverswords",
+    "conference": "Pacific West Conference",
+    "location": "Honolulu, HI"
+  },
+  {
+    "school": "Chestnut Hill",
+    "nickname": "Griffins",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Philadelphia, PA"
+  },
+  {
+    "school": "Chico State",
+    "nickname": "Wildcats",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Chico, CA"
+  },
+  {
+    "school": "Chowan",
+    "nickname": "Hawks",
+    "conference": "Conference Carolinas",
+    "location": "Murfreesboro, NC"
+  },
+  {
+    "school": "Christian Brothers",
+    "nickname": "Buccaneers",
+    "conference": "Gulf South Conference",
+    "location": "Memphis, IN"
+  },
+  {
+    "school": "Claflin",
+    "nickname": "Panthers",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Orangeburg, SC"
+  },
+  {
+    "school": "Clarion",
+    "nickname": "Golden Eagles",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Clarion, PA"
+  },
+  {
+    "school": "Clark Atlanta",
+    "nickname": "Black Panthers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Atlanta, GA"
+  },
+  {
+    "school": "Clayton State",
+    "nickname": "Lakers",
+    "conference": "Peach Belt Conference",
+    "location": "Morrow, GA"
+  },
+  {
+    "school": "Coker",
+    "nickname": "Cobras",
+    "conference": "South Atlantic Conference",
+    "location": "Hartsville, SC"
+  },
+  {
+    "school": "Colorado Christian",
+    "nickname": "Cougars",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Lakewood, CO"
+  },
+  {
+    "school": "Colorado Mesa",
+    "nickname": "Mavericks",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Grand Junction, CO"
+  },
+  {
+    "school": "Colorado Mines",
+    "nickname": "Orediggers",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Golden, CO"
+  },
+  {
+    "school": "Colorado-Colorado Springs",
+    "nickname": "Mountain Lions",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Colorado Springs, CO"
+  },
+  {
+    "school": "Columbus State",
+    "nickname": "Cougars",
+    "conference": "Peach Belt Conference",
+    "location": "Columbus, GA"
+  },
+  {
+    "school": "Concord",
+    "nickname": "Mountain Lions",
+    "conference": "Mountain East Conference",
+    "location": "Athens, WV"
+  },
+  {
+    "school": "Concordia (CA)",
+    "nickname": "Eagles",
+    "conference": "Pacific West Conference",
+    "location": "Irvine, CA"
+  },
+  {
+    "school": "Concordia St. Paul",
+    "nickname": "Golden Bears",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Saint Paul, MN"
+  },
+  {
+    "school": "Converse",
+    "nickname": "Valkyries",
+    "conference": "Conference Carolinas",
+    "location": "Spartanburg, SC"
+  },
+  {
+    "school": "CSU Pueblo",
+    "nickname": "ThunderWolves",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Pueblo, CO"
+  },
+  {
+    "school": "D'Youville",
+    "nickname": "Saints",
+    "conference": "East Coast Conference",
+    "location": "Buffalo, NY"
+  },
+  {
+    "school": "Daemen College",
+    "nickname": "Wildcats",
+    "conference": "East Coast Conference",
+    "location": "Amherst, NY"
+  },
+  {
+    "school": "Dallas Baptist",
+    "nickname": "Patriots",
+    "conference": "Lone Star Conference",
+    "location": "Dallas, TX"
+  },
+  {
+    "school": "Davenport",
+    "nickname": "Panthers",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Caledonia Township, MI"
+  },
+  {
+    "school": "Davis & Elkins",
+    "nickname": "Senators",
+    "conference": "Mountain East Conference",
+    "location": "Elkins, WV"
+  },
+  {
+    "school": "Delta State",
+    "nickname": "Statesmen",
+    "conference": "Gulf South Conference",
+    "location": "Cleveland, MS"
+  },
+  {
+    "school": "District of Columbia",
+    "nickname": "Firebirds",
+    "conference": "East Coast Conference",
+    "location": "Washington, DC"
+  },
+  {
+    "school": "Dominican (CA)",
+    "nickname": "Penguins",
+    "conference": "Pacific West Conference",
+    "location": "San Rafael, CA"
+  },
+  {
+    "school": "Dominican (NY)",
+    "nickname": "Chargers",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Orangeburg, NY"
+  },
+  {
+    "school": "Drury University",
+    "nickname": "Panthers",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Springfield, MO"
+  },
+  {
+    "school": "East Central",
+    "nickname": "Tigers",
+    "conference": "Great American Conference",
+    "location": "Ada, OK"
+  },
+  {
+    "school": "East Stroudsburg",
+    "nickname": "Warriors",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "East Stroudsburg, PA"
+  },
+  {
+    "school": "Eastern New Mexico",
+    "nickname": "Greyhounds",
+    "conference": "Lone Star Conference",
+    "location": "Portales, NM"
+  },
+  {
+    "school": "Eckerd College",
+    "nickname": "Tritons",
+    "conference": "Sunshine State Conference",
+    "location": "St. Petersburg, FL"
+  },
+  {
+    "school": "Edinboro",
+    "nickname": "Fighting Scots",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Edinboro, PA"
+  },
+  {
+    "school": "Edward Waters",
+    "nickname": "Tigers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Jacksonville, FL"
+  },
+  {
+    "school": "Elizabeth City State",
+    "nickname": "Vikings",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Elizabeth City, NC"
+  },
+  {
+    "school": "Embry Riddle",
+    "nickname": "Eagles",
+    "conference": "Sunshine State Conference",
+    "location": "Daytona Beach, FL"
+  },
+  {
+    "school": "Emmanuel (GA)",
+    "nickname": "Lions",
+    "conference": "Conference Carolinas",
+    "location": "Franklin Springs, GA"
+  },
+  {
+    "school": "Emory & Henry",
+    "nickname": "Wasps",
+    "conference": "South Atlantic Conference",
+    "location": "Emory, VA"
+  },
+  {
+    "school": "Emporia State",
+    "nickname": "Hornets",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Emporia, KS"
+  },
+  {
+    "school": "Erskine",
+    "nickname": "Flying Fleet",
+    "conference": "Conference Carolinas",
+    "location": "Due West, SC"
+  },
+  {
+    "school": "Fairmont State",
+    "nickname": "Fighting Falcons",
+    "conference": "Mountain East Conference",
+    "location": "Fairmont, WV"
+  },
+  {
+    "school": "Fayetteville State",
+    "nickname": "Broncos",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Fayetteville, NC"
+  },
+  {
+    "school": "Felician College",
+    "nickname": "Golden Falcons",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Lodi, NJ"
+  },
+  {
+    "school": "Ferris State",
+    "nickname": "Bulldogs",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Big Rapids, MI"
+  },
+  {
+    "school": "Ferrum",
+    "nickname": "Panthers",
+    "conference": "Conference Carolinas",
+    "location": "Ferrum, VA"
+  },
+  {
+    "school": "Findlay",
+    "nickname": "Oilers",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Findlay, OH"
+  },
+  {
+    "school": "Flagler",
+    "nickname": "Saints",
+    "conference": "Peach Belt Conference",
+    "location": "St. Augustine, FL"
+  },
+  {
+    "school": "Florida Southern",
+    "nickname": "Moccasins",
+    "conference": "Sunshine State Conference",
+    "location": "Lakeland, FL"
+  },
+  {
+    "school": "Florida Tech",
+    "nickname": "Panthers",
+    "conference": "Sunshine State Conference",
+    "location": "Melbourne, FL"
+  },
+  {
+    "school": "Fort Hays State",
+    "nickname": "Tigers",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Hays, KS"
+  },
+  {
+    "school": "Fort Lewis",
+    "nickname": "Skyhawks",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Durango, CO"
+  },
+  {
+    "school": "Fort Valley State",
+    "nickname": "Wildcats",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Fort Valley, GA"
+  },
+  {
+    "school": "Francis Marion",
+    "nickname": "Patriots",
+    "conference": "Conference Carolinas",
+    "location": "Florence, SC"
+  },
+  {
+    "school": "Franklin Pierce",
+    "nickname": "Ravens",
+    "conference": "Northeast-10 Conference",
+    "location": "Rindge, NH"
+  },
+  {
+    "school": "Fresno Pacific",
+    "nickname": "Sunbirds",
+    "conference": "Pacific West Conference",
+    "location": "Fresno, CA"
+  },
+  {
+    "school": "Frostburg State",
+    "nickname": "Bobcats",
+    "conference": "Mountain East Conference",
+    "location": "Frostburg, MD"
+  },
+  {
+    "school": "Gannon",
+    "nickname": "Golden Knights",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Erie, PA"
+  },
+  {
+    "school": "Georgia College",
+    "nickname": "Bobcats",
+    "conference": "Peach Belt Conference",
+    "location": "Milledgeville, GA"
+  },
+  {
+    "school": "Georgia Southwestern State",
+    "nickname": "Hurricanes",
+    "conference": "Peach Belt Conference",
+    "location": "Americus, GA"
+  },
+  {
+    "school": "Georgian Court",
+    "nickname": "Lions",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Lakewood, NJ"
+  },
+  {
+    "school": "Glenville State",
+    "nickname": "Pioneers",
+    "conference": "Mountain East Conference",
+    "location": "Glenville, WV"
+  },
+  {
+    "school": "Goldey-Beacom",
+    "nickname": "Lightning",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Wilmington, DE"
+  },
+  {
+    "school": "Grand Valley State",
+    "nickname": "Lakers",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Allendale, MI"
+  },
+  {
+    "school": "Harding",
+    "nickname": "Bison",
+    "conference": "Great American Conference",
+    "location": "Searcy, AR"
+  },
+  {
+    "school": "Hawaii Pacific",
+    "nickname": "Sharks",
+    "conference": "Pacific West Conference",
+    "location": "Honolulu, HI"
+  },
+  {
+    "school": "Hawaii-Hilo",
+    "nickname": "Vulcans",
+    "conference": "Pacific West Conference",
+    "location": "Hilo, HI"
+  },
+  {
+    "school": "Henderson State",
+    "nickname": "Reddies",
+    "conference": "Great American Conference",
+    "location": "Arkadelphia, AR"
+  },
+  {
+    "school": "Hillsdale (MI)",
+    "nickname": "Chargers",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Hillsdale, MI"
+  },
+  {
+    "school": "Holy Family",
+    "nickname": "Tigers",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Philadelphia, PA"
+  },
+  {
+    "school": "Illinois-Springfield",
+    "nickname": "Prairie Stars",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Springfield, IL"
+  },
+  {
+    "school": "Indiana University of Pennsylvania",
+    "nickname": "Crimson Hawks",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Indiana, PA"
+  },
+  {
+    "school": "Indianapolis",
+    "nickname": "Greyhounds",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Indianapolis, IN"
+  },
+  {
+    "school": "Jefferson",
+    "nickname": "Rams",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Philadelphia, PA"
+  },
+  {
+    "school": "Johnson C. Smith",
+    "nickname": "Golden Bulls",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Charlotte, NC"
+  },
+  {
+    "school": "Kentucky State",
+    "nickname": "Thorobreds",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Frankfort, KY"
+  },
+  {
+    "school": "Kentucky Wesleyan",
+    "nickname": "Panthers",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Owensboro, KY"
+  },
+  {
+    "school": "King",
+    "nickname": "Tornado",
+    "conference": "Conference Carolinas",
+    "location": "Bristol, TN"
+  },
+  {
+    "school": "Kutztown",
+    "nickname": "Golden Bears",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Kutztown, PA"
+  },
+  {
+    "school": "Lake Erie",
+    "nickname": "Storm",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Painesville, OH"
+  },
+  {
+    "school": "Lake Superior State",
+    "nickname": "Lakers",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Sault Sainte Marie, MI"
+  },
+  {
+    "school": "Lander",
+    "nickname": "Bearcats",
+    "conference": "Peach Belt Conference",
+    "location": "Greenwood, SC"
+  },
+  {
+    "school": "Lane",
+    "nickname": "Dragons",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Jackson, TN"
+  },
+  {
+    "school": "Lee University",
+    "nickname": "Flames",
+    "conference": "Gulf South Conference",
+    "location": "Cleveland, TN"
+  },
+  {
+    "school": "Lees-McRae",
+    "nickname": "Bobcats",
+    "conference": "Conference Carolinas",
+    "location": "Banner Elk, NC"
+  },
+  {
+    "school": "LeMoyne-Owen College",
+    "nickname": "Magicians",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Memphis, TN"
+  },
+  {
+    "school": "Lenoir-Rhyne",
+    "nickname": "Bears",
+    "conference": "South Atlantic Conference",
+    "location": "Hickory, NC"
+  },
+  {
+    "school": "Lewis",
+    "nickname": "Flyers",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Romeoville, IL"
+  },
+  {
+    "school": "Lincoln (MO)",
+    "nickname": "Blue Tigers",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Jefferson City, MO"
+  },
+  {
+    "school": "Lincoln (PA)",
+    "nickname": "Lions",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Chester County, PA"
+  },
+  {
+    "school": "Lincoln Memorial",
+    "nickname": "Railsplitters",
+    "conference": "South Atlantic Conference",
+    "location": "Harrogate, TN"
+  },
+  {
+    "school": "Livingstone",
+    "nickname": "Blue Bears",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Salisbury, NC"
+  },
+  {
+    "school": "Lock Haven",
+    "nickname": "Eagles",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Lock Haven, PA"
+  },
+  {
+    "school": "Lubbock Christian",
+    "nickname": "Chaparral",
+    "conference": "Lone Star Conference",
+    "location": "Lubbock, TX"
+  },
+  {
+    "school": "Lynn",
+    "nickname": "Fighting Knights",
+    "conference": "Sunshine State Conference",
+    "location": "Boca Raton, FL"
+  },
+  {
+    "school": "Malone",
+    "nickname": "Pioneers",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Canton, OH"
+  },
+  {
+    "school": "Mansfield",
+    "nickname": "Mountaineers",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Mansfield, PA"
+  },
+  {
+    "school": "Mars Hill",
+    "nickname": "Mountain Lions",
+    "conference": "South Atlantic Conference",
+    "location": "Mars Hill, NC"
+  },
+  {
+    "school": "Maryville (MO)",
+    "nickname": "Saints",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Town and Country, MO"
+  },
+  {
+    "school": "McKendree",
+    "nickname": "Bearcats",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Lebanon, IL"
+  },
+  {
+    "school": "Mercy College",
+    "nickname": "Mavericks",
+    "conference": "East Coast Conference",
+    "location": "Dobbs Ferry, NY"
+  },
+  {
+    "school": "Metro State",
+    "nickname": "Roadrunners",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Denver, CO"
+  },
+  {
+    "school": "Michigan Tech",
+    "nickname": "Huskies",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Houghton, MI"
+  },
+  {
+    "school": "Midwestern State",
+    "nickname": "Mustangs",
+    "conference": "Lone Star Conference",
+    "location": "Wichita Falls, TX"
+  },
+  {
+    "school": "Miles College",
+    "nickname": "Golden Bears",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Fairfield, AL"
+  },
+  {
+    "school": "Millersville University",
+    "nickname": "Marauders",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Millersville, PA"
+  },
+  {
+    "school": "Minnesota Crookston",
+    "nickname": "Golden Eagles",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Crookston, MN"
+  },
+  {
+    "school": "Minnesota Duluth",
+    "nickname": "Bulldogs",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Duluth, MN"
+  },
+  {
+    "school": "Minnesota State - Moorhead",
+    "nickname": "Dragons",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Moorhead, MN"
+  },
+  {
+    "school": "Minnesota State-Mankato",
+    "nickname": "Mavericks",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Mankato, MN"
+  },
+  {
+    "school": "Minot State",
+    "nickname": "Beavers",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Minot, ND"
+  },
+  {
+    "school": "Mississippi College",
+    "nickname": "Choctaws",
+    "conference": "Gulf South Conference",
+    "location": "Clinton, MS"
+  },
+  {
+    "school": "Missouri S&T (Rolla)",
+    "nickname": "Miners",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Rolla, MO"
+  },
+  {
+    "school": "Missouri Southern State",
+    "nickname": "Lions",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Joplin, MO"
+  },
+  {
+    "school": "Missouri Western",
+    "nickname": "Griffons",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Saint Joseph, MO"
+  },
+  {
+    "school": "Missouri-St. Louis",
+    "nickname": "Tritons",
+    "conference": "Great Lakes Valley Conference",
+    "location": "St. Louis, MO"
+  },
+  {
+    "school": "Molloy",
+    "nickname": "Lions",
+    "conference": "East Coast Conference",
+    "location": "Rockville Centre, NY"
+  },
+  {
+    "school": "Montana St.-Billings",
+    "nickname": "Yellowjackets",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Billings, MT"
+  },
+  {
+    "school": "Montevallo",
+    "nickname": "Falcons",
+    "conference": "Gulf South Conference",
+    "location": "Montevallo, AL"
+  },
+  {
+    "school": "Morehouse",
+    "nickname": "Maroon Tigers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Atlanta, GA"
+  },
+  {
+    "school": "Mount Olive",
+    "nickname": "Trojans",
+    "conference": "Conference Carolinas",
+    "location": "Mount Olive, NC"
+  },
+  {
+    "school": "Nebraska-Kearney",
+    "nickname": "Lopers",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Kearney, NE"
+  },
+  {
+    "school": "New Mexico Highlands",
+    "nickname": "Cowboys",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Las Vegas, NM"
+  },
+  {
+    "school": "Newberry",
+    "nickname": "Wolves",
+    "conference": "South Atlantic Conference",
+    "location": "Newberry, SC"
+  },
+  {
+    "school": "Newman University",
+    "nickname": "Jets",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Wichita, KS"
+  },
+  {
+    "school": "North Georgia",
+    "nickname": "Nighthawks",
+    "conference": "Peach Belt Conference",
+    "location": "Dahlonega, GA"
+  },
+  {
+    "school": "North Greenville",
+    "nickname": "Crusaders",
+    "conference": "Conference Carolinas",
+    "location": "Tigerville, SC"
+  },
+  {
+    "school": "Northeastern State",
+    "nickname": "RiverHawks",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Tahlequah, OK"
+  },
+  {
+    "school": "Northern Michigan",
+    "nickname": "Wildcats",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Marquette, MI"
+  },
+  {
+    "school": "Northern State",
+    "nickname": "Wolves",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Aberdeen, SD"
+  },
+  {
+    "school": "Northwest Missouri State",
+    "nickname": "Bearcats",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Maryville, MO"
+  },
+  {
+    "school": "Northwest Nazarene",
+    "nickname": "Nighthawks",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Nampa, ID"
+  },
+  {
+    "school": "Northwestern Oklahoma State",
+    "nickname": "Rangers",
+    "conference": "Great American Conference",
+    "location": "Alva, OK"
+  },
+  {
+    "school": "Northwood (MI)",
+    "nickname": "Timberwolves",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Midland, MI"
+  },
+  {
+    "school": "Nova Southeastern",
+    "nickname": "Sharks",
+    "conference": "Sunshine State Conference",
+    "location": "Davie, FL"
+  },
+  {
+    "school": "Ohio Dominican",
+    "nickname": "Panthers",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Columbus, OH"
+  },
+  {
+    "school": "Oklahoma Baptist",
+    "nickname": "Bison",
+    "conference": "Great American Conference",
+    "location": "Shawnee, OK"
+  },
+  {
+    "school": "Oklahoma Christian",
+    "nickname": "Eagles",
+    "conference": "Lone Star Conference",
+    "location": "Oklahoma City, OK"
+  },
+  {
+    "school": "Ouachita Baptist",
+    "nickname": "Tigers",
+    "conference": "Great American Conference",
+    "location": "Arkadelphia, AR"
+  },
+  {
+    "school": "Pace",
+    "nickname": "Setters",
+    "conference": "Northeast-10 Conference",
+    "location": "Pleasantville, NY"
+  },
+  {
+    "school": "Palm Beach Atlantic",
+    "nickname": "Sailfish",
+    "conference": "Sunshine State Conference",
+    "location": "West Palm Beach, FL"
+  },
+  {
+    "school": "Pitt-Johnstown",
+    "nickname": "Mountain Cats",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Johnstown, PA"
+  },
+  {
+    "school": "Pittsburg State",
+    "nickname": "Gorillas",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Pittsburg, KS"
+  },
+  {
+    "school": "Point Loma",
+    "nickname": "Sea Lions",
+    "conference": "Pacific West Conference",
+    "location": "San Diego, CA"
+  },
+  {
+    "school": "Post",
+    "nickname": "Eagles",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Waterbury, CT"
+  },
+  {
+    "school": "Purdue-Northwest",
+    "nickname": "Pride",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Hammond, IN"
+  },
+  {
+    "school": "Queens College",
+    "nickname": "Knights",
+    "conference": "East Coast Conference",
+    "location": "Queens, NY"
+  },
+  {
+    "school": "Quincy",
+    "nickname": "Hawks",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Quincy, IL"
+  },
+  {
+    "school": "Regis (CO)",
+    "nickname": "Rangers",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Denver, CO"
+  },
+  {
+    "school": "Roberts Wesleyan College",
+    "nickname": "Raiders",
+    "conference": "East Coast Conference",
+    "location": "North Chili, NY"
+  },
+  {
+    "school": "Rockhurst",
+    "nickname": "Hawks",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Kansas City, MO"
+  },
+  {
+    "school": "Rogers State",
+    "nickname": "Hillcats",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Claremore, OK"
+  },
+  {
+    "school": "Rollins College",
+    "nickname": "Tars",
+    "conference": "Sunshine State Conference",
+    "location": "Orlando, FL"
+  },
+  {
+    "school": "Saginaw Valley State",
+    "nickname": "Cardinals",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "University Center, MI"
+  },
+  {
+    "school": "Saint Anselm",
+    "nickname": "Hawks",
+    "conference": "Northeast-10 Conference",
+    "location": "Goffstown, NH"
+  },
+  {
+    "school": "Saint Leo",
+    "nickname": "Lions",
+    "conference": "Sunshine State Conference",
+    "location": "Saint Leo, FL"
+  },
+  {
+    "school": "Saint Michael's",
+    "nickname": "Purple Knights",
+    "conference": "Northeast-10 Conference",
+    "location": "Colchester, VT"
+  },
+  {
+    "school": "Salem University",
+    "nickname": "Tigers",
+    "conference": "Division II Independent Conference",
+    "location": "Salem, WV"
+  },
+  {
+    "school": "San Francisco State",
+    "nickname": "Gators",
+    "conference": "California Collegiate Athletic Association",
+    "location": "San Francisco, CA"
+  },
+  {
+    "school": "Savannah State",
+    "nickname": "Tigers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Savannah, GA"
+  },
+  {
+    "school": "Seattle Pacific",
+    "nickname": "Falcons",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Seattle, WA"
+  },
+  {
+    "school": "Seton Hill",
+    "nickname": "Griffins",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Greensburg, PA"
+  },
+  {
+    "school": "Shaw",
+    "nickname": "Bears",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Raleigh, NC"
+  },
+  {
+    "school": "Shepherd University",
+    "nickname": "Rams",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Shepherdstown, WV"
+  },
+  {
+    "school": "Shippensburg",
+    "nickname": "Red Raiders",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Shippensburg, PA"
+  },
+  {
+    "school": "Shorter",
+    "nickname": "Hawks",
+    "conference": "Conference Carolinas",
+    "location": "Rome, GA"
+  },
+  {
+    "school": "Sioux Falls",
+    "nickname": "Cougars",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Sioux Falls, SD"
+  },
+  {
+    "school": "Slippery Rock",
+    "nickname": "The Rock",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "Slippery Rock, PA"
+  },
+  {
+    "school": "South Carolina-Aiken",
+    "nickname": "Pacers",
+    "conference": "Peach Belt Conference",
+    "location": "Aiken, SC"
+  },
+  {
+    "school": "South Dakota School of Mines",
+    "nickname": "Hardrockers",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Rapid City, SD"
+  },
+  {
+    "school": "Southeastern Oklahoma State",
+    "nickname": "Savage Storm",
+    "conference": "Great American Conference",
+    "location": "Durant, OK"
+  },
+  {
+    "school": "Southern Arkansas",
+    "nickname": "Muleriders",
+    "conference": "Great American Conference",
+    "location": "Magnolia, AR"
+  },
+  {
+    "school": "Southern Connecticut State",
+    "nickname": "Owls",
+    "conference": "Northeast-10 Conference",
+    "location": "New Haven, CT"
+  },
+  {
+    "school": "Southern Nazarene",
+    "nickname": "Crimson Storm",
+    "conference": "Great American Conference",
+    "location": "Bethany, OK"
+  },
+  {
+    "school": "Southern New Hampshire",
+    "nickname": "Penmen",
+    "conference": "Northeast-10 Conference",
+    "location": "Manchester, NH"
+  },
+  {
+    "school": "Southern Wesleyan",
+    "nickname": "Warriors",
+    "conference": "Conference Carolinas",
+    "location": "Central, SC"
+  },
+  {
+    "school": "Southwest Baptist",
+    "nickname": "Bearcats",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Bolivar, MO"
+  },
+  {
+    "school": "Southwest Minnesota State",
+    "nickname": "Mustangs",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Marshall, MN"
+  },
+  {
+    "school": "Southwestern Oklahoma State",
+    "nickname": "Bulldogs",
+    "conference": "Great American Conference",
+    "location": "Weatherford, OK"
+  },
+  {
+    "school": "Spring Hill",
+    "nickname": "Badgers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Mobile, AL"
+  },
+  {
+    "school": "St. Cloud State",
+    "nickname": "Huskies",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "St. Cloud, MN"
+  },
+  {
+    "school": "St. Edward's",
+    "nickname": "Hilltoppers",
+    "conference": "Lone Star Conference",
+    "location": "Austin, TX"
+  },
+  {
+    "school": "St. Martin's",
+    "nickname": "Saints",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Lacey, WA"
+  },
+  {
+    "school": "St. Mary's (TX)",
+    "nickname": "Rattlers",
+    "conference": "Lone Star Conference",
+    "location": "San Antonio, TX"
+  },
+  {
+    "school": "St. Thomas Aquinas",
+    "nickname": "Spartans",
+    "conference": "East Coast Conference",
+    "location": "Sparkill, NY"
+  },
+  {
+    "school": "Stanislaus State",
+    "nickname": "Warriors",
+    "conference": "California Collegiate Athletic Association",
+    "location": "Turlock, CA"
+  },
+  {
+    "school": "Staten Island",
+    "nickname": "Dolphins",
+    "conference": "East Coast Conference",
+    "location": "Staten Island, NY"
+  },
+  {
+    "school": "Sul Ross State",
+    "nickname": "Lobos",
+    "conference": "Lone Star Conference",
+    "location": "Alpine, TX"
+  },
+  {
+    "school": "Tampa",
+    "nickname": "Spartans",
+    "conference": "Sunshine State Conference",
+    "location": "Tampa, FL"
+  },
+  {
+    "school": "Texas A&M-International",
+    "nickname": "Dustdevils",
+    "conference": "Lone Star Conference",
+    "location": "Laredo, TX"
+  },
+  {
+    "school": "Texas A&M-Kingsville",
+    "nickname": "Javelinas",
+    "conference": "Lone Star Conference",
+    "location": "Kingsville, TX"
+  },
+  {
+    "school": "Texas-Dallas",
+    "nickname": "Comets",
+    "conference": "Lone Star Conference",
+    "location": "Richardson, TX"
+  },
+  {
+    "school": "Texas-Permian Basin",
+    "nickname": "Falcons",
+    "conference": "Lone Star Conference",
+    "location": "Odessa, TX"
+  },
+  {
+    "school": "Texas-Tyler",
+    "nickname": "Patriots",
+    "conference": "Lone Star Conference",
+    "location": "Tyler, TX"
+  },
+  {
+    "school": "Thomas More",
+    "nickname": "Saints",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Crestview Hills, KY"
+  },
+  {
+    "school": "Tiffin",
+    "nickname": "Dragons",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "Tiffin, OH"
+  },
+  {
+    "school": "Trevecca Nazarene",
+    "nickname": "Trojans",
+    "conference": "Gulf South Conference",
+    "location": "Nashville, TN"
+  },
+  {
+    "school": "Truman State",
+    "nickname": "Bulldogs",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Kirksville, MO"
+  },
+  {
+    "school": "Tusculum",
+    "nickname": "Pioneers",
+    "conference": "South Atlantic Conference",
+    "location": "Greeneville, TN"
+  },
+  {
+    "school": "Tuskegee",
+    "nickname": "Golden Tigers",
+    "conference": "Southern Intercollegiate Athletic Conference",
+    "location": "Tuskegee, AL"
+  },
+  {
+    "school": "UNC-Pembroke",
+    "nickname": "Braves",
+    "conference": "Conference Carolinas",
+    "location": "Pembroke, NC"
+  },
+  {
+    "school": "Union (TN)",
+    "nickname": "Bulldogs",
+    "conference": "Gulf South Conference",
+    "location": "Jackson, TN"
+  },
+  {
+    "school": "University of Charleston",
+    "nickname": "Golden Eagles",
+    "conference": "Mountain East Conference",
+    "location": "Charleston, WV"
+  },
+  {
+    "school": "University of Mary",
+    "nickname": "Marauders",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Bismarck, ND"
+  },
+  {
+    "school": "Upper Iowa",
+    "nickname": "Peacocks",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Fayette, IA"
+  },
+  {
+    "school": "Valdosta State",
+    "nickname": "Blazers",
+    "conference": "Gulf South Conference",
+    "location": "Valdosta, GA"
+  },
+  {
+    "school": "Virginia State",
+    "nickname": "Trojans",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Petersburg, VA"
+  },
+  {
+    "school": "Virginia Union",
+    "nickname": "Panthers",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Richmond, VA"
+  },
+  {
+    "school": "Virginia-Wise",
+    "nickname": "Cavaliers",
+    "conference": "South Atlantic Conference",
+    "location": "Wise, VA"
+  },
+  {
+    "school": "Walsh",
+    "nickname": "Cavaliers",
+    "conference": "Great Midwest Athletic Conference",
+    "location": "North Canton, OH"
+  },
+  {
+    "school": "Washburn",
+    "nickname": "Ichabods",
+    "conference": "Mid-America Intercollegiate Athletic Association",
+    "location": "Topeka, KS"
+  },
+  {
+    "school": "Wayne State (MI)",
+    "nickname": "Warriors",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Detroit, MI"
+  },
+  {
+    "school": "Wayne State (NEB)",
+    "nickname": "Wildcats",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Wayne, NE"
+  },
+  {
+    "school": "West Alabama",
+    "nickname": "Tigers",
+    "conference": "Gulf South Conference",
+    "location": "Livingston, AL"
+  },
+  {
+    "school": "West Chester PA",
+    "nickname": "Golden Rams",
+    "conference": "Pennsylvania State Athletic Conference",
+    "location": "West Chester, PA"
+  },
+  {
+    "school": "West Florida",
+    "nickname": "Argonauts",
+    "conference": "Gulf South Conference",
+    "location": "Pensacola, FL"
+  },
+  {
+    "school": "West Liberty",
+    "nickname": "Hilltoppers",
+    "conference": "Mountain East Conference",
+    "location": "West Liberty, WV"
+  },
+  {
+    "school": "West Texas A&M",
+    "nickname": "Buffaloes",
+    "conference": "Lone Star Conference",
+    "location": "Canyon, TX"
+  },
+  {
+    "school": "West Virginia State",
+    "nickname": "Yellow Jackets",
+    "conference": "Mountain East Conference",
+    "location": "Institute, WV"
+  },
+  {
+    "school": "Western Colorado",
+    "nickname": "Mountaineers",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Gunnison, CO"
+  },
+  {
+    "school": "Western New Mexico",
+    "nickname": "Mustangs",
+    "conference": "Lone Star Conference",
+    "location": "Silver City, NM"
+  },
+  {
+    "school": "Western Oregon",
+    "nickname": "Wolves",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Monmouth, OR"
+  },
+  {
+    "school": "Western Washington",
+    "nickname": "Vikings",
+    "conference": "Great Northwest Athletic Conference",
+    "location": "Bellingham, WA"
+  },
+  {
+    "school": "Westminster (Utah)",
+    "nickname": "Griffins",
+    "conference": "Rocky Mountain Athletic Conference",
+    "location": "Salt Lake City, UT"
+  },
+  {
+    "school": "Wheeling",
+    "nickname": "Cardinals",
+    "conference": "Mountain East Conference",
+    "location": "Wheeling, WV"
+  },
+  {
+    "school": "William Jewell",
+    "nickname": "Cardinals",
+    "conference": "Great Lakes Valley Conference",
+    "location": "Liberty, MO"
+  },
+  {
+    "school": "Wilmington (DE)",
+    "nickname": "Wildcats",
+    "conference": "Central Atlantic Collegiate Conference",
+    "location": "Wilmington, DE"
+  },
+  {
+    "school": "Wingate",
+    "nickname": "Bulldogs",
+    "conference": "South Atlantic Conference",
+    "location": "Wingate, NC"
+  },
+  {
+    "school": "Winona State",
+    "nickname": "Warriors",
+    "conference": "Northern Sun Intercollegiate Conference",
+    "location": "Winona, MN"
+  },
+  {
+    "school": "Winston-Salem State",
+    "nickname": "Rams",
+    "conference": "Central Intercollegiate Athletic Association",
+    "location": "Winston-Salem, NC"
+  },
+  {
+    "school": "Wisconsin-Parkside",
+    "nickname": "Rangers",
+    "conference": "Great Lakes Intercollegiate Athletic Conference",
+    "location": "Kenosha, WI"
+  },
+  {
+    "school": "WV Wesleyan",
+    "nickname": "Bobcats",
+    "conference": "Mountain East Conference",
+    "location": "Buckhannon, WV"
+  },
+  {
+    "school": "Young Harris",
+    "nickname": "Mountain Lions",
+    "conference": "Conference Carolinas",
+    "location": "Young Harris, GA"
+  }
+]

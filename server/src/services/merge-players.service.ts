@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { db, type DbClient } from "../db/index.js";
 import {
   playerIdentities,
@@ -6,6 +6,7 @@ import {
   playerStints,
   players,
 } from "../db/schema/index.js";
+import { normalizeDisplayName } from "./player-identity.service.js";
 
 export interface MergePlayersResult {
   keptPlayerId: number;
@@ -13,6 +14,9 @@ export interface MergePlayersResult {
   displayName: string;
   profileViewsTransferred: number;
   slugTransferred: boolean;
+  identitiesMoved: number;
+  stintsMoved: number;
+  statsMoved: number;
 }
 
 /**
@@ -54,7 +58,99 @@ export async function mergePlayerInto(
 
     const mergedViews = keep.profileViews + duplicate.profileViews;
 
-    // Move season rows that exist only on the duplicate (e.g. seed 2023-24 before backfill catches up).
+    let identitiesMoved = 0;
+    let stintsMoved = 0;
+    let statsMoved = 0;
+
+    const duplicateIdentities = await tx
+      .select()
+      .from(playerIdentities)
+      .where(eq(playerIdentities.playerId, duplicatePlayerId));
+
+    for (const identity of duplicateIdentities) {
+      const keepIdentityConflict = identity.leagueId
+        ? await tx
+            .select({ id: playerIdentities.id })
+            .from(playerIdentities)
+            .where(
+              and(
+                eq(playerIdentities.playerId, keepPlayerId),
+                eq(playerIdentities.leagueId, identity.leagueId),
+                eq(playerIdentities.source, identity.source),
+              ),
+            )
+            .limit(1)
+        : await tx
+            .select({ id: playerIdentities.id })
+            .from(playerIdentities)
+            .where(
+              and(
+                eq(playerIdentities.playerId, keepPlayerId),
+                isNull(playerIdentities.leagueId),
+                eq(playerIdentities.source, identity.source),
+              ),
+            )
+            .limit(1);
+
+      if (keepIdentityConflict.length) {
+        await tx
+          .delete(playerIdentities)
+          .where(eq(playerIdentities.id, identity.id));
+        continue;
+      }
+
+      await tx
+        .update(playerIdentities)
+        .set({ playerId: keepPlayerId, updatedAt: new Date() })
+        .where(eq(playerIdentities.id, identity.id));
+      identitiesMoved += 1;
+    }
+
+    const duplicateStints = await tx
+      .select()
+      .from(playerStints)
+      .where(eq(playerStints.playerId, duplicatePlayerId));
+
+    for (const stint of duplicateStints) {
+      const stintConflict =
+        stint.seasonId == null
+          ? await tx
+              .select({ id: playerStints.id })
+              .from(playerStints)
+              .where(
+                and(
+                  eq(playerStints.playerId, keepPlayerId),
+                  eq(playerStints.teamId, stint.teamId),
+                  eq(playerStints.leagueId, stint.leagueId),
+                  isNull(playerStints.seasonId),
+                ),
+              )
+              .limit(1)
+          : await tx
+              .select({ id: playerStints.id })
+              .from(playerStints)
+              .where(
+                and(
+                  eq(playerStints.playerId, keepPlayerId),
+                  eq(playerStints.teamId, stint.teamId),
+                  eq(playerStints.leagueId, stint.leagueId),
+                  eq(playerStints.seasonId, stint.seasonId),
+                ),
+              )
+              .limit(1);
+
+      if (stintConflict.length) {
+        await tx.delete(playerStints).where(eq(playerStints.id, stint.id));
+        continue;
+      }
+
+      await tx
+        .update(playerStints)
+        .set({ playerId: keepPlayerId })
+        .where(eq(playerStints.id, stint.id));
+      stintsMoved += 1;
+    }
+
     const duplicateStats = await tx
       .select()
       .from(playerSeasonStats)
@@ -74,45 +170,18 @@ export async function mergePlayerInto(
         )
         .limit(1);
 
-      if (existingOnKeep) continue;
+      if (existingOnKeep) {
+        await tx
+          .delete(playerSeasonStats)
+          .where(eq(playerSeasonStats.id, stat.id));
+        continue;
+      }
 
       await tx
         .update(playerSeasonStats)
         .set({ playerId: keepPlayerId })
         .where(eq(playerSeasonStats.id, stat.id));
-
-      const duplicateStints = await tx
-        .select()
-        .from(playerStints)
-        .where(
-          and(
-            eq(playerStints.playerId, duplicatePlayerId),
-            eq(playerStints.teamId, stat.teamId),
-            eq(playerStints.leagueId, stat.leagueId),
-            eq(playerStints.seasonId, stat.seasonId),
-          ),
-        );
-
-      for (const stint of duplicateStints) {
-        if (stint.seasonId == null) continue;
-        const [stintOnKeep] = await tx
-          .select({ id: playerStints.id })
-          .from(playerStints)
-          .where(
-            and(
-              eq(playerStints.playerId, keepPlayerId),
-              eq(playerStints.teamId, stint.teamId),
-              eq(playerStints.leagueId, stint.leagueId),
-              eq(playerStints.seasonId, stint.seasonId),
-            ),
-          )
-          .limit(1);
-        if (stintOnKeep) continue;
-        await tx
-          .update(playerStints)
-          .set({ playerId: keepPlayerId })
-          .where(eq(playerStints.id, stint.id));
-      }
+      statsMoved += 1;
     }
 
     await tx
@@ -149,8 +218,79 @@ export async function mergePlayerInto(
       displayName: keep.displayName,
       profileViewsTransferred: duplicate.profileViews,
       slugTransferred: preferDuplicateSlug && duplicateSlug !== keepSlug,
+      identitiesMoved,
+      stintsMoved,
+      statsMoved,
     };
   });
+}
+
+export interface D2DuplicatePair {
+  d2PlayerId: number;
+  balldontliePlayerId: number;
+  displayName: string;
+  birthDate: string | null;
+  d2ExternalId: string;
+  balldontlieExternalId: string;
+}
+
+/** D2 profiles whose name + birthDate match exactly one balldontlie player on a different id. */
+export async function findD2BalldontlieDuplicates(
+  database: DbClient = db,
+): Promise<D2DuplicatePair[]> {
+  const d2Identities = await database
+    .select({
+      playerId: playerIdentities.playerId,
+      externalId: playerIdentities.externalId,
+      displayName: players.displayName,
+      birthDate: players.birthDate,
+    })
+    .from(playerIdentities)
+    .innerJoin(players, eq(playerIdentities.playerId, players.id))
+    .where(eq(playerIdentities.source, "usbasket-ncaa-d2"));
+
+  const bdlIdentities = await database
+    .select({
+      playerId: playerIdentities.playerId,
+      externalId: playerIdentities.externalId,
+      displayName: players.displayName,
+      birthDate: players.birthDate,
+    })
+    .from(playerIdentities)
+    .innerJoin(players, eq(playerIdentities.playerId, players.id))
+    .where(eq(playerIdentities.source, "balldontlie"));
+
+  const bdlByKey = new Map<string, typeof bdlIdentities>();
+  for (const row of bdlIdentities) {
+    if (!row.birthDate) continue;
+    const key = `${normalizeDisplayName(row.displayName)}|${row.birthDate}`;
+    const list = bdlByKey.get(key) ?? [];
+    list.push(row);
+    bdlByKey.set(key, list);
+  }
+
+  const pairs: D2DuplicatePair[] = [];
+
+  for (const d2 of d2Identities) {
+    if (!d2.birthDate) continue;
+    const key = `${normalizeDisplayName(d2.displayName)}|${d2.birthDate}`;
+    const matches = bdlByKey.get(key);
+    if (!matches || matches.length !== 1) continue;
+
+    const bdl = matches[0];
+    if (bdl.playerId === d2.playerId) continue;
+
+    pairs.push({
+      d2PlayerId: d2.playerId,
+      balldontliePlayerId: bdl.playerId,
+      displayName: d2.displayName,
+      birthDate: d2.birthDate,
+      d2ExternalId: d2.externalId,
+      balldontlieExternalId: bdl.externalId,
+    });
+  }
+
+  return pairs.sort((a, b) => a.displayName.localeCompare(b.displayName));
 }
 
 export interface SeedDuplicatePair {

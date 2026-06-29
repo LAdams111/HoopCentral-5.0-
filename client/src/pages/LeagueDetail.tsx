@@ -7,10 +7,12 @@ import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, teamLogoUrl, displ
 import { getLeague, type LeagueTeam } from "@/lib/api";
 import { getLeagueDisplay } from "@/lib/leagues";
 import {
-  getNcaaConference,
-  groupNcaaTeamsByConference,
-  OTHER_NCAA_M_CONFERENCE_SLUG,
-} from "@/lib/ncaa-conferences";
+  getNcaaLeagueConference,
+  groupNcaaLeagueTeams,
+  isNcaaGroupedLeague,
+  isOtherNcaaConference,
+  type NcaaGroupedLeagueSlug,
+} from "@/lib/ncaa-league-groups";
 
 export function LeagueDetail() {
   const { league: leagueSlug, conference: conferenceSlug } = useParams<{
@@ -28,13 +30,17 @@ export function LeagueDetail() {
     retry: false,
   });
 
-  const isNcaaMen = apiSlug === "ncaa-m";
-  const isConferenceList = isNcaaMen && !activeConferenceSlug;
-  const isConferenceView = isNcaaMen && Boolean(activeConferenceSlug);
+  const isNcaaGrouped = isNcaaGroupedLeague(apiSlug);
+  const ncaaGroupedSlug: NcaaGroupedLeagueSlug | null = isNcaaGrouped ? apiSlug : null;
+  const isConferenceList = isNcaaGrouped && !activeConferenceSlug;
+  const isConferenceView = isNcaaGrouped && Boolean(activeConferenceSlug);
 
   const conferenceGroups = useMemo(
-    () => (isNcaaMen ? groupNcaaTeamsByConference(dbLeague?.teams ?? []) : []),
-    [isNcaaMen, dbLeague?.teams],
+    () =>
+      ncaaGroupedSlug
+        ? groupNcaaLeagueTeams(ncaaGroupedSlug, dbLeague?.teams ?? [])
+        : [],
+    [ncaaGroupedSlug, dbLeague?.teams],
   );
 
   const activeConferenceGroup = useMemo(
@@ -83,9 +89,10 @@ export function LeagueDetail() {
 
   if (
     isConferenceView &&
+    ncaaGroupedSlug &&
     !isLoading &&
-    activeConferenceSlug !== OTHER_NCAA_M_CONFERENCE_SLUG &&
-    !getNcaaConference(activeConferenceSlug)
+    !isOtherNcaaConference(ncaaGroupedSlug, activeConferenceSlug) &&
+    !getNcaaLeagueConference(ncaaGroupedSlug, activeConferenceSlug)
   ) {
     return <ConferenceNotFound leagueSlug={apiSlug} />;
   }
