@@ -199,20 +199,6 @@ async function findLatestSeasonForTeam(teamId: number) {
   return row?.season ?? null;
 }
 
-async function findLatestSeasonForTeams(teamIds: number[]) {
-  if (teamIds.length === 0) return null;
-
-  const [row] = await db
-    .select({ season: seasons })
-    .from(playerSeasonStats)
-    .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
-    .where(inArray(playerSeasonStats.teamId, teamIds))
-    .orderBy(desc(seasons.seasonLabel))
-    .limit(1);
-
-  return row?.season ?? null;
-}
-
 function toTeamInfo(team: typeof teams.$inferSelect): TeamInfo {
   return {
     id: team.id,
@@ -394,9 +380,7 @@ export async function getTeamRoster(
 
   const teamIds = await relatedTeamIds(team, leagueSlug);
 
-  const season =
-    (await findSeason(seasonKey, team.leagueId)) ??
-    (await findLatestSeasonForTeams(teamIds));
+  const season = await findSeason(seasonKey, team.leagueId);
 
   if (!season) {
     return {
@@ -458,9 +442,7 @@ export async function getTeamRecord(
 
   const teamIds = await relatedTeamIds(team, leagueSlug);
 
-  const season =
-    (await findSeason(seasonKey, team.leagueId)) ??
-    (await findLatestSeasonForTeams(teamIds));
+  const season = await findSeason(seasonKey, team.leagueId);
 
   if (!season) return null;
 
