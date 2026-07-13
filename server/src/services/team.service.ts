@@ -155,6 +155,10 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
   return pickBestTeamMatch(matches);
 }
 
+function canonicalSeasonLabelFromStartYear(startYear: number): string {
+  return `${startYear}-${String(startYear + 1).slice(-2)}`;
+}
+
 async function findSeason(seasonKey: string, leagueId: number) {
   const decoded = decodeURIComponent(seasonKey).trim();
 
@@ -169,19 +173,22 @@ async function findSeason(seasonKey: string, leagueId: number) {
   if (exact) return exact;
 
   if (/^\d{4}$/.test(decoded)) {
-    const [prefix] = await db
+    const canonicalLabel = canonicalSeasonLabelFromStartYear(
+      Number.parseInt(decoded, 10),
+    );
+
+    const [canonical] = await db
       .select()
       .from(seasons)
       .where(
         and(
           eq(seasons.leagueId, leagueId),
-          ilike(seasons.seasonLabel, `${decoded}-%`),
+          eq(seasons.seasonLabel, canonicalLabel),
         ),
       )
-      .orderBy(desc(seasons.seasonLabel))
       .limit(1);
 
-    if (prefix) return prefix;
+    if (canonical) return canonical;
   }
 
   return null;

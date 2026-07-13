@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, ChevronDown } from "lucide-react";
+import { useEffect } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
   formatSeasonHeading,
-  generateSeasonYears,
+  generateSeasonLabels,
+  normalizeSeasonKey,
   teamLogoUrl,
   displayTeamName,
-  seasonKeyToYear,
-  seasonYearToLabel,
 } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { getTeamRecord, getTeamRoster } from "@/lib/api";
@@ -79,10 +79,19 @@ export function Roster() {
   const location = useLocation();
   const decodedTeam = decodeURIComponent(team);
   const decodedSeason = decodeURIComponent(season);
-  const seasonYear = seasonKeyToYear(decodedSeason);
-  const seasonYears = generateSeasonYears();
+  const seasonLabel = normalizeSeasonKey(decodedSeason);
+  const seasonLabels = generateSeasonLabels();
 
   const leagueSlug = new URLSearchParams(location.search).get("league") ?? undefined;
+
+  useEffect(() => {
+    if (!team || !season || decodedSeason === seasonLabel) return;
+    const leagueQuery = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
+    navigate(
+      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(seasonLabel)}${leagueQuery}`,
+      { replace: true },
+    );
+  }, [team, season, decodedTeam, decodedSeason, seasonLabel, leagueSlug, navigate]);
 
   const {
     data: roster,
@@ -90,14 +99,14 @@ export function Roster() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["team-roster", team, decodedSeason, leagueSlug],
-    queryFn: () => getTeamRoster(decodedTeam, decodedSeason, leagueSlug ?? undefined),
+    queryKey: ["team-roster", team, seasonLabel, leagueSlug],
+    queryFn: () => getTeamRoster(decodedTeam, seasonLabel, leagueSlug ?? undefined),
     enabled: Boolean(team && season),
   });
 
   const { data: record } = useQuery({
-    queryKey: ["team-record", team, decodedSeason, leagueSlug],
-    queryFn: () => getTeamRecord(decodedTeam, decodedSeason, leagueSlug ?? undefined),
+    queryKey: ["team-record", team, seasonLabel, leagueSlug],
+    queryFn: () => getTeamRecord(decodedTeam, seasonLabel, leagueSlug ?? undefined),
     enabled: Boolean(team && season),
   });
 
@@ -219,19 +228,19 @@ export function Roster() {
               </div>
               <div className="relative">
                 <select
-                  value={seasonYear}
+                  value={seasonLabel}
                   onChange={(e) => handleSeasonChange(e.target.value)}
                   className="h-12 w-full appearance-none rounded-xl border-2 border-border bg-background px-3 py-2 pr-10 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   data-testid="select-season"
                 >
-                  {seasonYears.map((year) => (
+                  {seasonLabels.map((label) => (
                     <option
-                      key={year}
-                      value={String(year)}
+                      key={label}
+                      value={label}
                       className="font-mono"
-                      data-testid={`option-season-${year}`}
+                      data-testid={`option-season-${label}`}
                     >
-                      {seasonYearToLabel(year)}
+                      {label}
                     </option>
                   ))}
                 </select>
@@ -249,7 +258,7 @@ export function Roster() {
               className="font-display text-3xl font-bold uppercase tracking-tight"
               data-testid="text-season-heading"
             >
-              {formatSeasonHeading(decodedSeason)} Season Roster
+              {formatSeasonHeading(seasonLabel)} Season Roster
             </h2>
             {players.length > 0 && (
               <Badge className="font-mono text-[10px] uppercase tracking-widest">

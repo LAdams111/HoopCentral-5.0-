@@ -252,12 +252,25 @@ export function seasonYearToLabel(year: number): string {
   return `${year}-${endYear}`;
 }
 
+/** Normalize roster URL/API season keys to canonical labels (2017 → 2017-18). */
+export function normalizeSeasonKey(seasonKey: string): string {
+  const trimmed = seasonKey.trim();
+  if (/^\d{4}$/.test(trimmed)) {
+    return seasonYearToLabel(Number.parseInt(trimmed, 10));
+  }
+  return trimmed;
+}
+
 export function generateSeasonYears(): number[] {
   const current = getCurrentSeasonYear();
   return Array.from(
     { length: current - SEASON_START_YEAR + 1 },
     (_, index) => current - index,
   );
+}
+
+export function generateSeasonLabels(): string[] {
+  return generateSeasonYears().map(seasonYearToLabel);
 }
 
 export function formatSeasonHeading(seasonKey: string): string {
@@ -267,11 +280,9 @@ export function formatSeasonHeading(seasonKey: string): string {
   return seasonKey;
 }
 
+/** @deprecated Prefer normalizeSeasonKey for roster season routing. */
 export function seasonKeyToYear(seasonKey: string): string {
-  if (/^\d{4}$/.test(seasonKey)) {
-    return seasonKey;
-  }
-  return seasonLabelToUrlYear(seasonKey);
+  return seasonLabelToUrlYear(normalizeSeasonKey(seasonKey));
 }
 
 export function rosterPath(
