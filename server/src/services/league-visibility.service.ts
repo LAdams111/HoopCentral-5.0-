@@ -1,10 +1,12 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
 import {
   evaluateLeagueVisibility,
+  isBrowsableTeam,
   isJunkTeam,
   isLeaguePubliclyVisible,
+  junkTeamReason,
   type LeagueVisibilityInput,
   type TeamVisibilityInput,
 } from "../utils/league-visibility.js";
@@ -139,8 +141,115 @@ export async function auditLeagueVisibility(): Promise<{
   };
 }
 
-export function filterVisibleTeams<T extends TeamVisibilityInput>(teams: T[]): T[] {
-  return teams.filter((team) => !isJunkTeam(team));
+export function filterVisibleTeams<T extends TeamVisibilityInput & { id?: number }>(
+  teams: T[],
+  playerCountByTeamId?: Map<number, number>,
+): T[] {
+  return teams.filter((team) =>
+    isBrowsableTeam(team, {
+      distinctPlayerCount:
+        team.id != null ? playerCountByTeamId?.get(team.id) : undefined,
+    }),
+  );
+}
+
+export async function getDistinctPlayerCountByTeamId(
+  teamIds: number[],
+): Promise<Map<number, number>> {
+  if (teamIds.length === 0) return new Map();
+
+  const counts = new Map<number, number>();
+  const chunkSize = 500;
+
+  for (let offset = 0; offset < teamIds.length; offset += chunkSize) {
+    const chunk = teamIds.slice(offset, offset + chunkSize);
+    const idList = sql.join(chunk.map((id) => sql`${id}`), sql`, `);
+    const result = await db.execute<{ team_id: number; player_count: number }>(sql`
+      SELECT team_id, COUNT(DISTINCT player_id)::int AS player_count
+      FROM (
+        SELECT team_id, player_id FROM player_season_stats
+        WHERE team_id IN (${idList})
+        UNION
+        SELECT team_id, player_id FROM player_stints
+        WHERE team_id IN (${idList})
+      ) combined
+      GROUP BY team_id
+    `);
+
+    for (const row of result.rows) {
+      counts.set(Number(row.team_id), Number(row.player_count));
+    }
+  }
+
+  return counts;
+}
+
+export async function auditHiddenTeams(limit = 40): Promise<{
+  hiddenByReason: Record<string, number>;
+  samples: Array<{
+    leagueSlug: string;
+    leagueName: string;
+    teamName: string;
+    teamSlug: string;
+    playerCount: number;
+    reason: string;
+  }>;
+}> {
+  const publicIds = await getPublicLeagueIds();
+  if (publicIds.size === 0) {
+    return { hiddenByReason: {}, samples: [] };
+  }
+
+  const publicIdList = [...publicIds];
+  const idList = sql.join(publicIdList.map((id) => sql`${id}`), sql`, `);
+
+  const teamRows = await db.execute<{
+    id: number;
+    name: string;
+    slug: string;
+    league_slug: string;
+    league_name: string;
+  }>(sql`
+    SELECT t.id, t.name, t.slug, l.slug AS league_slug, l.name AS league_name
+    FROM teams t
+    INNER JOIN leagues l ON l.id = t.league_id
+    WHERE t.league_id IN (${idList})
+  `);
+
+  const playerCounts = await getDistinctPlayerCountByTeamId(
+    teamRows.rows.map((row) => Number(row.id)),
+  );
+
+  const hiddenByReason: Record<string, number> = {};
+  const samples: Array<{
+    leagueSlug: string;
+    leagueName: string;
+    teamName: string;
+    teamSlug: string;
+    playerCount: number;
+    reason: string;
+  }> = [];
+
+  for (const row of teamRows.rows) {
+    const team = { name: row.name, slug: row.slug };
+    const context = { distinctPlayerCount: playerCounts.get(Number(row.id)) ?? 0 };
+    const reason = junkTeamReason(team, context);
+    if (!reason) continue;
+
+    hiddenByReason[reason] = (hiddenByReason[reason] ?? 0) + 1;
+    if (samples.length < limit) {
+      samples.push({
+        leagueSlug: row.league_slug,
+        leagueName: row.league_name,
+        teamName: row.name,
+        teamSlug: row.slug,
+        playerCount: context.distinctPlayerCount,
+        reason,
+      });
+    }
+  }
+
+  return { hiddenByReason, samples };
 }
 
 export function countVisibleTeams(

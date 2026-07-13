@@ -14,7 +14,7 @@ import { normalizeSlugParam } from "../utils/slug.js";
 import { prefixMatch, wordPrefixMatch } from "../utils/search-match.js";
 import { resolvePublicLeagueSlug, LEGACY_NCAA_MENS_SLUG } from "../utils/league-slug.js";
 import { findLeagueRowBySlug } from "../utils/league-resolution.js";
-import { isJunkTeam } from "../utils/league-visibility.js";
+import { isBrowsableTeam } from "../utils/league-visibility.js";
 import { isLeagueIdPublic } from "./league-visibility.service.js";
 import { resolveNcaaTeamSlugVariants } from "../utils/ncaa-team-aliases.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
@@ -258,7 +258,7 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
     .orderBy(teams.name);
 
   return rows
-    .filter((row) => !isJunkTeam({ name: row.team.name, slug: row.team.slug }))
+    .filter((row) => isBrowsableTeam({ name: row.team.name, slug: row.team.slug }))
     .map((row) => ({
       ...toTeamInfo(row.team),
       league: {
@@ -298,7 +298,7 @@ export async function searchTeams(params: {
   const summaries: TeamSummary[] = [];
   for (const row of rows) {
     if (summaries.length >= limit) break;
-    if (isJunkTeam({ name: row.team.name, slug: row.team.slug })) continue;
+    if (!isBrowsableTeam({ name: row.team.name, slug: row.team.slug })) continue;
     if (!(await isLeagueIdPublic(row.league.id))) continue;
 
     summaries.push({

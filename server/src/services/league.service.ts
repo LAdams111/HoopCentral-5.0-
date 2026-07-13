@@ -19,6 +19,7 @@ import { normalizeSlugParam } from "../utils/slug.js";
 import { prefixMatch, wordPrefixMatch } from "../utils/search-match.js";
 import {
   filterVisibleTeams,
+  getDistinctPlayerCountByTeamId,
   getPublicLeagueIds,
   getTeamsByLeagueId,
 } from "./league-visibility.service.js";
@@ -324,7 +325,8 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
     return null;
   }
 
-  const browsableTeams = filterVisibleTeams(leagueTeams);
+  const playerCounts = await getDistinctPlayerCountByTeamId(leagueTeams.map((team) => team.id));
+  const browsableTeams = filterVisibleTeams(leagueTeams, playerCounts);
   const visibleTeams = filterLeagueTeams(responseSlug, browsableTeams).map((team) => {
     if (responseSlug !== "u-sports") return team;
     const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);

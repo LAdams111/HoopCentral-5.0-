@@ -21,6 +21,9 @@ const WHITELISTED_SLUGS = new Set<string>([
 
 const WHITELISTED_SLUG_PREFIXES = ["ncaa-"];
 
+const MONTH_PATTERN =
+  /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/i;
+
 const JUNK_TEAM_NAME_PATTERNS: RegExp[] = [
   /signed at/i,
   /^in feb/i,
@@ -42,9 +45,10 @@ const JUNK_TEAM_NAME_PATTERNS: RegExp[] = [
   /games played/i,
   /walk[- ]?on/i,
   /player of the year/i,
-  /first team/i,
-  /second team/i,
-  /third team/i,
+  /first team all/i,
+  /second team all/i,
+  /third team all/i,
+  /all-conference first team/i,
   /\bunanimous\b/i,
   /team leader/i,
   /points scored/i,
@@ -61,6 +65,20 @@ const JUNK_TEAM_NAME_PATTERNS: RegExp[] = [
   /selected to/i,
   /earned\b/i,
   /received\b.*\baward\b/i,
+  /left in/i,
+  /joined in/i,
+  /signed in/i,
+  /released in/i,
+  /\breleased\b/i,
+  /\bwaived\b/i,
+  /\bdeparted\b/i,
+  /\bnot drafted\b/i,
+  /[<>]/,
+  /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/,
+  /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)['.]?\s*'?\d{2,4}\b/i,
+  /'\d{2}\b/,
+  /starting five\)/i,
+  /\(starting five\)/i,
 ];
 
 const JUNK_TEAM_SLUG_PATTERNS: RegExp[] = [
@@ -70,6 +88,60 @@ const JUNK_TEAM_SLUG_PATTERNS: RegExp[] = [
   /co-captain/,
   /school-year/,
   /then-moved-to/,
+  /left-in-/,
+  /joined-in-/,
+  /signed-in-/,
+  /released-in-/,
+  /not-drafted/,
+];
+
+/** Softer narrative cues — hide only when the team has a single linked player. */
+const SINGLE_PLAYER_NARRATIVE_NAME_PATTERNS: RegExp[] = [
+  /\bleft\b/i,
+  /\bjoined\b/i,
+  /\bsigned\b/i,
+  /\breleased\b/i,
+  /\bwaived\b/i,
+  MONTH_PATTERN,
+  /'\d{2}\b/,
+  /\b\d{4}\b/,
+  /[<>()[\]{}]/,
+  /[,;]/,
+  /\bpart\s*\d+/i,
+  /\b\d+\s*pts?\b/i,
+  /\b\d+\s*reb/i,
+];
+
+const SINGLE_PLAYER_NARRATIVE_SLUG_PATTERNS: RegExp[] = [
+  /left/,
+  /joined/,
+  /signed/,
+  /released/,
+  /waived/,
+  /jan-/,
+  /feb-/,
+  /mar-/,
+  /apr-/,
+  /may-/,
+  /jun-/,
+  /jul-/,
+  /aug-/,
+  /sep-/,
+  /oct-/,
+  /nov-/,
+  /dec-/,
+];
+
+const REAL_TEAM_NAME_HINTS: RegExp[] = [
+  /\buniversity\b/i,
+  /\bcollege\b/i,
+  /\bclub\b/i,
+  /\bbc\b/i,
+  /\bfc\b/i,
+  /\bteam\b/i,
+  /\bschool\b/i,
+  /\bstate\b/i,
+  /\bnational\b/i,
 ];
 
 const JUNK_LEAGUE_NAME_PATTERNS: RegExp[] = [
@@ -90,6 +162,10 @@ export interface TeamVisibilityInput {
   slug: string;
 }
 
+export interface TeamBrowseContext {
+  distinctPlayerCount?: number;
+}
+
 export function isWhitelistedLeagueSlug(slug: string): boolean {
   const normalized = slug.toLowerCase();
   if (WHITELISTED_SLUGS.has(normalized)) return true;
@@ -107,8 +183,46 @@ export function isJunkTeamSlug(slug: string): boolean {
   return JUNK_TEAM_SLUG_PATTERNS.some((pattern) => pattern.test(normalized));
 }
 
+export function isSinglePlayerNarrativeTeam(team: TeamVisibilityInput): boolean {
+  const name = team.name.trim();
+  const slug = team.slug.toLowerCase();
+
+  if (REAL_TEAM_NAME_HINTS.some((pattern) => pattern.test(name)) && !/[<>]/.test(name)) {
+    return false;
+  }
+
+  const nameHit = SINGLE_PLAYER_NARRATIVE_NAME_PATTERNS.some((pattern) => pattern.test(name));
+  const slugHit = SINGLE_PLAYER_NARRATIVE_SLUG_PATTERNS.some((pattern) => pattern.test(slug));
+  return nameHit || slugHit;
+}
+
 export function isJunkTeam(team: TeamVisibilityInput): boolean {
   return isJunkTeamName(team.name) || isJunkTeamSlug(team.slug);
+}
+
+export function isBrowsableTeam(
+  team: TeamVisibilityInput,
+  context: TeamBrowseContext = {},
+): boolean {
+  if (isJunkTeam(team)) return false;
+
+  if (context.distinctPlayerCount === 1 && isSinglePlayerNarrativeTeam(team)) {
+    return false;
+  }
+
+  return true;
+}
+
+export function junkTeamReason(
+  team: TeamVisibilityInput,
+  context: TeamBrowseContext = {},
+): string | null {
+  if (isJunkTeamName(team.name)) return "junk team name";
+  if (isJunkTeamSlug(team.slug)) return "junk team slug";
+  if (context.distinctPlayerCount === 1 && isSinglePlayerNarrativeTeam(team)) {
+    return "single-player narrative team";
+  }
+  return null;
 }
 
 export function isJunkLeagueName(name: string, _slug: string): boolean {
