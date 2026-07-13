@@ -173,6 +173,17 @@ export function getLeagues(): Promise<LeagueSummary[]> {
   return fetchJson("/api/leagues");
 }
 
+export function getFeaturedLeagues(): Promise<LeagueSummary[]> {
+  return fetchJson("/api/leagues/featured");
+}
+
+export function searchLeagues(q: string, limit?: number): Promise<LeagueSummary[]> {
+  const params = new URLSearchParams();
+  params.set("q", q);
+  if (limit) params.set("limit", String(limit));
+  return fetchJson(`/api/leagues/search?${params.toString()}`);
+}
+
 export function getLeague(slug: string): Promise<LeagueDetail> {
   return fetchJson(`/api/leagues/${encodeURIComponent(slug)}`);
 }

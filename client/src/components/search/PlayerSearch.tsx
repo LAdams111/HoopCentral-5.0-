@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Search } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  getLeagues,
   getPlayers,
+  searchLeagues,
   searchTeams,
   type LeagueSummary,
   type PlayerCard,
@@ -14,54 +14,6 @@ import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
 import { getLeagueDisplay } from "@/lib/leagues";
 import { teamLogoUrl, displayTeamName } from "@/lib/constants";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
-
-function scoreLeagueMatch(league: LeagueSummary, query: string): number {
-  const q = query.trim().toLowerCase();
-  const meta = getLeagueDisplay(league.slug, league.name);
-  const display = meta.display.toLowerCase();
-  const slug = league.slug.toLowerCase();
-  const slugSpaced = slug.replace(/-/g, " ");
-  const name = league.name.toLowerCase();
-
-  if (display === q || slug === q || slugSpaced === q) return 100;
-  if (display.startsWith(q) || slug.startsWith(q) || slugSpaced.startsWith(q)) return 80;
-  if (name.startsWith(q)) return 70;
-  if (display.includes(q) || slug.includes(q) || slugSpaced.includes(q) || name.includes(q)) {
-    return 50;
-  }
-  return 0;
-}
-
-function filterLeaguesForSearch(
-  leagues: LeagueSummary[],
-  query: string,
-  limit = 2,
-): LeagueSummary[] {
-  const terms = query
-    .trim()
-    .toLowerCase()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (terms.length === 0) return [];
-
-  return leagues
-    .filter((league) => {
-      const meta = getLeagueDisplay(league.slug, league.name);
-      const haystack = [
-        league.name,
-        league.slug,
-        league.slug.replace(/-/g, " "),
-        meta.display,
-        meta.tier,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return terms.every((term) => haystack.includes(term));
-    })
-    .sort((a, b) => scoreLeagueMatch(b, query) - scoreLeagueMatch(a, query))
-    .slice(0, limit);
-}
 
 export function PlayerSearch() {
   const [query, setQuery] = useState("");
@@ -89,15 +41,11 @@ export function PlayerSearch() {
     enabled,
   });
 
-  const { data: allLeagues = [] } = useQuery({
-    queryKey: ["leagues"],
-    queryFn: getLeagues,
+  const { data: leagueResults = [] } = useQuery({
+    queryKey: ["search-leagues", debounced],
+    queryFn: () => searchLeagues(debounced, 2),
+    enabled,
   });
-
-  const leagueResults = useMemo(
-    () => (enabled ? filterLeaguesForSearch(allLeagues, debounced, 2) : []),
-    [allLeagues, debounced, enabled],
-  );
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
