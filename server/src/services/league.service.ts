@@ -1,4 +1,4 @@
-import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
+import { eq, notInArray, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
 import { NBA_CURRENT_TEAM_SLUGS } from "../data/nba-teams.js";
 import { USPORTS_CURRENT_TEAM_SLUGS, resolveUsportsTeamDisplayName } from "../data/usports-teams.js";
@@ -15,6 +15,15 @@ import {
   genderForLeagueRow,
 } from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
+import {
+  filterVisibleTeams,
+  getPublicLeagueIds,
+  getTeamsByLeagueId,
+} from "./league-visibility.service.js";
+import {
+  isLeaguePubliclyVisible,
+  isWhitelistedLeagueSlug,
+} from "../utils/league-visibility.js";
 
 const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
   nba: NBA_CURRENT_TEAM_SLUGS,
@@ -120,23 +129,25 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
     });
   }
 
-  for (const row of results) {
-    const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
-    if (!canonicalSlugs) continue;
+  const teamsByLeagueId = await getTeamsByLeagueId();
+  const publicLeagueIds = await getPublicLeagueIds();
+  const visibleResults: LeagueSummary[] = [];
 
-    const [countRow] = await db
-      .select({ teamCount: sql<number>`count(*)::int` })
-      .from(teams)
-      .where(
-        and(
-          eq(teams.leagueId, row.id),
-          inArray(teams.slug, [...canonicalSlugs]),
-        ),
-      );
-    row.teamCount = countRow?.teamCount ?? 0;
+  for (const row of results) {
+    const leagueTeams = teamsByLeagueId.get(row.id) ?? [];
+    if (!publicLeagueIds.has(row.id)) continue;
+
+    const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
+    if (canonicalSlugs) {
+      row.teamCount = leagueTeams.filter((team) => canonicalSlugs.has(team.slug)).length;
+    } else if (!isWhitelistedLeagueSlug(row.slug)) {
+      row.teamCount = filterVisibleTeams(leagueTeams).length;
+    }
+
+    visibleResults.push(row);
   }
 
-  return results.sort((a, b) => a.name.localeCompare(b.name));
+  return visibleResults.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null> {
@@ -163,7 +174,12 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
     .where(eq(teams.leagueId, league.id))
     .orderBy(teams.name);
 
-  const visibleTeams = filterLeagueTeams(responseSlug, leagueTeams).map((team) => {
+  if (!isLeaguePubliclyVisible({ slug: league.slug, name: league.name }, leagueTeams)) {
+    return null;
+  }
+
+  const browsableTeams = filterVisibleTeams(leagueTeams);
+  const visibleTeams = filterLeagueTeams(responseSlug, browsableTeams).map((team) => {
     if (responseSlug !== "u-sports") return team;
     const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);
     return displayName ? { ...team, name: displayName } : team;

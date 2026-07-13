@@ -14,6 +14,8 @@ import { normalizeSlugParam } from "../utils/slug.js";
 import { prefixMatch, wordPrefixMatch } from "../utils/search-match.js";
 import { resolvePublicLeagueSlug, LEGACY_NCAA_MENS_SLUG } from "../utils/league-slug.js";
 import { findLeagueRowBySlug } from "../utils/league-resolution.js";
+import { isJunkTeam } from "../utils/league-visibility.js";
+import { isLeagueIdPublic } from "./league-visibility.service.js";
 import { resolveNcaaTeamSlugVariants } from "../utils/ncaa-team-aliases.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
@@ -222,6 +224,11 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
         resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
       )
     : null;
+
+  if (leagueRow && !(await isLeagueIdPublic(leagueRow.id))) {
+    return [];
+  }
+
   const normalizedLeague = leagueRow?.slug;
   const canonicalSlugs = normalizedLeague
     ? normalizedLeague === "g-league"
@@ -250,14 +257,16 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
     )
     .orderBy(teams.name);
 
-  return rows.map((row) => ({
-    ...toTeamInfo(row.team),
-    league: {
-      id: row.league.id,
-      name: row.league.name,
-      slug: row.league.slug,
-    },
-  }));
+  return rows
+    .filter((row) => !isJunkTeam({ name: row.team.name, slug: row.team.slug }))
+    .map((row) => ({
+      ...toTeamInfo(row.team),
+      league: {
+        id: row.league.id,
+        name: row.league.name,
+        slug: row.league.slug,
+      },
+    }));
 }
 
 export async function searchTeams(params: {
@@ -284,16 +293,25 @@ export async function searchTeams(params: {
       ),
     )
     .orderBy(teams.name)
-    .limit(limit);
+    .limit(limit * 4);
 
-  return rows.map((row) => ({
-    ...toTeamInfo(row.team),
-    league: {
-      id: row.league.id,
-      name: row.league.name,
-      slug: row.league.slug,
-    },
-  }));
+  const summaries: TeamSummary[] = [];
+  for (const row of rows) {
+    if (summaries.length >= limit) break;
+    if (isJunkTeam({ name: row.team.name, slug: row.team.slug })) continue;
+    if (!(await isLeagueIdPublic(row.league.id))) continue;
+
+    summaries.push({
+      ...toTeamInfo(row.team),
+      league: {
+        id: row.league.id,
+        name: row.league.name,
+        slug: row.league.slug,
+      },
+    });
+  }
+
+  return summaries;
 }
 
 export async function getTeamBySlug(
