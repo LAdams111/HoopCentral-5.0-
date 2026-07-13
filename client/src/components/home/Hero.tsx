@@ -13,7 +13,7 @@ export function Hero() {
       <div className="container relative z-10 px-4 text-center">
         <div className="mb-6 inline-flex animate-fade-in-up items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-xs text-primary">
           <Zap className="h-3 w-3" />
-          <span>REAL-TIME STATS</span>
+          <span>REAL-TIME VIEW COUNT</span>
         </div>
 
         <h1 className="mb-6 animate-fade-in-up font-display text-7xl font-bold tracking-tighter text-foreground delay-100 md:text-9xl">
@@ -30,7 +30,7 @@ export function Hero() {
         </h1>
 
         <p className="mx-auto mb-10 max-w-2xl animate-fade-in-up font-body text-xl text-muted-foreground delay-200 md:text-2xl">
-          The ultimate database for modern basketball stats. Track performance of
+          The ultimate database for basketball stats. Track performance of
           the biggest stars and hottest prospects.
         </p>
 

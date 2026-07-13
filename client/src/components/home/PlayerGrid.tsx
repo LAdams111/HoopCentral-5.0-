@@ -24,7 +24,7 @@ export function PlayerGrid({
   players,
   loading,
   actionLabel = "View All Players",
-  actionHref = "/players",
+  actionHref,
   actionVariant = "outline",
   variant = "default",
   emptyMessage = "No players to display.",

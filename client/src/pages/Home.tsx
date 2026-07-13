@@ -51,9 +51,6 @@ export function Home() {
         subtitle="Trending athletes this week"
         players={mostViewed}
         loading={playersLoading}
-        actionLabel="Explore Trends"
-        actionHref="/players"
-        actionVariant="ghost"
         variant="default"
       />
       <PlayerGrid
@@ -62,11 +59,7 @@ export function Home() {
         subtitle="Top performers from the current season"
         players={featured}
         loading={featuredLoading}
-        actionLabel="View All Players"
-        actionHref="/players"
-        actionVariant="outline"
         variant="muted"
-        showMobileCta
       />
       <FavoritesStrip players={allPlayers} />
     </div>
