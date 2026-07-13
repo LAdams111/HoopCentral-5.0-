@@ -113,7 +113,9 @@ function isTrustedSuspectedDuplicate(
   pair: NcaaSuspectedDuplicate,
   aliasMap: Record<string, string>,
 ): boolean {
-  if (pair.reason === "likely_same_school") return true;
+  if (pair.reason === "likely_same_school") {
+    return sameSchoolName(pair.variantA.teamName, pair.variantB.teamName);
+  }
   if (pair.reason !== "sequential_era_split") return false;
 
   const slugA = normalizeSlugParam(pair.variantA.slug);
@@ -261,7 +263,10 @@ function aliasesShareIdentity(
   if (
     abbrev &&
     abbrev.length >= 3 &&
-    entries.every((entry) => entry.teamAbbreviation === abbrev)
+    entries.every((entry) => entry.teamAbbreviation === abbrev) &&
+    entries.some((entry, index) =>
+      entries.slice(index + 1).some((other) => sameSchoolName(entry.teamName, other.teamName)),
+    )
   ) {
     return true;
   }

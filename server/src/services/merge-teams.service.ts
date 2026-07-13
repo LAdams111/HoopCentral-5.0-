@@ -20,9 +20,14 @@ import {
   resolveCanonicalIdentity as resolveUsportsCanonicalIdentity,
   type UsportsTeamIdentity,
 } from "../utils/usports-team-aliases.js";
+import {
+  buildCcaaTeamMergeGroups,
+  resolveCcaaCanonicalIdentity,
+  type CcaaTeamIdentity,
+} from "../utils/ccaa-team-aliases.js";
 import { LEGACY_NCAA_MENS_SLUG } from "../utils/league-slug.js";
 
-export type { NcaaTeamIdentity, UsportsTeamIdentity };
+export type { NcaaTeamIdentity, UsportsTeamIdentity, CcaaTeamIdentity };
 
 export interface TeamMergePlan {
   canonical: NcaaTeamIdentity | UsportsTeamIdentity;
@@ -614,4 +619,79 @@ export async function applyUsportsCanonicalIdentityUpdates(
   return updates;
 }
 
-export { resolveCanonicalIdentity, resolveUsportsCanonicalIdentity };
+export interface CcaaTeamMergePlan extends TeamMergePlan {
+  canonical: CcaaTeamIdentity;
+}
+
+export interface CcaaTeamMergeExecution extends TeamMergeExecution {
+  plan: CcaaTeamMergePlan;
+}
+
+export async function applyCcaaTeamCanonicalIdentity(
+  teamId: number,
+  identity: CcaaTeamIdentity,
+  database: DbClient = db,
+): Promise<boolean> {
+  const [team] = await database
+    .select({ id: teams.id })
+    .from(teams)
+    .where(eq(teams.id, teamId))
+    .limit(1);
+
+  if (!team) return false;
+
+  await database
+    .update(teams)
+    .set({
+      slug: identity.slug,
+      name: identity.name,
+      abbreviation: identity.abbreviation,
+    })
+    .where(eq(teams.id, teamId));
+
+  return true;
+}
+
+export async function findCcaaDuplicateMergePlans(
+  database: DbClient = db,
+): Promise<CcaaTeamMergePlan[]> {
+  const mergeGroups = buildCcaaTeamMergeGroups();
+  return findDuplicateMergePlansForLeague("ccaa", mergeGroups, database);
+}
+
+export async function executeCcaaTeamMergePlan(
+  plan: CcaaTeamMergePlan,
+  database: DbClient = db,
+): Promise<CcaaTeamMergeExecution> {
+  const merges: MergeTeamsResult[] = [];
+  let keepTeamId = plan.keepTeamId;
+
+  for (const duplicateId of plan.duplicateTeamIds) {
+    const result = await mergeTeamInto(duplicateId, keepTeamId, database);
+    merges.push(result);
+    keepTeamId = result.keptTeamId;
+  }
+
+  const canonicalUpdated = await applyCcaaTeamCanonicalIdentity(
+    keepTeamId,
+    plan.canonical,
+    database,
+  );
+
+  return { plan, merges, canonicalUpdated };
+}
+
+export async function mergeAllCcaaDuplicateTeams(
+  database: DbClient = db,
+): Promise<CcaaTeamMergeExecution[]> {
+  const plans = await findCcaaDuplicateMergePlans(database);
+  const results: CcaaTeamMergeExecution[] = [];
+
+  for (const plan of plans) {
+    results.push(await executeCcaaTeamMergePlan(plan, database));
+  }
+
+  return results;
+}
+
+export { resolveCanonicalIdentity, resolveUsportsCanonicalIdentity, resolveCcaaCanonicalIdentity };

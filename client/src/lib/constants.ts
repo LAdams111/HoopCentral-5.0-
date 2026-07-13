@@ -6,7 +6,8 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { ncaaTeamLogoUrl, resolveNcaaEspnId, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
+import { ncaaTeamLogoUrl, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
+import { isNcaaLeagueSlug } from "./ncaa-league-groups";
 import {
   isUsportsLeagueSlug,
   resolveUsportsTeamDisplayName,
@@ -175,19 +176,24 @@ export function displayTeamName(
     slug?: string;
   },
 ): string {
-  if (isUsportsLeagueSlug(options?.leagueSlug) || options?.slug) {
+  if (isUsportsLeagueSlug(options?.leagueSlug)) {
     const usportsName = resolveUsportsTeamDisplayName(teamName, {
       slug: options?.slug,
     });
     if (usportsName) return usportsName;
   }
 
-  return (
-    resolveNcaaTeamDisplayName(teamName, {
-      abbreviation: options?.abbreviation,
-      slug: options?.slug,
-    }) ?? teamName
-  );
+  if (isNcaaLeagueSlug(options?.leagueSlug)) {
+    return (
+      resolveNcaaTeamDisplayName(teamName, {
+        abbreviation: options?.abbreviation,
+        slug: options?.slug,
+        allowAbbreviationMatch: true,
+      }) ?? teamName
+    );
+  }
+
+  return teamName;
 }
 
 export function teamLogoUrl(
@@ -205,13 +211,11 @@ export function teamLogoUrl(
     slug: options?.slug,
   };
 
-  if (
-    leagueSlug === "ncaa" ||
-    leagueSlug === "ncaa-m" ||
-    leagueSlug === "ncaa-w" ||
-    leagueSlug === "ncaa-d2"
-  ) {
-    return ncaaTeamLogoUrl(teamName, ncaaOptions);
+  if (isNcaaLeagueSlug(leagueSlug)) {
+    return ncaaTeamLogoUrl(teamName, {
+      ...ncaaOptions,
+      allowAbbreviationMatch: true,
+    });
   }
   if (leagueSlug === "g-league" || G_LEAGUE_TEAM_IDS[teamName]) {
     return gleagueTeamLogoUrl(
@@ -225,12 +229,6 @@ export function teamLogoUrl(
   }
   if (leagueSlug === "nba" || NBA_TEAM_IDS[teamName]) {
     return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
-  }
-  if (resolveNcaaEspnId(teamName, ncaaOptions)) {
-    return ncaaTeamLogoUrl(teamName, ncaaOptions);
-  }
-  if (leagueSlug?.startsWith("ncaa")) {
-    return ncaaTeamLogoUrl(teamName, ncaaOptions);
   }
   return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
 }

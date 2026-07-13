@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
@@ -17,6 +17,7 @@ import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { isBrowsableTeam } from "../utils/league-visibility.js";
 import { isLeagueIdPublic } from "./league-visibility.service.js";
 import { resolveNcaaTeamSlugVariants } from "../utils/ncaa-team-aliases.js";
+import { resolveCcaaTeamSlugVariants } from "../utils/ccaa-team-aliases.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -99,7 +100,9 @@ async function relatedTeamIds(
   const slugVariants =
     leagueRow?.slug === LEGACY_NCAA_MENS_SLUG || leagueRow?.slug === "ncaa-m"
       ? resolveNcaaTeamSlugVariants(team.slug)
-      : [team.slug];
+      : leagueRow?.slug === "ccaa"
+        ? resolveCcaaTeamSlugVariants(team.slug)
+        : [team.slug];
 
   const rows = await db
     .select({ id: teams.id })
@@ -127,9 +130,17 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
 
   const isNcaaMen =
     leagueRow?.slug === LEGACY_NCAA_MENS_SLUG || leagueRow?.slug === "ncaa-m";
+  const isCcaa = leagueRow?.slug === "ccaa";
   const slugVariants = isNcaaMen
     ? resolveNcaaTeamSlugVariants(slugCandidate)
-    : [slugCandidate];
+    : isCcaa
+      ? resolveCcaaTeamSlugVariants(slugCandidate)
+      : [slugCandidate];
+
+  const matchPredicates = [
+    ...slugVariantPredicates(slugVariants),
+    eq(teams.name, decoded),
+  ];
 
   const matches = await db
     .select({ team: teams })
@@ -137,11 +148,7 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
     .innerJoin(leagues, eq(teams.leagueId, leagues.id))
     .where(
       and(
-        or(
-          ...slugVariantPredicates(slugVariants),
-          ilike(teams.abbreviation, decoded),
-          ilike(teams.name, decoded),
-        ),
+        or(...matchPredicates),
         leagueRow ? eq(teams.leagueId, leagueRow.id) : undefined,
       ),
     )

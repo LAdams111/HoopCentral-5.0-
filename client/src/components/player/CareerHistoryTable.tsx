@@ -48,7 +48,10 @@ export function CareerHistoryTable({ career }: { career: CareerEntry[] }) {
                 </td>
                 <td className="px-6 py-4 font-mono">
                   <span className="whitespace-nowrap text-primary">
-                    {displayTeamName(entry.team)}
+                    {displayTeamName(entry.team, {
+                      leagueSlug: entry.leagueSlug,
+                      slug: entry.teamSlug,
+                    })}
                   </span>
                 </td>
                 <td className="px-6 py-4 font-mono text-muted-foreground">

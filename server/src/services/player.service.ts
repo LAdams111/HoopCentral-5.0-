@@ -60,7 +60,9 @@ export interface PlayerStatRow {
 export interface CareerEntry {
   id: number;
   team: string;
+  teamSlug: string;
   league: string;
+  leagueSlug: string;
   season: string;
   startDate: string | null;
   endDate: string | null;
@@ -381,7 +383,9 @@ export async function getPlayerById(
     .select({
       stint: playerStints,
       teamName: teams.name,
+      teamSlug: teams.slug,
       leagueName: leagues.name,
+      leagueSlug: leagues.slug,
       seasonLabel: seasons.seasonLabel,
     })
     .from(playerStints)
@@ -399,7 +403,9 @@ export async function getPlayerById(
   const career: CareerEntry[] = stintRows.map((s) => ({
     id: s.stint.id,
     team: s.teamName,
+    teamSlug: s.teamSlug,
     league: s.leagueName,
+    leagueSlug: s.leagueSlug,
     season: s.seasonLabel ?? "—",
     startDate: s.stint.startDate ?? null,
     endDate: s.stint.endDate ?? null,

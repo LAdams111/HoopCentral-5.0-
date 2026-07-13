@@ -6992,6 +6992,7 @@ function teamMatchesConference(
   const espnId = resolveNcaaEspnId(team.name, {
     abbreviation: team.abbreviation,
     slug: team.slug,
+    allowAbbreviationMatch: true,
   });
   if (espnId && conference.teamEspnIds.includes(espnId)) return true;
 
@@ -7004,6 +7005,7 @@ export function conferenceForNcaaTeam(
   const espnId = resolveNcaaEspnId(team.name, {
     abbreviation: team.abbreviation,
     slug: team.slug,
+    allowAbbreviationMatch: true,
   });
   if (espnId && ESPN_ID_TO_CONFERENCE[espnId]) {
     return ESPN_ID_TO_CONFERENCE[espnId];
@@ -7051,6 +7053,7 @@ function dedupeTeamsByEspnId<T extends { name: string; abbreviation: string; slu
     const espnId = resolveNcaaEspnId(team.name, {
       abbreviation: team.abbreviation,
       slug: team.slug,
+      allowAbbreviationMatch: true,
     });
 
     if (!espnId) {

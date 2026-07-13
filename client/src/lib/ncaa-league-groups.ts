@@ -13,6 +13,18 @@ import {
 
 export type NcaaGroupedLeagueSlug = "ncaa-m" | "ncaa-d2";
 
+const NCAA_LEAGUE_SLUGS = new Set([
+  "ncaa",
+  "ncaa-m",
+  "ncaa-w",
+  "ncaa-d2",
+]);
+
+export function isNcaaLeagueSlug(leagueSlug?: string): boolean {
+  if (!leagueSlug) return false;
+  return NCAA_LEAGUE_SLUGS.has(leagueSlug.trim().toLowerCase());
+}
+
 export function isNcaaGroupedLeague(slug: string): slug is NcaaGroupedLeagueSlug {
   return slug === "ncaa-m" || slug === "ncaa-d2";
 }

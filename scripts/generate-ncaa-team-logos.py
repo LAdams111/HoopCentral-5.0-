@@ -151,7 +151,14 @@ def main() -> None:
             add_slug_alias(by_slug, slugify(label), espn_id)
 
         if abbrev:
-            by_abbrev[abbrev] = espn_id
+            if abbrev in by_abbrev and by_abbrev[abbrev] != espn_id:
+                print(
+                    f"WARNING: abbreviation collision for {abbrev}: "
+                    f"{by_abbrev[abbrev]} vs {espn_id} ({display_name})",
+                    file=sys.stderr,
+                )
+            else:
+                by_abbrev[abbrev] = espn_id
 
     for alias, canonical_slug in manual_aliases.items():
         espn_id = resolve_espn_id(by_slug, canonical_slug)
@@ -211,7 +218,7 @@ function normalizeTeamName(name: string): string {{
 
 export function resolveNcaaEspnId(
   teamName: string,
-  options?: {{ abbreviation?: string; slug?: string }},
+  options?: {{ abbreviation?: string; slug?: string; allowAbbreviationMatch?: boolean }},
 ): string | undefined {{
   const slug = options?.slug?.trim().toLowerCase();
   if (slug && ESPN_IDS_BY_SLUG[slug]) return ESPN_IDS_BY_SLUG[slug];
@@ -226,15 +233,17 @@ export function resolveNcaaEspnId(
     return ESPN_IDS_BY_NAME[normalizedName];
   }}
 
-  const abbrev = options?.abbreviation?.trim().toUpperCase();
-  if (abbrev && ESPN_IDS_BY_ABBREV[abbrev]) return ESPN_IDS_BY_ABBREV[abbrev];
+  if (options?.allowAbbreviationMatch) {{
+    const abbrev = options?.abbreviation?.trim().toUpperCase();
+    if (abbrev && ESPN_IDS_BY_ABBREV[abbrev]) return ESPN_IDS_BY_ABBREV[abbrev];
+  }}
 
   return undefined;
 }}
 
 export function resolveNcaaTeamDisplayName(
   teamName: string,
-  options?: {{ abbreviation?: string; slug?: string }},
+  options?: {{ abbreviation?: string; slug?: string; allowAbbreviationMatch?: boolean }},
 ): string | undefined {{
   const espnId = resolveNcaaEspnId(teamName, options);
   if (!espnId) return undefined;
@@ -243,7 +252,7 @@ export function resolveNcaaTeamDisplayName(
 
 export function ncaaTeamLogoUrl(
   teamName: string,
-  options?: {{ abbreviation?: string; slug?: string }},
+  options?: {{ abbreviation?: string; slug?: string; allowAbbreviationMatch?: boolean }},
 ): string {{
   const espnId = resolveNcaaEspnId(teamName, options);
   if (!espnId) return NCAA_LOGO_FALLBACK;

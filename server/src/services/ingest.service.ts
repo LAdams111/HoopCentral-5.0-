@@ -20,6 +20,7 @@ import {
 } from "../utils/league-slug.js";
 import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
 import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../utils/usports-team-aliases.js";
+import { normalizeCcaaTeamForIngest } from "../utils/ccaa-team-aliases.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -552,6 +553,10 @@ async function ingestPlayerSeasonOnce(
         }
         throw error;
       }
+    }
+
+    if (resolvedLeague.slug === "ccaa") {
+      teamPayload = normalizeCcaaTeamForIngest(teamPayload);
     }
 
     const seasonResult = await findOrCreateSeason(tx, leagueResult.id, input.season.label);

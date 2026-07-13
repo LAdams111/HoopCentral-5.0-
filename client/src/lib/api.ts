@@ -48,7 +48,9 @@ export function formatGamesPlayed(games: number | null | undefined): string {
 export interface CareerEntry {
   id: number;
   team: string;
+  teamSlug: string;
   league: string;
+  leagueSlug: string;
   season: string;
   startDate: string | null;
   endDate: string | null;
