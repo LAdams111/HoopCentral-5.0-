@@ -21,6 +21,8 @@ export default function App() {
         <Route path="/roster/:team/:season" element={<Roster />} />
         <Route path="/teams/:slug" element={<Team />} />
         <Route path="/leagues" element={<Leagues />} />
+        <Route path="/leagues/:league/state/:state" element={<LeagueDetail />} />
+        <Route path="/leagues/:league/region/:region" element={<LeagueDetail />} />
         <Route path="/leagues/:league/conference/:conference" element={<LeagueDetail />} />
         <Route path="/leagues/:league" element={<LeagueDetail />} />
         <Route path="/prospects" element={<Prospects />} />

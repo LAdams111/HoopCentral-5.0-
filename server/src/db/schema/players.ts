@@ -1,6 +1,7 @@
 import {
   date,
   integer,
+  jsonb,
   pgTable,
   serial,
   text,
@@ -21,6 +22,7 @@ export const players = pgTable("players", {
   country: text("country"),
   jerseyNumber: text("jersey_number"),
   headshotUrl: text("headshot_url").default(""),
+  extendedProfile: jsonb("extended_profile").$type<Record<string, unknown>>(),
   profileViews: integer("profile_views").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

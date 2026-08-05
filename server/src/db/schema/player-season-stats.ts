@@ -1,4 +1,4 @@
-import { integer, numeric, pgTable, serial, unique } from "drizzle-orm/pg-core";
+import { integer, jsonb, numeric, pgTable, serial, unique } from "drizzle-orm/pg-core";
 import { leagues } from "./leagues.js";
 import { players } from "./players.js";
 import { seasons } from "./seasons.js";
@@ -29,6 +29,7 @@ export const playerSeasonStats = pgTable(
     fieldGoalPct: numeric("fg_pct", { precision: 5, scale: 1 }),
     threePointPct: numeric("three_point_pct", { precision: 5, scale: 1 }),
     freeThrowPct: numeric("free_throw_pct", { precision: 5, scale: 1 }),
+    extendedStats: jsonb("extended_stats").$type<Record<string, unknown>>(),
   },
   (t) => [unique().on(t.playerId, t.teamId, t.seasonId, t.leagueId)],
 );

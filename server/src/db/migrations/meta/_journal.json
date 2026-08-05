@@ -127,6 +127,13 @@
       "when": 1751126400000,
       "tag": "0018_consolidate_liga_acb",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1751212800000,
+      "tag": "0019_extended_stats_and_profile",
+      "breakpoints": true
     }
   ]
 }

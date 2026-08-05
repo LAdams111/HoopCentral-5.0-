@@ -38,6 +38,7 @@ export interface IngestSeasonStatFields {
   fieldGoalPct?: number | null;
   threePointPct?: number | null;
   freeThrowPct?: number | null;
+  extended?: Record<string, unknown> | null;
 }
 
 export interface IngestPlayerSeasonInput {
@@ -51,6 +52,7 @@ export interface IngestPlayerSeasonInput {
     weightKg?: number | null;
     hometown?: string | null;
     headshotUrl?: string | null;
+    extendedProfile?: Record<string, unknown> | null;
   };
   league: {
     slug: string;
@@ -165,6 +167,18 @@ function requireNumber(value: unknown, field: string): number {
   return value;
 }
 
+function optionalExtendedRecord(
+  value: unknown,
+  field: string,
+): Record<string, unknown> | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new IngestValidationError(`${field} must be a JSON object`);
+  }
+  return value as Record<string, unknown>;
+}
+
 function parseSeasonStatFields(
   statsObj: Record<string, unknown>,
   prefix: string,
@@ -179,6 +193,7 @@ function parseSeasonStatFields(
     fieldGoalPct: optionalNumber(statsObj.fieldGoalPct, `${prefix}.fieldGoalPct`),
     threePointPct: optionalNumber(statsObj.threePointPct, `${prefix}.threePointPct`),
     freeThrowPct: optionalNumber(statsObj.freeThrowPct, `${prefix}.freeThrowPct`),
+    extended: optionalExtendedRecord(statsObj.extended, `${prefix}.extended`),
   };
 }
 
@@ -227,6 +242,7 @@ export function parseIngestPlayerSeasonBody(body: unknown): IngestPlayerSeasonIn
       weightKg: optionalNumber(playerObj.weightKg, "player.weightKg"),
       hometown: optionalString(playerObj.hometown),
       headshotUrl: optionalString(playerObj.headshotUrl),
+      extendedProfile: optionalExtendedRecord(playerObj.extendedProfile, "player.extendedProfile"),
     },
     league: {
       slug: normalizeSlugParam(requireString(leagueObj.slug, "league.slug")),
@@ -417,7 +433,7 @@ async function upsertSeasonStats(
     )
     .limit(1);
 
-  const values: Record<string, string | number> = {
+  const values: Record<string, string | number | Record<string, unknown>> = {
     gamesPlayed: params.gamesPlayed,
     pointsPerGame: String(params.pointsPerGame),
     reboundsPerGame: String(params.reboundsPerGame),
@@ -438,6 +454,9 @@ async function upsertSeasonStats(
   }
   if (params.freeThrowPct != null) {
     values.freeThrowPct = String(params.freeThrowPct);
+  }
+  if (params.extended != null && Object.keys(params.extended).length > 0) {
+    values.extendedStats = params.extended;
   }
 
   if (existing) {
@@ -500,6 +519,9 @@ function buildSeasonIngestPlayerUpdate(
   if (input.headshotUrl) {
     const sanitized = sanitizeHeadshotUrl(input.headshotUrl);
     if (sanitized) update.headshotUrl = sanitized;
+  }
+  if (input.extendedProfile != null && Object.keys(input.extendedProfile).length > 0) {
+    update.extendedProfile = input.extendedProfile;
   }
 
   return update;

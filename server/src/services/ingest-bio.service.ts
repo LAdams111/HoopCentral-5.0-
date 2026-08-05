@@ -26,6 +26,7 @@ export interface IngestPlayerBioInput {
     hometown?: string | null;
     country?: string | null;
     headshotUrl?: string | null;
+    extendedProfile?: Record<string, unknown> | null;
   };
   linkTo?: {
     source: string;
@@ -69,6 +70,18 @@ function optionalNumber(value: unknown, field: string): number | null | undefine
   return value;
 }
 
+function optionalExtendedRecord(
+  value: unknown,
+  field: string,
+): Record<string, unknown> | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new IngestValidationError(`${field} must be a JSON object`);
+  }
+  return value as Record<string, unknown>;
+}
+
 export function parseIngestPlayerBioBody(body: unknown): IngestPlayerBioInput {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     throw new IngestValidationError("Request body must be a JSON object");
@@ -107,6 +120,10 @@ export function parseIngestPlayerBioBody(body: unknown): IngestPlayerBioInput {
       hometown: optionalString(playerObj.hometown),
       country: optionalString(playerObj.country),
       headshotUrl: optionalString(playerObj.headshotUrl),
+      extendedProfile: optionalExtendedRecord(
+        playerObj.extendedProfile,
+        "player.extendedProfile",
+      ),
     },
     linkTo,
   };
@@ -217,6 +234,9 @@ function buildBioUpdate(input: IngestPlayerBioInput): Partial<typeof players.$in
   if (input.player.headshotUrl) {
     const sanitized = sanitizeHeadshotUrl(input.player.headshotUrl);
     if (sanitized) update.headshotUrl = sanitized;
+  }
+  if (input.player.extendedProfile != null && Object.keys(input.player.extendedProfile).length > 0) {
+    update.extendedProfile = input.player.extendedProfile;
   }
 
   return update;
