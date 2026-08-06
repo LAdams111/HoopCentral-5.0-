@@ -21,6 +21,8 @@
     "db:merge-ncaa-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-ncaa-teams.ts",
     "db:merge-usports-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-usports-teams.ts",
     "db:merge-ccaa-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-ccaa-teams.ts",
+    "db:cleanup-maxpreps-placeholders": "tsx --tsconfig tsconfig.json ../scripts/cleanup-maxpreps-placeholder-seasons.ts",
+    "db:merge-montverde-hs-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-montverde-hs-teams.ts",
     "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {

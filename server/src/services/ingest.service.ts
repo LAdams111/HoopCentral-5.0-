@@ -21,6 +21,7 @@ import {
 import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
 import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../utils/usports-team-aliases.js";
 import { normalizeCcaaTeamForIngest } from "../utils/ccaa-team-aliases.js";
+import { normalizeMaxprepsTeamForIngest } from "../utils/maxpreps-team-aliases.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -579,6 +580,13 @@ async function ingestPlayerSeasonOnce(
 
     if (resolvedLeague.slug === "ccaa") {
       teamPayload = normalizeCcaaTeamForIngest(teamPayload);
+    }
+
+    if (
+      input.source === "maxpreps-hs-basketball" &&
+      resolvedLeague.slug === "high-school"
+    ) {
+      teamPayload = normalizeMaxprepsTeamForIngest(teamPayload);
     }
 
     const seasonResult = await findOrCreateSeason(tx, leagueResult.id, input.season.label);

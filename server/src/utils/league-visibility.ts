@@ -1,5 +1,6 @@
 import { SEED_LEAGUES } from "../data/leagues.js";
 import { CANONICAL_LEAGUE_NAMES } from "./league-slug.js";
+import { isHiddenMontverdeDuplicateSlug } from "./maxpreps-team-aliases.js";
 
 /** Minimum teams for a discovered (non-whitelisted) league to appear publicly. */
 export const MIN_PUBLIC_TEAM_COUNT = 4;
@@ -204,6 +205,7 @@ export function isBrowsableTeam(
   team: TeamVisibilityInput,
   context: TeamBrowseContext = {},
 ): boolean {
+  if (isHiddenMontverdeDuplicateSlug(team.slug)) return false;
   if (isJunkTeam(team)) return false;
 
   if (context.distinctPlayerCount === 1 && isSinglePlayerNarrativeTeam(team)) {
