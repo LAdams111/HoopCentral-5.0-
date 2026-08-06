@@ -20,6 +20,7 @@ export const FEATURED_LEAGUE_SLUGS = [
   "cba",
   "b-league",
   "high-school",
+  "high-school-w",
 ] as const;
 
 export type FeaturedLeagueSlug = (typeof FEATURED_LEAGUE_SLUGS)[number];

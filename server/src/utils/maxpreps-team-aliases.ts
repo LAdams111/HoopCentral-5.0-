@@ -6,44 +6,39 @@ export interface MaxprepsTeamIdentity {
   abbreviation: string;
 }
 
-/** Canonical high-school teams keyed by alias slug. */
+/** Junk / narrative duplicate slugs → canonical MaxPreps HS team (not separate squads). */
 const HS_TEAM_ALIASES: Record<string, MaxprepsTeamIdentity> = {
-  "montverde-academy-purple-eagles-ps": {
-    slug: "montverde-academy-eagles-fl",
-    name: "Montverde Academy Eagles",
-    abbreviation: "MAE",
-  },
-  "montverde-academy-purple-eagles-fl": {
-    slug: "montverde-academy-eagles-fl",
-    name: "Montverde Academy Eagles",
-    abbreviation: "MAE",
-  },
   "montverde-fl": {
     slug: "montverde-academy-eagles-fl",
-    name: "Montverde Academy Eagles",
-    abbreviation: "MAE",
+    name: "Montverde Academy Eagles Varsity Boys Basketball",
+    abbreviation: "MAEVBB",
   },
   "montverde-fl-usa": {
     slug: "montverde-academy-eagles-fl",
-    name: "Montverde Academy Eagles",
-    abbreviation: "MAE",
+    name: "Montverde Academy Eagles Varsity Boys Basketball",
+    abbreviation: "MAEVBB",
   },
   "montverde-academy-hs-texas": {
     slug: "montverde-academy-eagles-fl",
-    name: "Montverde Academy Eagles",
-    abbreviation: "MAE",
+    name: "Montverde Academy Eagles Varsity Boys Basketball",
+    abbreviation: "MAEVBB",
   },
 };
 
 export const MONTEVERDE_HS_CANONICAL_SLUG = "montverde-academy-eagles-fl";
+export const MONTEVERDE_HS_PURPLE_SLUG = "montverde-academy-purple-eagles-fl";
 
-export const MONTEVERDE_HS_DUPLICATE_SLUGS = [
-  "montverde-academy-purple-eagles-ps",
-  "montverde-academy-purple-eagles-fl",
+/** Slugs that were merged into main Eagles before squad split (junk only, not Purple). */
+export const MONTEVERDE_HS_JUNK_DUPLICATE_SLUGS = [
   "montverde-fl",
   "montverde-fl-usa",
   "montverde-academy-hs-texas",
 ] as const;
+
+const VISIBLE_MONTEVERDE_SLUGS = new Set([
+  MONTEVERDE_HS_CANONICAL_SLUG,
+  MONTEVERDE_HS_PURPLE_SLUG,
+]);
 
 export function normalizeMaxprepsTeamForIngest(team: MaxprepsTeamIdentity): MaxprepsTeamIdentity {
   const slugKey = normalizeSlugParam(team.slug);
@@ -52,9 +47,9 @@ export function normalizeMaxprepsTeamForIngest(team: MaxprepsTeamIdentity): Maxp
   return { ...alias };
 }
 
-/** Hide duplicate Montverde/Monteverde team pages outside the canonical MaxPreps HS slug. */
+/** Hide parser junk Montverde pages; keep main + Purple squads visible. */
 export function isHiddenMontverdeDuplicateSlug(slug: string): boolean {
   const normalized = normalizeSlugParam(slug);
-  if (normalized === MONTEVERDE_HS_CANONICAL_SLUG) return false;
+  if (VISIBLE_MONTEVERDE_SLUGS.has(normalized)) return false;
   return /\bmontverde\b|\bmonteverde\b/.test(normalized);
 }

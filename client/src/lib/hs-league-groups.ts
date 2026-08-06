@@ -7,6 +7,9 @@ import {
 } from "./hs-us-states";
 
 export const HS_LEAGUE_SLUG = "high-school";
+export const HS_GIRLS_LEAGUE_SLUG = "high-school-w";
+
+const HS_LEAGUE_SLUGS = new Set([HS_LEAGUE_SLUG, HS_GIRLS_LEAGUE_SLUG]);
 
 export interface HsStateGroup<T extends { slug: string }> {
   state: { slug: string; name: string };
@@ -19,7 +22,7 @@ export interface HsRegionGroup {
 }
 
 export function isHighSchoolLeague(slug: string): boolean {
-  return slug.trim().toLowerCase() === HS_LEAGUE_SLUG;
+  return HS_LEAGUE_SLUGS.has(slug.trim().toLowerCase());
 }
 
 export function groupHighSchoolTeamsByState<T extends { slug: string }>(

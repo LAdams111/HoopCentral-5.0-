@@ -103,10 +103,18 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     category: "domestic",
   },
   "high-school": {
-    display: "High School",
+    display: "High School (Boys)",
     tier: "Amateur",
     description:
-      "Varsity high school basketball programs across the country producing top collegiate and professional talent.",
+      "Varsity boys high school basketball programs across the United States and Canada.",
+    regions: ["US", "CA"],
+    category: "domestic",
+  },
+  "high-school-w": {
+    display: "High School (Girls)",
+    tier: "Amateur",
+    description:
+      "Varsity girls high school basketball programs across the United States and Canada.",
     regions: ["US", "CA"],
     category: "domestic",
   },
@@ -245,6 +253,7 @@ export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
     "ncaa-d2",
     "ote",
     "high-school",
+    "high-school-w",
     "aau",
   ];
   const internationalOrder = [

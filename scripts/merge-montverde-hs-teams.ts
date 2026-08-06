@@ -14,7 +14,7 @@ import { leagues, teams } from "../server/src/db/schema/index.js";
 import { mergeTeamInto } from "../server/src/services/merge-teams.service.js";
 import {
   MONTEVERDE_HS_CANONICAL_SLUG,
-  MONTEVERDE_HS_DUPLICATE_SLUGS,
+  MONTEVERDE_HS_JUNK_DUPLICATE_SLUGS,
 } from "../server/src/utils/maxpreps-team-aliases.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -53,7 +53,7 @@ async function main(): Promise<void> {
   const duplicates = await db
     .select({ id: teams.id, slug: teams.slug, name: teams.name })
     .from(teams)
-    .where(and(eq(teams.leagueId, hsLeague.id), inArray(teams.slug, [...MONTEVERDE_HS_DUPLICATE_SLUGS])));
+    .where(and(eq(teams.leagueId, hsLeague.id), inArray(teams.slug, [...MONTEVERDE_HS_JUNK_DUPLICATE_SLUGS])));
 
   if (duplicates.length === 0) {
     console.log("No Montverde duplicate teams to merge.");

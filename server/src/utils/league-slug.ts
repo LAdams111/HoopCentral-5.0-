@@ -92,6 +92,8 @@ export function leagueGenderForSlug(slug: string): LeagueGender | null {
     return "male";
   }
   if (normalized === NCAA_WOMENS_SLUG) return "female";
+  if (normalized === "high-school") return "male";
+  if (normalized === "high-school-w") return "female";
   return null;
 }
 
