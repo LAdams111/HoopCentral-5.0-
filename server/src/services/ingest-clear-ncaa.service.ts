@@ -11,10 +11,8 @@ import { IngestValidationError } from "./ingest.service.js";
 
 const NCAA_LEAGUE_SLUGS = ["ncaa", "ncaa-w"] as const;
 
-/** usbasket-profile noise — not authoritative for CBB CSV replace. */
+/** usbasket name-collision noise — never touch ncaa-d2 / ncaa-d3 (real lower-division careers). */
 const JUNK_COLLEGE_LEAGUE_SLUGS = [
-  "ncaa-d2",
-  "ncaa-d3",
   "naia",
   "juco",
   "uscaa",
