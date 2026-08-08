@@ -10,6 +10,14 @@ import {
   parseIngestPlayerBioBody,
 } from "../services/ingest-bio.service.js";
 import { getCompletionStatusBySource } from "../services/ingest-status.service.js";
+import {
+  clearPlayerNcaaSeasons,
+  parseClearPlayerNcaaSeasonsBody,
+} from "../services/ingest-clear-ncaa.service.js";
+import {
+  ingestMergePlayers,
+  parseMergePlayersBody,
+} from "../services/ingest-merge.service.js";
 
 export const ingestRouter = Router();
 
@@ -71,6 +79,46 @@ ingestRouter.post("/player-bio", async (req, res) => {
     console.error(err);
     res.status(500).json({
       error: { code: "INTERNAL_ERROR", message: "Failed to ingest player bio" },
+    });
+  }
+});
+
+ingestRouter.post("/clear-player-ncaa-seasons", async (req, res) => {
+  try {
+    const input = parseClearPlayerNcaaSeasonsBody(req.body);
+    const result = await clearPlayerNcaaSeasons(input);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof IngestValidationError) {
+      res.status(400).json({
+        error: { code: "INVALID_BODY", message: err.message },
+      });
+      return;
+    }
+
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to clear NCAA seasons" },
+    });
+  }
+});
+
+ingestRouter.post("/merge-players", async (req, res) => {
+  try {
+    const input = parseMergePlayersBody(req.body);
+    const result = await ingestMergePlayers(input);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof IngestValidationError) {
+      res.status(400).json({
+        error: { code: "INVALID_BODY", message: err.message },
+      });
+      return;
+    }
+
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to merge players" },
     });
   }
 });
