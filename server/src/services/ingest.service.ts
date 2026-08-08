@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { db, type DbClient } from "../db/index.js";
 import {
   leagues,
@@ -12,7 +12,6 @@ import {
 import { normalizeSlugParam } from "../utils/slug.js";
 import { resolveOperationalIngestLeague } from "../utils/league-resolution.js";
 import {
-  AUTHORITATIVE_NCAA_SEASON_SOURCES,
   MENS_NCAA_SOURCES,
   USPORTS_SOURCES,
   WOMENS_NCAA_SOURCES,
@@ -24,7 +23,6 @@ import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../util
 import { normalizeCcaaTeamForIngest } from "../utils/ccaa-team-aliases.js";
 import { normalizeMaxprepsTeamForIngest } from "../utils/maxpreps-team-aliases.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
-import { sanitizeIngestHometown } from "../utils/hometown.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
   isPostgresTransientError,
@@ -105,10 +103,6 @@ const OPERATIONAL_NCAA_LEAGUE_SLUGS = new Set([
 ]);
 
 function shouldNormalizeNcaaTeamForIngest(source: string, leagueSlug: string): boolean {
-  // CBB CSV already canonicalizes teams; do not remap slug/name on ingest.
-  if (AUTHORITATIVE_NCAA_SEASON_SOURCES.has(source)) {
-    return false;
-  }
   if (MENS_NCAA_SOURCES.has(source) || WOMENS_NCAA_SOURCES.has(source)) {
     return true;
   }
@@ -116,74 +110,6 @@ function shouldNormalizeNcaaTeamForIngest(source: string, leagueSlug: string): b
     return OPERATIONAL_NCAA_LEAGUE_SLUGS.has(normalizeSlugParam(leagueSlug));
   }
   return false;
-}
-
-function isAuthoritativeNcaaSeasonSource(source: string, leagueSlug: string): boolean {
-  if (!AUTHORITATIVE_NCAA_SEASON_SOURCES.has(source)) {
-    return false;
-  }
-  return OPERATIONAL_NCAA_LEAGUE_SLUGS.has(normalizeSlugParam(leagueSlug));
-}
-
-/** Drop other team rows for the same player/league/season (e.g. Duke vs Duke University). */
-async function clearConflictingPlayerSeasonRows(
-  database: DbClient,
-  params: {
-    playerId: number;
-    leagueId: number;
-    seasonId: number;
-    keepTeamId: number;
-  },
-): Promise<void> {
-  const conflictingRows = await database
-    .select({ teamId: playerSeasonStats.teamId })
-    .from(playerSeasonStats)
-    .where(
-      and(
-        eq(playerSeasonStats.playerId, params.playerId),
-        eq(playerSeasonStats.leagueId, params.leagueId),
-        eq(playerSeasonStats.seasonId, params.seasonId),
-        ne(playerSeasonStats.teamId, params.keepTeamId),
-      ),
-    );
-
-  const conflictingTeamIds = [...new Set(conflictingRows.map((row) => row.teamId))];
-  if (conflictingTeamIds.length === 0) {
-    return;
-  }
-
-  await database
-    .delete(playerSeasonPlayoffStats)
-    .where(
-      and(
-        eq(playerSeasonPlayoffStats.playerId, params.playerId),
-        eq(playerSeasonPlayoffStats.leagueId, params.leagueId),
-        eq(playerSeasonPlayoffStats.seasonId, params.seasonId),
-        inArray(playerSeasonPlayoffStats.teamId, conflictingTeamIds),
-      ),
-    );
-
-  await database
-    .delete(playerSeasonStats)
-    .where(
-      and(
-        eq(playerSeasonStats.playerId, params.playerId),
-        eq(playerSeasonStats.leagueId, params.leagueId),
-        eq(playerSeasonStats.seasonId, params.seasonId),
-        inArray(playerSeasonStats.teamId, conflictingTeamIds),
-      ),
-    );
-
-  await database
-    .delete(playerStints)
-    .where(
-      and(
-        eq(playerStints.playerId, params.playerId),
-        eq(playerStints.leagueId, params.leagueId),
-        eq(playerStints.seasonId, params.seasonId),
-        inArray(playerStints.teamId, conflictingTeamIds),
-      ),
-    );
 }
 
 /** When a player already has stats for this league+season, reuse that team (any source). */
@@ -590,10 +516,7 @@ function buildSeasonIngestPlayerUpdate(
   if (input.position != null) update.position = input.position;
   if (input.heightCm != null) update.heightCm = input.heightCm;
   if (input.weightKg != null) update.weightKg = input.weightKg;
-  if (input.hometown != null) {
-    const sanitized = sanitizeIngestHometown(input.hometown);
-    if (sanitized) update.hometown = sanitized;
-  }
+  if (input.hometown != null) update.hometown = input.hometown;
   if (input.headshotUrl) {
     const sanitized = sanitizeHeadshotUrl(input.headshotUrl);
     if (sanitized) update.headshotUrl = sanitized;
@@ -674,37 +597,15 @@ async function ingestPlayerSeasonOnce(
       seasonId: seasonResult.id,
     });
 
-    const authoritativeNcaaSeason = isAuthoritativeNcaaSeasonSource(
-      input.source,
-      resolvedLeague.slug,
-    );
-
-    const teamResult = authoritativeNcaaSeason
-      ? await findOrCreateTeam(
+    const teamResult = existingSeasonStat
+      ? { id: existingSeasonStat.teamId, created: false }
+      : await findOrCreateTeam(
           tx,
           leagueResult.id,
           teamPayload.slug,
           teamPayload.name,
           teamPayload.abbreviation,
-        )
-      : existingSeasonStat
-        ? { id: existingSeasonStat.teamId, created: false }
-        : await findOrCreateTeam(
-            tx,
-            leagueResult.id,
-            teamPayload.slug,
-            teamPayload.name,
-            teamPayload.abbreviation,
-          );
-
-    if (authoritativeNcaaSeason) {
-      await clearConflictingPlayerSeasonRows(tx, {
-        playerId: identityResult.player.id,
-        leagueId: leagueResult.id,
-        seasonId: seasonResult.id,
-        keepTeamId: teamResult.id,
-      });
-    }
+        );
 
     const stintCreated = await upsertStint(tx, {
       playerId: identityResult.player.id,

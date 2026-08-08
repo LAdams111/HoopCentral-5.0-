@@ -11,15 +11,6 @@ export const USPORTS_SOURCES = new Set(["usbasket-u-sports"]);
 /** Sources that ingest women's NCAA D1 data. */
 export const WOMENS_NCAA_SOURCES = new Set(["usbasket-ncaa-d1-w"]);
 
-/** Sports Reference CBB CSV ingest — canonical team/season replaces older NCAA rows. */
-export const SPORTS_REFERENCE_CBB_MENS_SOURCE = "sports-reference-cbb";
-export const SPORTS_REFERENCE_CBB_WOMENS_SOURCE = "sports-reference-cbb-w";
-
-export const AUTHORITATIVE_NCAA_SEASON_SOURCES = new Set([
-  SPORTS_REFERENCE_CBB_MENS_SOURCE,
-  SPORTS_REFERENCE_CBB_WOMENS_SOURCE,
-]);
-
 /** Legacy men's league slug — still used by the live scraper. */
 export const LEGACY_NCAA_MENS_SLUG = "ncaa";
 
