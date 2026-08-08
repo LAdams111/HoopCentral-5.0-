@@ -19,6 +19,8 @@ const JUNK_COLLEGE_LEAGUE_SLUGS = [
   "juco",
   "uscaa",
   "university-league",
+  "high-school",
+  "high-school-w",
 ] as const;
 
 export interface ClearPlayerNcaaSeasonsInput {
