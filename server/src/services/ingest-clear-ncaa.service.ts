@@ -11,15 +11,15 @@ import { IngestValidationError } from "./ingest.service.js";
 
 const NCAA_LEAGUE_SLUGS = ["ncaa", "ncaa-w"] as const;
 
-/** usbasket name-collision noise — never touch ncaa-d2 / ncaa-d3 (real lower-division careers). */
+/** usbasket name-collision noise — never touch ncaa-d2 / ncaa-d3 or high school (MaxPreps). */
 const JUNK_COLLEGE_LEAGUE_SLUGS = [
   "naia",
   "juco",
   "uscaa",
   "university-league",
-  "high-school",
-  "high-school-w",
 ] as const;
+
+const PROTECTED_FROM_ZERO_GP_CLEAR = ["high-school", "high-school-w"] as const;
 
 export interface ClearPlayerNcaaSeasonsInput {
   playerId: number;
@@ -105,12 +105,21 @@ export async function clearPlayerNcaaSeasons(
             )
         : [];
 
-    const zeroGpStatRows = await tx
+    const protectedLeagueRows = await tx
+      .select({ id: leagues.id })
+      .from(leagues)
+      .where(inArray(leagues.slug, [...PROTECTED_FROM_ZERO_GP_CLEAR]));
+    const protectedLeagueIds = new Set(protectedLeagueRows.map((row) => row.id));
+
+    const allZeroGpStatRows = await tx
       .select({ id: playerSeasonStats.id, teamId: playerSeasonStats.teamId, leagueId: playerSeasonStats.leagueId, seasonId: playerSeasonStats.seasonId })
       .from(playerSeasonStats)
       .where(
         and(eq(playerSeasonStats.playerId, input.playerId), eq(playerSeasonStats.gamesPlayed, 0)),
       );
+    const zeroGpStatRows = allZeroGpStatRows.filter(
+      (row) => !protectedLeagueIds.has(row.leagueId),
+    );
 
     const statIdsToDelete = new Set<number>();
     for (const row of [...ncaaStatRows, ...junkStatRows, ...zeroGpStatRows]) {
