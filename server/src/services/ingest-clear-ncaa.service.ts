@@ -11,6 +11,16 @@ import { IngestValidationError } from "./ingest.service.js";
 
 const NCAA_LEAGUE_SLUGS = ["ncaa", "ncaa-w"] as const;
 
+/** usbasket-profile noise — not authoritative for CBB CSV replace. */
+const JUNK_COLLEGE_LEAGUE_SLUGS = [
+  "ncaa-d2",
+  "ncaa-d3",
+  "naia",
+  "juco",
+  "uscaa",
+  "university-league",
+] as const;
+
 export interface ClearPlayerNcaaSeasonsInput {
   playerId: number;
 }
@@ -21,6 +31,8 @@ export interface ClearPlayerNcaaSeasonsResult {
   statsRemoved: number;
   stintsRemoved: number;
   playoffStatsRemoved: number;
+  junkStatsRemoved: number;
+  zeroGpStatsRemoved: number;
 }
 
 function requirePlayerId(value: unknown, field: string): number {
@@ -54,92 +66,147 @@ export async function clearPlayerNcaaSeasons(
     throw new IngestValidationError(`Player ${input.playerId} not found`);
   }
 
-  const leagueRows = await db
-    .select({ id: leagues.id })
-    .from(leagues)
-    .where(inArray(leagues.slug, [...NCAA_LEAGUE_SLUGS]));
-
-  const leagueIds = leagueRows.map((row) => row.id);
-  if (leagueIds.length === 0) {
-    return {
-      ok: true,
-      playerId: input.playerId,
-      statsRemoved: 0,
-      stintsRemoved: 0,
-      playoffStatsRemoved: 0,
-    };
-  }
-
   return db.transaction(async (tx) => {
-    const statRows = await tx
-      .select({ id: playerSeasonStats.id })
+    const ncaaLeagueRows = await tx
+      .select({ id: leagues.id })
+      .from(leagues)
+      .where(inArray(leagues.slug, [...NCAA_LEAGUE_SLUGS]));
+    const ncaaLeagueIds = ncaaLeagueRows.map((row) => row.id);
+
+    const junkLeagueRows = await tx
+      .select({ id: leagues.id })
+      .from(leagues)
+      .where(inArray(leagues.slug, [...JUNK_COLLEGE_LEAGUE_SLUGS]));
+    const junkLeagueIds = junkLeagueRows.map((row) => row.id);
+
+    const ncaaStatRows =
+      ncaaLeagueIds.length > 0
+        ? await tx
+            .select({ id: playerSeasonStats.id, teamId: playerSeasonStats.teamId, leagueId: playerSeasonStats.leagueId, seasonId: playerSeasonStats.seasonId })
+            .from(playerSeasonStats)
+            .where(
+              and(
+                eq(playerSeasonStats.playerId, input.playerId),
+                inArray(playerSeasonStats.leagueId, ncaaLeagueIds),
+              ),
+            )
+        : [];
+
+    const junkStatRows =
+      junkLeagueIds.length > 0
+        ? await tx
+            .select({ id: playerSeasonStats.id, teamId: playerSeasonStats.teamId, leagueId: playerSeasonStats.leagueId, seasonId: playerSeasonStats.seasonId })
+            .from(playerSeasonStats)
+            .where(
+              and(
+                eq(playerSeasonStats.playerId, input.playerId),
+                inArray(playerSeasonStats.leagueId, junkLeagueIds),
+              ),
+            )
+        : [];
+
+    const zeroGpStatRows = await tx
+      .select({ id: playerSeasonStats.id, teamId: playerSeasonStats.teamId, leagueId: playerSeasonStats.leagueId, seasonId: playerSeasonStats.seasonId })
       .from(playerSeasonStats)
       .where(
-        and(
-          eq(playerSeasonStats.playerId, input.playerId),
-          inArray(playerSeasonStats.leagueId, leagueIds),
-        ),
+        and(eq(playerSeasonStats.playerId, input.playerId), eq(playerSeasonStats.gamesPlayed, 0)),
       );
 
-    const stintRows = await tx
-      .select({ id: playerStints.id })
-      .from(playerStints)
-      .where(
-        and(
-          eq(playerStints.playerId, input.playerId),
-          inArray(playerStints.leagueId, leagueIds),
-        ),
-      );
-
-    const playoffRows = await tx
-      .select({ id: playerSeasonPlayoffStats.id })
-      .from(playerSeasonPlayoffStats)
-      .where(
-        and(
-          eq(playerSeasonPlayoffStats.playerId, input.playerId),
-          inArray(playerSeasonPlayoffStats.leagueId, leagueIds),
-        ),
-      );
-
-    if (playoffRows.length > 0) {
-      await tx
-        .delete(playerSeasonPlayoffStats)
-        .where(
-          and(
-            eq(playerSeasonPlayoffStats.playerId, input.playerId),
-            inArray(playerSeasonPlayoffStats.leagueId, leagueIds),
-          ),
-        );
+    const statIdsToDelete = new Set<number>();
+    for (const row of [...ncaaStatRows, ...junkStatRows, ...zeroGpStatRows]) {
+      statIdsToDelete.add(row.id);
     }
 
-    if (statRows.length > 0) {
+    if (statIdsToDelete.size > 0) {
       await tx
         .delete(playerSeasonStats)
         .where(
           and(
             eq(playerSeasonStats.playerId, input.playerId),
-            inArray(playerSeasonStats.leagueId, leagueIds),
+            inArray(playerSeasonStats.id, [...statIdsToDelete]),
           ),
         );
     }
 
-    if (stintRows.length > 0) {
+    const ncaaStintRows =
+      ncaaLeagueIds.length > 0
+        ? await tx
+            .select({ id: playerStints.id })
+            .from(playerStints)
+            .where(
+              and(
+                eq(playerStints.playerId, input.playerId),
+                inArray(playerStints.leagueId, ncaaLeagueIds),
+              ),
+            )
+        : [];
+
+    const junkStintRows =
+      junkLeagueIds.length > 0
+        ? await tx
+            .select({ id: playerStints.id })
+            .from(playerStints)
+            .where(
+              and(
+                eq(playerStints.playerId, input.playerId),
+                inArray(playerStints.leagueId, junkLeagueIds),
+              ),
+            )
+        : [];
+
+    const stintIdsToDelete = new Set<number>([
+      ...ncaaStintRows.map((row) => row.id),
+      ...junkStintRows.map((row) => row.id),
+    ]);
+
+    if (stintIdsToDelete.size > 0) {
       await tx
         .delete(playerStints)
         .where(
           and(
             eq(playerStints.playerId, input.playerId),
-            inArray(playerStints.leagueId, leagueIds),
+            inArray(playerStints.id, [...stintIdsToDelete]),
           ),
         );
     }
 
+    const playoffRows =
+      ncaaLeagueIds.length > 0
+        ? await tx
+            .select({ id: playerSeasonPlayoffStats.id })
+            .from(playerSeasonPlayoffStats)
+            .where(
+              and(
+                eq(playerSeasonPlayoffStats.playerId, input.playerId),
+                inArray(playerSeasonPlayoffStats.leagueId, ncaaLeagueIds),
+              ),
+            )
+        : [];
+
+    if (playoffRows.length > 0 && ncaaLeagueIds.length > 0) {
+      await tx
+        .delete(playerSeasonPlayoffStats)
+        .where(
+          and(
+            eq(playerSeasonPlayoffStats.playerId, input.playerId),
+            inArray(playerSeasonPlayoffStats.leagueId, ncaaLeagueIds),
+          ),
+        );
+    }
+
+    const junkOnlyIds = new Set(junkStatRows.map((row) => row.id));
+    const zeroOnlyIds = new Set(
+      zeroGpStatRows.filter((row) => !junkOnlyIds.has(row.id)).map((row) => row.id),
+    );
+
     return {
       ok: true,
       playerId: input.playerId,
-      statsRemoved: statRows.length,
-      stintsRemoved: stintRows.length,
+      statsRemoved: ncaaStatRows.length,
+      stintsRemoved: ncaaStintRows.length,
       playoffStatsRemoved: playoffRows.length,
+      junkStatsRemoved: junkOnlyIds.size,
+      zeroGpStatsRemoved: zeroOnlyIds.size,
     };
   });
 }
