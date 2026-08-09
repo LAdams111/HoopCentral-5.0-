@@ -11,13 +11,14 @@ import {
   teams,
 } from "../db/schema/index.js";
 import { normalizeSlugParam } from "../utils/slug.js";
-import { prefixMatch, wordPrefixMatch } from "../utils/search-match.js";
-import { resolvePublicLeagueSlug, LEGACY_NCAA_MENS_SLUG } from "../utils/league-slug.js";
-import { findLeagueRowBySlug } from "../utils/league-resolution.js";
+import { prefixMatch, wordPrefixMatch, compareTeamSearchResults } from "../utils/search-match.js";
+import { resolvePublicLeagueSlug, LEGACY_NCAA_MENS_SLUG, canonicalLeagueName } from "../utils/league-slug.js";
+import { findLeagueRowBySlug, displaySlugForLeagueRow } from "../utils/league-resolution.js";
 import { isBrowsableTeam } from "../utils/league-visibility.js";
 import { isLeagueIdPublic } from "./league-visibility.service.js";
 import { resolveNcaaTeamSlugVariants } from "../utils/ncaa-team-aliases.js";
 import { resolveCcaaTeamSlugVariants } from "../utils/ccaa-team-aliases.js";
+import { NORTH_AMERICAN_LEAGUE_SLUGS } from "../utils/league-regions.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -215,6 +216,23 @@ async function findLatestSeasonForTeam(teamId: number) {
   return row?.season ?? null;
 }
 
+function toSearchLeagueInfo(league: typeof leagues.$inferSelect): TeamLeagueInfo {
+  const slug = displaySlugForLeagueRow("ncaa-m", league.slug);
+  return {
+    id: league.id,
+    name:
+      slug === "ncaa-m"
+        ? canonicalLeagueName("ncaa-m", league.name)
+        : league.name,
+    slug,
+  };
+}
+
+async function isTeamSearchableLeague(league: typeof leagues.$inferSelect): Promise<boolean> {
+  if (league.slug === LEGACY_NCAA_MENS_SLUG) return true;
+  return isLeagueIdPublic(league.id);
+}
+
 function toTeamInfo(team: typeof teams.$inferSelect): TeamInfo {
   return {
     id: team.id,
@@ -284,6 +302,13 @@ export async function searchTeams(params: {
   if (!trimmed) return [];
 
   const limit = Math.min(25, Math.max(1, params.limit ?? 10));
+  const regionOrder =
+    NORTH_AMERICAN_LEAGUE_SLUGS.length > 0
+      ? sql`CASE WHEN ${leagues.slug} IN (${sql.join(
+          NORTH_AMERICAN_LEAGUE_SLUGS.map((slug) => sql`${slug}`),
+          sql`, `,
+        )}) THEN 0 ELSE 1 END`
+      : sql`1`;
 
   const rows = await db
     .select({
@@ -299,26 +324,22 @@ export async function searchTeams(params: {
         wordPrefixMatch(teams.slug, trimmed),
       ),
     )
-    .orderBy(teams.name)
-    .limit(limit * 4);
+    .orderBy(regionOrder, teams.name)
+    .limit(limit * 25);
 
-  const summaries: TeamSummary[] = [];
+  const candidates: TeamSummary[] = [];
   for (const row of rows) {
-    if (summaries.length >= limit) break;
     if (!isBrowsableTeam({ name: row.team.name, slug: row.team.slug })) continue;
-    if (!(await isLeagueIdPublic(row.league.id))) continue;
+    if (!(await isTeamSearchableLeague(row.league))) continue;
 
-    summaries.push({
+    candidates.push({
       ...toTeamInfo(row.team),
-      league: {
-        id: row.league.id,
-        name: row.league.name,
-        slug: row.league.slug,
-      },
+      league: toSearchLeagueInfo(row.league),
     });
   }
 
-  return summaries;
+  candidates.sort((a, b) => compareTeamSearchResults(a, b, trimmed));
+  return candidates.slice(0, limit);
 }
 
 export async function getTeamBySlug(
