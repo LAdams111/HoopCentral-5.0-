@@ -14,6 +14,7 @@ import { findLeagueRowBySlug } from "../utils/league-resolution.js";
 import { normalizeSlugParam } from "../utils/slug.js";
 import { wordPrefixMatch } from "../utils/search-match.js";
 import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
+import { formatJerseyNumber } from "../utils/jersey.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { formatPosition } from "../utils/position.js";
 
@@ -91,7 +92,7 @@ export function toPlayerCard(
     teamSlug,
     height: cmToFeetInches(player.heightCm),
     weight: kgToLbs(player.weightKg),
-    jerseyNumber: player.jerseyNumber ?? "",
+    jerseyNumber: formatJerseyNumber(player.jerseyNumber),
     country: player.country ?? "",
     headshotUrl: sanitizeHeadshotUrl(player.headshotUrl),
     bio: null,

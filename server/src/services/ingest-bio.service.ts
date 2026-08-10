@@ -11,6 +11,8 @@ import {
   isPostgresTransientError,
 } from "../utils/postgres.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
+import { formatJerseyNumber } from "../utils/jersey.js";
+import { pickBetterHometown, sanitizeIngestHometown } from "../utils/hometown.js";
 import { IngestValidationError } from "./ingest.service.js";
 
 export interface IngestPlayerBioInput {
@@ -217,7 +219,10 @@ async function resolvePlayerForBioIngest(
   };
 }
 
-function buildBioUpdate(input: IngestPlayerBioInput): Partial<typeof players.$inferInsert> {
+function buildBioUpdate(
+  input: IngestPlayerBioInput,
+  existingHometown: string | null = null,
+): Partial<typeof players.$inferInsert> {
   const update: Partial<typeof players.$inferInsert> = {
     displayName: input.player.displayName,
     updatedAt: new Date(),
@@ -227,8 +232,22 @@ function buildBioUpdate(input: IngestPlayerBioInput): Partial<typeof players.$in
   if (input.player.position !== undefined) update.position = input.player.position;
   if (input.player.heightCm !== undefined) update.heightCm = input.player.heightCm;
   if (input.player.weightKg !== undefined) update.weightKg = input.player.weightKg;
-  if (input.player.jerseyNumber !== undefined) update.jerseyNumber = input.player.jerseyNumber;
-  if (input.player.hometown !== undefined) update.hometown = input.player.hometown;
+  if (input.player.jerseyNumber !== undefined) {
+    const jersey =
+      input.player.jerseyNumber != null
+        ? formatJerseyNumber(input.player.jerseyNumber) || input.player.jerseyNumber
+        : input.player.jerseyNumber;
+    update.jerseyNumber = jersey;
+  }
+  if (input.player.hometown !== undefined) {
+    if (input.player.hometown === null) {
+      update.hometown = null;
+    } else {
+      const sanitized = sanitizeIngestHometown(input.player.hometown);
+      const picked = pickBetterHometown(existingHometown, sanitized);
+      if (picked) update.hometown = picked;
+    }
+  }
   if (input.player.country !== undefined) update.country = input.player.country;
 
   if (input.player.headshotUrl) {
@@ -248,9 +267,15 @@ async function ingestPlayerBioOnce(
   return db.transaction(async (tx) => {
     const resolved = await resolvePlayerForBioIngest(input, tx);
 
+    const [existing] = await tx
+      .select({ hometown: players.hometown })
+      .from(players)
+      .where(eq(players.id, resolved.playerId))
+      .limit(1);
+
     await tx
       .update(players)
-      .set(buildBioUpdate(input))
+      .set(buildBioUpdate(input, existing?.hometown ?? null))
       .where(eq(players.id, resolved.playerId));
 
     return {
