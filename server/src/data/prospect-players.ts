@@ -6,9 +6,8 @@ export const PROSPECT_PLAYER_SLUGS = [
   "cameron-boozer",
   "tyran-stokes",
   "smith-jr-jordan",
-  "caleb-holt-7",
   "karim-lopez",
-  "nate-ament-2",
+  "nate-ament",
   "jayden-quaintance",
   "koa-peat",
   "darius-acuff-jr",
@@ -16,10 +15,8 @@ export const PROSPECT_PLAYER_SLUGS = [
   "cayden-boozer",
   "mccoy-brandon",
   "jason-crowe-3",
-  "cameron-williams-51",
   "bruce-branch",
   "christian-collins-2",
-  "dylan-mingo",
   "baba-oladotun",
   "stefan-joksimovic",
   "kiyan-anthony",
@@ -32,8 +29,8 @@ export const PROSPECT_PLAYER_SLUGS = [
   "isiah-harwell",
   "adams-darius",
   "tounde-yessoufou",
-  "mikel-brown-jr",
-  "jasper-johnson-3",
+  "mikel-brown",
+  "kingston-flemings",
 ] as const;
 
 export type ProspectPlayerSlug = (typeof PROSPECT_PLAYER_SLUGS)[number];

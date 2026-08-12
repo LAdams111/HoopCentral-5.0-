@@ -358,7 +358,17 @@ export async function getProspectPlayers(): Promise<PlayerCard[]> {
     })
     .from(players)
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
-    .where(inArray(players.slug, slugs));
+    .where(
+      and(
+        inArray(players.slug, slugs),
+        exists(
+          db
+            .select({ one: sql`1` })
+            .from(playerSeasonStats)
+            .where(eq(playerSeasonStats.playerId, players.id)),
+        ),
+      ),
+    );
 
   const bySlug = new Map(rows.map((row) => [row.player.slug, row]));
   const prospects: PlayerCard[] = [];
