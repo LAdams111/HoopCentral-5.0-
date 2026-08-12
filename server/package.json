@@ -25,6 +25,7 @@
     "db:merge-montverde-hs-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-montverde-hs-teams.ts",
     "db:fix-maxpreps-squad-teams": "tsx --tsconfig tsconfig.json ../scripts/fix-maxpreps-squad-team-assignments.ts",
     "db:move-hs-girls-players": "tsx --tsconfig tsconfig.json ../scripts/move-hs-girls-players.ts",
+    "db:increment-daily-profile-views": "tsx --tsconfig tsconfig.json ../scripts/increment-daily-profile-views.ts",
     "db:studio": "drizzle-kit studio --config drizzle.config.cjs"
   },
   "dependencies": {

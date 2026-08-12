@@ -465,6 +465,44 @@ export async function incrementProfileViews(id: number): Promise<void> {
     .where(eq(players.id, id));
 }
 
+/** Add 1–6 synthetic views per player once per calendar day (UTC). Idempotent. */
+export async function runDailySyntheticProfileViews(): Promise<{
+  updated: number;
+  skipped: boolean;
+}> {
+  const claimed = await db.execute<{ run_date: string }>(sql`
+    INSERT INTO profile_view_daily_runs (run_date, players_updated)
+    VALUES (current_date, 0)
+    ON CONFLICT (run_date) DO NOTHING
+    RETURNING run_date
+  `);
+
+  if (claimed.rows.length === 0) {
+    return { updated: 0, skipped: true };
+  }
+
+  const bumped = await db.execute<{ count: number }>(sql`
+    WITH updated AS (
+      UPDATE players
+      SET
+        profile_views = profile_views + (1 + (abs(hashtext(concat(id::text, current_date::text))) % 6)),
+        updated_at = NOW()
+      RETURNING id
+    )
+    SELECT count(*)::int AS count FROM updated
+  `);
+
+  const updated = bumped.rows[0]?.count ?? 0;
+
+  await db.execute(sql`
+    UPDATE profile_view_daily_runs
+    SET players_updated = ${updated}
+    WHERE run_date = current_date
+  `);
+
+  return { updated, skipped: false };
+}
+
 export async function getSeasonCount(): Promise<number> {
   const [row] = await db.select({ count: sql<number>`count(*)::int` }).from(seasons);
   return row?.count ?? 0;
