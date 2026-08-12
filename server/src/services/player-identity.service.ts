@@ -15,6 +15,31 @@ export function normalizeDisplayName(name: string): string {
     .trim();
 }
 
+export function stripDisplayNameSuffix(name: string): string {
+  return normalizeDisplayName(name)
+    .replace(/\b(jr|sr|ii|iii|iv)\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function displayNamesLikelySamePerson(a: string, b: string): boolean {
+  const left = normalizeDisplayName(a);
+  const right = normalizeDisplayName(b);
+  if (left === right) return true;
+
+  const leftBase = stripDisplayNameSuffix(a);
+  const rightBase = stripDisplayNameSuffix(b);
+  if (leftBase !== rightBase) return false;
+
+  const rightHasSuffix = /\b(jr|sr|ii|iii|iv)\b/.test(right);
+  const leftHasSuffix = /\b(jr|sr|ii|iii|iv)\b/.test(left);
+  if (leftHasSuffix !== rightHasSuffix) {
+    return !leftHasSuffix && rightHasSuffix;
+  }
+
+  return left.startsWith(right) || right.startsWith(left);
+}
+
 export interface FindOrCreatePlayerByIdentityInput {
   source: string;
   externalId: string;

@@ -6,7 +6,7 @@ import {
   playerStints,
   players,
 } from "../db/schema/index.js";
-import { normalizeDisplayName } from "./player-identity.service.js";
+import { normalizeDisplayName, displayNamesLikelySamePerson } from "./player-identity.service.js";
 
 export interface MergePlayersResult {
   keptPlayerId: number;
@@ -287,6 +287,214 @@ export async function findD2BalldontlieDuplicates(
       birthDate: d2.birthDate,
       d2ExternalId: d2.externalId,
       balldontlieExternalId: bdl.externalId,
+    });
+  }
+
+  return pairs.sort((a, b) => a.displayName.localeCompare(b.displayName));
+}
+
+export interface NbaSplitDuplicatePair {
+  sparsePlayerId: number;
+  keepPlayerId: number;
+  displayName: string;
+  sparseIdentities: number;
+  keepIdentities: number;
+  sparseStats: number;
+  keepStats: number;
+}
+
+const PRO_KEEP_IDENTITY_SOURCES = new Set([
+  "balldontlie",
+  "basketball-reference",
+  "sports-reference-cbb",
+  "seed",
+  "usbasket-ncaa-d1",
+  "usbasket-profile",
+]);
+
+function parseIdentitySources(raw: string | null): string[] {
+  if (!raw) return [];
+  return raw.split(",").map((entry) => entry.split(":")[0]?.trim()).filter(Boolean);
+}
+
+function isValidKeepCandidate(
+  sparse: { birth_date: string | null },
+  candidate: { birth_date: string | null },
+  candidateSources: string[],
+): boolean {
+  const hasMaxpreps = candidateSources.includes("maxpreps-hs-basketball");
+  const hasCorePro = candidateSources.some((source) =>
+    ["basketball-reference", "sports-reference-cbb", "balldontlie", "seed"].includes(
+      source,
+    ),
+  );
+  if (hasMaxpreps && !hasCorePro) return false;
+
+  if (candidateSources.some((source) => PRO_KEEP_IDENTITY_SOURCES.has(source))) {
+    return true;
+  }
+  return Boolean(candidate.birth_date && !sparse.birth_date);
+}
+
+function playerRichnessScore(player: {
+  birthDate: string | null;
+  hometown: string | null;
+  headshotUrl: string | null;
+  identityCount: number;
+  statCount: number;
+}): number {
+  return (
+    player.identityCount * 1000 +
+    player.statCount * 10 +
+    (player.birthDate ? 50 : 0) +
+    (player.hometown ? 20 : 0) +
+    (player.headshotUrl ? 10 : 0)
+  );
+}
+
+/** BDL-created sparse NBA records that match a richer profile under a variant name. */
+export async function findNbaBalldontlieSplitDuplicates(
+  database: DbClient = db,
+): Promise<NbaSplitDuplicatePair[]> {
+  const sparseCandidates = await database.execute(sql`
+    SELECT
+      p.id,
+      p.display_name,
+      p.birth_date,
+      p.hometown,
+      p.headshot_url,
+      (SELECT COUNT(*)::int FROM player_identities pi WHERE pi.player_id = p.id) AS identity_count,
+      (SELECT COUNT(*)::int FROM player_season_stats pss WHERE pss.player_id = p.id) AS stat_count,
+      (SELECT string_agg(pi.source, ',') FROM player_identities pi WHERE pi.player_id = p.id) AS identity_sources
+    FROM players p
+    WHERE EXISTS (
+      SELECT 1 FROM player_identities pi
+      WHERE pi.player_id = p.id AND pi.source = 'balldontlie'
+    )
+    AND (SELECT COUNT(*)::int FROM player_identities pi WHERE pi.player_id = p.id) <= 2
+    AND (
+      p.birth_date IS NULL
+      OR p.hometown IS NULL
+      OR COALESCE(p.headshot_url, '') = ''
+    )
+    AND NOT EXISTS (
+      SELECT 1
+      FROM player_identities pi
+      WHERE pi.player_id = p.id
+        AND pi.source IN (
+          'sports-reference-cbb',
+          'basketball-reference',
+          'seed'
+        )
+    )
+    AND EXISTS (
+      SELECT 1
+      FROM player_season_stats pss
+      JOIN leagues l ON l.id = pss.league_id
+      JOIN seasons s ON s.id = pss.season_id
+      WHERE pss.player_id = p.id
+        AND l.slug = 'nba'
+        AND s.season_label >= '2024-25'
+    )
+  `);
+
+  const allCandidates = await database.execute(sql`
+    SELECT
+      p.id,
+      p.display_name,
+      p.birth_date,
+      p.hometown,
+      p.headshot_url,
+      (SELECT COUNT(*)::int FROM player_identities pi WHERE pi.player_id = p.id) AS identity_count,
+      (SELECT COUNT(*)::int FROM player_season_stats pss WHERE pss.player_id = p.id) AS stat_count,
+      (SELECT string_agg(pi.source, ',') FROM player_identities pi WHERE pi.player_id = p.id) AS identity_sources
+    FROM players p
+    WHERE p.birth_date IS NOT NULL
+      OR (SELECT COUNT(*)::int FROM player_identities pi WHERE pi.player_id = p.id) >= 2
+  `);
+
+  const sparseRows = sparseCandidates.rows as Array<{
+    id: number;
+    display_name: string;
+    birth_date: string | null;
+    hometown: string | null;
+    headshot_url: string | null;
+    identity_count: number;
+    stat_count: number;
+    identity_sources: string | null;
+  }>;
+
+  const allRows = allCandidates.rows as typeof sparseRows;
+
+  const pairs: NbaSplitDuplicatePair[] = [];
+  const usedSparse = new Set<number>();
+  const usedKeep = new Set<number>();
+
+  for (const sparse of sparseRows) {
+    let bestKeep: (typeof allRows)[number] | null = null;
+    let bestScore = -1;
+
+    for (const candidate of allRows) {
+      if (candidate.id === sparse.id) continue;
+      if (!displayNamesLikelySamePerson(sparse.display_name, candidate.display_name)) {
+        continue;
+      }
+      if (
+        sparse.birth_date &&
+        candidate.birth_date &&
+        sparse.birth_date !== candidate.birth_date
+      ) {
+        continue;
+      }
+
+      const score = playerRichnessScore({
+        birthDate: candidate.birth_date,
+        hometown: candidate.hometown,
+        headshotUrl: candidate.headshot_url,
+        identityCount: candidate.identity_count,
+        statCount: candidate.stat_count,
+      });
+
+      const sparseScore = playerRichnessScore({
+        birthDate: sparse.birth_date,
+        hometown: sparse.hometown,
+        headshotUrl: sparse.headshot_url,
+        identityCount: sparse.identity_count,
+        statCount: sparse.stat_count,
+      });
+
+      if (score <= sparseScore) continue;
+
+      const keepIsRicher =
+        candidate.identity_count > sparse.identity_count ||
+        candidate.stat_count > sparse.stat_count ||
+        Boolean(candidate.birth_date && !sparse.birth_date);
+      if (!keepIsRicher) continue;
+      if (candidate.identity_count < 2 && !candidate.birth_date) continue;
+
+      const candidateSources = parseIdentitySources(candidate.identity_sources);
+      if (!isValidKeepCandidate(sparse, candidate, candidateSources)) continue;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestKeep = candidate;
+      }
+    }
+
+    if (!bestKeep) continue;
+    if (usedSparse.has(sparse.id) || usedKeep.has(bestKeep.id)) continue;
+
+    usedSparse.add(sparse.id);
+    usedKeep.add(bestKeep.id);
+
+    pairs.push({
+      sparsePlayerId: sparse.id,
+      keepPlayerId: bestKeep.id,
+      displayName: bestKeep.display_name,
+      sparseIdentities: sparse.identity_count,
+      keepIdentities: bestKeep.identity_count,
+      sparseStats: sparse.stat_count,
+      keepStats: bestKeep.stat_count,
     });
   }
 

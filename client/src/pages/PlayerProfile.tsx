@@ -134,10 +134,12 @@ export function PlayerProfile() {
         />
 
         <div className="container relative z-20 mx-auto flex h-full flex-col justify-between px-4 py-8">
-          <BackButton
-            fallback="/players"
-            className="hover-elevate active-elevate-2 mb-4 inline-flex w-fit items-center justify-center gap-2 rounded-full border [border-color:var(--button-outline)] px-3 text-xs font-medium shadow-xs min-h-8"
-          />
+          <div className="relative z-40 mb-4 w-fit">
+            <BackButton
+              fallback="/players"
+              className="hover-elevate active-elevate-2 inline-flex w-fit items-center justify-center gap-2 rounded-full border [border-color:var(--button-outline)] px-3 text-xs font-medium shadow-xs min-h-8"
+            />
+          </div>
 
           <div className="flex flex-col items-center gap-4 md:flex-row md:items-end md:gap-12">
             <div className="relative z-30 mt-4 shrink-0 md:mb-[-160px] md:mt-0 md:-translate-y-[120px]">
