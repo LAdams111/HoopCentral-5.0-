@@ -599,7 +599,7 @@ async function loadLeagueTeams(
 
   return {
     leagueId: league.id,
-    teams: rows.rows as CollegeTeamRow[],
+    teams: rows.rows as unknown as CollegeTeamRow[],
   };
 }
 
