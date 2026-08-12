@@ -1,0 +1,1340 @@
+[
+  {
+    "school": "Ahuntsic",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ahuntsic"
+  },
+  {
+    "school": "Alb-Augustana",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "alb-augustana"
+  },
+  {
+    "school": "Algoma University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "algoma-university"
+  },
+  {
+    "school": "Algonquin",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "algonquin"
+  },
+  {
+    "school": "Ambrose",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ambrose"
+  },
+  {
+    "school": "Andrews University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "andrews-university"
+  },
+  {
+    "school": "Appalachian Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "appalachian-bible-college"
+  },
+  {
+    "school": "Arlington Baptist University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "arlington-baptist-university"
+  },
+  {
+    "school": "Association Free Lutheran Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "association-free-lutheran-bible-college"
+  },
+  {
+    "school": "Baptist Bible College, MO",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "baptist-bible-college-mo"
+  },
+  {
+    "school": "Baptist University of Florida",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "baptist-university-of-florida"
+  },
+  {
+    "school": "Barclay College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "barclay-college"
+  },
+  {
+    "school": "Bethesda University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "bethesda-university"
+  },
+  {
+    "school": "Blue Lights College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "blue-lights-college"
+  },
+  {
+    "school": "Bob Jones University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "bob-jones-university"
+  },
+  {
+    "school": "Boyce College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "boyce-college"
+  },
+  {
+    "school": "Briercrest",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "briercrest"
+  },
+  {
+    "school": "Bristol University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "bristol-university"
+  },
+  {
+    "school": "California Miramar University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "california-miramar-university"
+  },
+  {
+    "school": "Calvary Chapel Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "calvary-chapel-bible-college"
+  },
+  {
+    "school": "Calvary University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "calvary-university"
+  },
+  {
+    "school": "Cambrian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "cambrian-college"
+  },
+  {
+    "school": "Camosun",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "camosun"
+  },
+  {
+    "school": "Campbellsville University at Harrodsburg",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "campbellsville-university-at-harrodsburg"
+  },
+  {
+    "school": "Canadian Mennonite University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "canadian-mennonite-university"
+  },
+  {
+    "school": "Canadore",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "canadore"
+  },
+  {
+    "school": "Capilano",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "capilano"
+  },
+  {
+    "school": "Carolina Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "carolina-christian-college"
+  },
+  {
+    "school": "Carolina University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "carolina-university"
+  },
+  {
+    "school": "Carver Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "carver-bible-college"
+  },
+  {
+    "school": "Cbc",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "cbc"
+  },
+  {
+    "school": "CEGEP de Ste.Foy",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "cegep-de-ste-foy"
+  },
+  {
+    "school": "Centennial",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "centennial"
+  },
+  {
+    "school": "Central Christian College of the Bible",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "central-christian-college-of-the-bible"
+  },
+  {
+    "school": "Champion Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "champion-christian-college"
+  },
+  {
+    "school": "Champlain College division 2",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "champlain-college-division-2"
+  },
+  {
+    "school": "Christian Heritage College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "christian-heritage-college"
+  },
+  {
+    "school": "Ch.-St-Lambert",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ch-st-lambert"
+  },
+  {
+    "school": "Clearwater Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "clearwater-christian-college"
+  },
+  {
+    "school": "Clinton College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "clinton-college"
+  },
+  {
+    "school": "Colege Montmorency",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "colege-montmorency"
+  },
+  {
+    "school": "College Champlain-St.Lambert",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "college-champlain-st-lambert"
+  },
+  {
+    "school": "Collège Edouard-Montpetit",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "coll-ge-edouard-montpetit"
+  },
+  {
+    "school": "College of Biblical Studies",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "college-of-biblical-studies"
+  },
+  {
+    "school": "College of Sequoias",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "college-of-sequoias"
+  },
+  {
+    "school": "College of the Ozarks",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "college-of-the-ozarks"
+  },
+  {
+    "school": "Columbia International University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "columbia-international-university"
+  },
+  {
+    "school": "Concordia",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "concordia"
+  },
+  {
+    "school": "Conestoga",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "conestoga"
+  },
+  {
+    "school": "Crandall",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "crandall"
+  },
+  {
+    "school": "Crossroads College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "crossroads-college"
+  },
+  {
+    "school": "Crowley's Ridge College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "crowley-s-ridge-college"
+  },
+  {
+    "school": "Dalhousie",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "dalhousie"
+  },
+  {
+    "school": "Dalhousie Agricultural Campus",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "dalhousie-agricultural-campus"
+  },
+  {
+    "school": "Dallas Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "dallas-christian-college"
+  },
+  {
+    "school": "Dartmouth College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "dartmouth-college"
+  },
+  {
+    "school": "Dawson",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "dawson"
+  },
+  {
+    "school": "Dayspring Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "dayspring-bible-college"
+  },
+  {
+    "school": "Douglas",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "douglas"
+  },
+  {
+    "school": "Durham",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "durham"
+  },
+  {
+    "school": "Ecclesia College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ecclesia-college"
+  },
+  {
+    "school": "Edouard-Montp.",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "edouard-montp"
+  },
+  {
+    "school": "El Camino College Compton Center",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "el-camino-college-compton-center"
+  },
+  {
+    "school": "Emmaus Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "emmaus-bible-college"
+  },
+  {
+    "school": "Faith Baptist Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "faith-baptist-bible-college"
+  },
+  {
+    "school": "Fanshawe",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "fanshawe"
+  },
+  {
+    "school": "Fleming",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "fleming"
+  },
+  {
+    "school": "Four Winds University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "four-winds-university"
+  },
+  {
+    "school": "Free Lutheran Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "free-lutheran-bible-college"
+  },
+  {
+    "school": "Fullerton College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "fullerton-college"
+  },
+  {
+    "school": "Gavilan College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "gavilan-college"
+  },
+  {
+    "school": "George Brown",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "george-brown"
+  },
+  {
+    "school": "Georgian",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "georgian"
+  },
+  {
+    "school": "Grace Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "grace-bible-college"
+  },
+  {
+    "school": "Grace Christian University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "grace-christian-university"
+  },
+  {
+    "school": "Grace University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "grace-university"
+  },
+  {
+    "school": "Grande Prairie",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "grande-prairie"
+  },
+  {
+    "school": "Grande Prairie Regional College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "grande-prairie-regional-college"
+  },
+  {
+    "school": "Grant McEwan College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "grant-mcewan-college"
+  },
+  {
+    "school": "Great Lakes Chr istian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "great-lakes-chr-istian-college"
+  },
+  {
+    "school": "Great Lakes Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "great-lakes-christian-college"
+  },
+  {
+    "school": "Hillsdale Baptist",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "hillsdale-baptist"
+  },
+  {
+    "school": "Hillsdale FBBC",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "hillsdale-fbbc"
+  },
+  {
+    "school": "Hillsdale Freewill Baptist Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "hillsdale-freewill-baptist-bible-college"
+  },
+  {
+    "school": "Holland",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "holland"
+  },
+  {
+    "school": "Holland Hurricanes",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "holland-hurricanes"
+  },
+  {
+    "school": "Holy Patriot University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "holy-patriot-university"
+  },
+  {
+    "school": "Humber",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "humber"
+  },
+  {
+    "school": "Jean-De-Breb.",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "jean-de-breb"
+  },
+  {
+    "school": "John Abbott",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "john-abbott"
+  },
+  {
+    "school": "Johnson, TN",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "johnson-tn"
+  },
+  {
+    "school": "Johnson University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "johnson-university"
+  },
+  {
+    "school": "Johnson University, FL",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "johnson-university-fl"
+  },
+  {
+    "school": "Johnson University, TN",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "johnson-university-tn"
+  },
+  {
+    "school": "Justice College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "justice-college"
+  },
+  {
+    "school": "Justice University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "justice-university"
+  },
+  {
+    "school": "Kansas Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "kansas-christian-college"
+  },
+  {
+    "school": "Kentucky Christian University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "kentucky-christian-university"
+  },
+  {
+    "school": "Keyano",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "keyano"
+  },
+  {
+    "school": "King'S Univ.",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "king-s-univ"
+  },
+  {
+    "school": "Kuyper College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "kuyper-college"
+  },
+  {
+    "school": "Kwantlen Polytechnic University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "kwantlen-polytechnic-university"
+  },
+  {
+    "school": "La Cite",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "la-cite"
+  },
+  {
+    "school": "Lakeland",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "lakeland"
+  },
+  {
+    "school": "Lambton",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "lambton"
+  },
+  {
+    "school": "Langara",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "langara"
+  },
+  {
+    "school": "Lethbridge",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "lethbridge"
+  },
+  {
+    "school": "Life Pacific College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "life-pacific-college"
+  },
+  {
+    "school": "Lincoln University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "lincoln-university"
+  },
+  {
+    "school": "Long Beach CC",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "long-beach-cc"
+  },
+  {
+    "school": "Loyalist",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "loyalist"
+  },
+  {
+    "school": "MacEwan",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "macewan"
+  },
+  {
+    "school": "Manhattan Chr istian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "manhattan-chr-istian-college"
+  },
+  {
+    "school": "Manhattan Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "manhattan-christian-college"
+  },
+  {
+    "school": "Maryland Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "maryland-bible-college"
+  },
+  {
+    "school": "MCC Toronto Basket",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "mcc-toronto-basket"
+  },
+  {
+    "school": "Medicine Hat",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "medicine-hat"
+  },
+  {
+    "school": "Miami Dade",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "miami-dade"
+  },
+  {
+    "school": "Miami Hamilton",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "miami-hamilton"
+  },
+  {
+    "school": "Miami University Hamilton",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "miami-university-hamilton"
+  },
+  {
+    "school": "Miami University Middletown",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "miami-university-middletown"
+  },
+  {
+    "school": "Mid-Atlantic Christian University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "mid-atlantic-christian-university"
+  },
+  {
+    "school": "Mid Continent College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "mid-continent-college"
+  },
+  {
+    "school": "Mohawk",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "mohawk"
+  },
+  {
+    "school": "Montmorency",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "montmorency"
+  },
+  {
+    "school": "Moody Bible Institute",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "moody-bible-institute"
+  },
+  {
+    "school": "Morthland College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "morthland-college"
+  },
+  {
+    "school": "Mount Allison",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "mount-allison"
+  },
+  {
+    "school": "Msvu",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "msvu"
+  },
+  {
+    "school": "Multnomah University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "multnomah-university"
+  },
+  {
+    "school": "Nait",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "nait"
+  },
+  {
+    "school": "Nebraska Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "nebraska-christian-college"
+  },
+  {
+    "school": "Nelson University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "nelson-university"
+  },
+  {
+    "school": "New College of Florida",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "new-college-of-florida"
+  },
+  {
+    "school": "New Hope Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "new-hope-christian-college"
+  },
+  {
+    "school": "New Hope College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "new-hope-college"
+  },
+  {
+    "school": "Niagara",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "niagara"
+  },
+  {
+    "school": "Nobel University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "nobel-university"
+  },
+  {
+    "school": "North American University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "north-american-university"
+  },
+  {
+    "school": "Northwest Indian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "northwest-indian-college"
+  },
+  {
+    "school": "Nova Scotia Agriculture College",
+    "nickname": "",
+    "conference": "Nova Scotia",
+    "slug": "nova-scotia-agriculture-college"
+  },
+  {
+    "school": "Nwp",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "nwp"
+  },
+  {
+    "school": "Oak Hills Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "oak-hills-christian-college"
+  },
+  {
+    "school": "Oakland City University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "oakland-city-university"
+  },
+  {
+    "school": "Ohio Christian University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ohio-christian-university"
+  },
+  {
+    "school": "Ohio University Chillicothe",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ohio-university-chillicothe"
+  },
+  {
+    "school": "Okanagan",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "okanagan"
+  },
+  {
+    "school": "Olds",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "olds"
+  },
+  {
+    "school": "Outaouais",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "outaouais"
+  },
+  {
+    "school": "Ozark Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ozark-christian-college"
+  },
+  {
+    "school": "Paine College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "paine-college"
+  },
+  {
+    "school": "Paul Quinn College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "paul-quinn-college"
+  },
+  {
+    "school": "Pensacola Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "pensacola-christian-college"
+  },
+  {
+    "school": "Piedmont International University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "piedmont-international-university"
+  },
+  {
+    "school": "Portland Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "portland-bible-college"
+  },
+  {
+    "school": "Providence University College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "providence-university-college"
+  },
+  {
+    "school": "Quest University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "quest-university"
+  },
+  {
+    "school": "Randall University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "randall-university"
+  },
+  {
+    "school": "Red Deer",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "red-deer"
+  },
+  {
+    "school": "Redeemer",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "redeemer"
+  },
+  {
+    "school": "Red River College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "red-river-college"
+  },
+  {
+    "school": "Regent University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "regent-university"
+  },
+  {
+    "school": "Rhema Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "rhema-bible-college"
+  },
+  {
+    "school": "Richmond, BC / Vancouver College",
+    "nickname": "",
+    "conference": "British Columbia",
+    "slug": "richmond-bc-vancouver-college"
+  },
+  {
+    "school": "Ridley College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "ridley-college"
+  },
+  {
+    "school": "Saddleback JC",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "saddleback-jc"
+  },
+  {
+    "school": "SAGU American Indian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sagu-american-indian-college"
+  },
+  {
+    "school": "Sainte-Foy",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sainte-foy"
+  },
+  {
+    "school": "Saint Katherine College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "saint-katherine-college"
+  },
+  {
+    "school": "Sait",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sait"
+  },
+  {
+    "school": "S.Alberta Institute of Tech",
+    "nickname": "",
+    "conference": "Alberta",
+    "slug": "s-alberta-institute-of-tech"
+  },
+  {
+    "school": "S.Alberta Institute of Technology",
+    "nickname": "",
+    "conference": "Alberta",
+    "slug": "s-alberta-institute-of-technology"
+  },
+  {
+    "school": "San Jose City College Jaguars",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "san-jose-city-college-jaguars"
+  },
+  {
+    "school": "Sault College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sault-college"
+  },
+  {
+    "school": "SE Baptist",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "se-baptist"
+  },
+  {
+    "school": "Seminary",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "seminary"
+  },
+  {
+    "school": "Seneca",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "seneca"
+  },
+  {
+    "school": "Sherbrooke",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sherbrooke"
+  },
+  {
+    "school": "Sheridan",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sheridan"
+  },
+  {
+    "school": "Simmons College of Kentucky",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "simmons-college-of-kentucky"
+  },
+  {
+    "school": "Sisseton Wahpeton College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "sisseton-wahpeton-college"
+  },
+  {
+    "school": "Southeastern Baptist College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "southeastern-baptist-college"
+  },
+  {
+    "school": "Southern Alberta Institute of Technology",
+    "nickname": "",
+    "conference": "Alberta",
+    "slug": "southern-alberta-institute-of-technology"
+  },
+  {
+    "school": "Southern Alberta Inst.of Tech",
+    "nickname": "",
+    "conference": "Alberta",
+    "slug": "southern-alberta-inst-of-tech"
+  },
+  {
+    "school": "Spurgeon College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "spurgeon-college"
+  },
+  {
+    "school": "St.Clair",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "st-clair"
+  },
+  {
+    "school": "St.Lawrence",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "st-lawrence"
+  },
+  {
+    "school": "St. Louis Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "st-louis-christian-college"
+  },
+  {
+    "school": "St.Mary's University College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "st-mary-s-university-college"
+  },
+  {
+    "school": "Stmu",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "stmu"
+  },
+  {
+    "school": "St.Thomas",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "st-thomas"
+  },
+  {
+    "school": "Team Ahuntsic",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "team-ahuntsic"
+  },
+  {
+    "school": "Tennessee Temple University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "tennessee-temple-university"
+  },
+  {
+    "school": "The King'S",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "the-king-s"
+  },
+  {
+    "school": "Thetford",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "thetford"
+  },
+  {
+    "school": "The Word of Life Bible Institute",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "the-word-of-life-bible-institute"
+  },
+  {
+    "school": "Toccoa Falls College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "toccoa-falls-college"
+  },
+  {
+    "school": "Trinity Baptist College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "trinity-baptist-college"
+  },
+  {
+    "school": "Trinity Bible College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "trinity-bible-college"
+  },
+  {
+    "school": "Trinity College, FL",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "trinity-college-fl"
+  },
+  {
+    "school": "Unbsj",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "unbsj"
+  },
+  {
+    "school": "Union Adventist University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "union-adventist-university"
+  },
+  {
+    "school": "Union College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "union-college"
+  },
+  {
+    "school": "University of Los Angeles College of Divinity",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "university-of-los-angeles-college-of-divinity"
+  },
+  {
+    "school": "University of Northern British Columbia",
+    "nickname": "",
+    "conference": "British Columbia",
+    "slug": "university-of-northern-british-columbia"
+  },
+  {
+    "school": "University of Pittsburgh-Titusville",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "university-of-pittsburgh-titusville"
+  },
+  {
+    "school": "University of Puget Sound Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "university-of-puget-sound-christian-college"
+  },
+  {
+    "school": "University of Saint Katherine",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "university-of-saint-katherine"
+  },
+  {
+    "school": "University of Toronto at Mississauga",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "university-of-toronto-at-mississauga"
+  },
+  {
+    "school": "UofA-Augustana",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "uofa-augustana"
+  },
+  {
+    "school": "U of T Mississauga",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "u-of-t-mississauga"
+  },
+  {
+    "school": "Valley Forge Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "valley-forge-christian-college"
+  },
+  {
+    "school": "Vanier",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "vanier"
+  },
+  {
+    "school": "Viu",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "viu"
+  },
+  {
+    "school": "Volunteer State Community College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "volunteer-state-community-college"
+  },
+  {
+    "school": "Warner Pacific College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "warner-pacific-college"
+  },
+  {
+    "school": "Welch College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "welch-college"
+  },
+  {
+    "school": "Westcliff University",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "westcliff-university"
+  },
+  {
+    "school": "West Coast Baptist College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "west-coast-baptist-college"
+  },
+  {
+    "school": "West Los Angeles College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "west-los-angeles-college"
+  },
+  {
+    "school": "West Valley JC",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "west-valley-jc"
+  },
+  {
+    "school": "Yellowstone Chr.",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "yellowstone-chr"
+  },
+  {
+    "school": "Yellowstone Christian College",
+    "nickname": "",
+    "conference": "Other",
+    "slug": "yellowstone-christian-college"
+  }
+]

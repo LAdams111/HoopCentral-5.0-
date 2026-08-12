@@ -1,0 +1,290 @@
+[
+  {
+    "school": "Acadia",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "acadia"
+  },
+  {
+    "school": "Alberta",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "alberta"
+  },
+  {
+    "school": "Algoma",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "algoma"
+  },
+  {
+    "school": "Bishop's",
+    "nickname": "",
+    "conference": "RSEQ",
+    "slug": "bishop-s"
+  },
+  {
+    "school": "Brandon",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "brandon"
+  },
+  {
+    "school": "Brock",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "brock"
+  },
+  {
+    "school": "Calgary",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "calgary"
+  },
+  {
+    "school": "Cape Breton",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "cape-breton"
+  },
+  {
+    "school": "Carleton",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "carleton"
+  },
+  {
+    "school": "Concordia",
+    "nickname": "",
+    "conference": "RSEQ",
+    "slug": "concordia"
+  },
+  {
+    "school": "Dalhousie",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "dalhousie"
+  },
+  {
+    "school": "Guelph",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "guelph"
+  },
+  {
+    "school": "Lakehead",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "lakehead"
+  },
+  {
+    "school": "Laurentian",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "laurentian"
+  },
+  {
+    "school": "Laurier",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "laurier"
+  },
+  {
+    "school": "Laval",
+    "nickname": "",
+    "conference": "RSEQ",
+    "slug": "laval"
+  },
+  {
+    "school": "Lethbridge",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "lethbridge"
+  },
+  {
+    "school": "MacEwan",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "macewan"
+  },
+  {
+    "school": "Manitoba",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "manitoba"
+  },
+  {
+    "school": "McGill",
+    "nickname": "",
+    "conference": "RSEQ",
+    "slug": "mcgill"
+  },
+  {
+    "school": "McMaster",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "mcmaster"
+  },
+  {
+    "school": "Memorial",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "memorial"
+  },
+  {
+    "school": "Mount Royal",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "mount-royal"
+  },
+  {
+    "school": "Nipissing",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "nipissing"
+  },
+  {
+    "school": "Ontario Tech",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "ontario-tech"
+  },
+  {
+    "school": "Ottawa",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "ottawa"
+  },
+  {
+    "school": "Queen's",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "queen-s"
+  },
+  {
+    "school": "Regina",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "regina"
+  },
+  {
+    "school": "Saskatchewan",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "saskatchewan"
+  },
+  {
+    "school": "Saint Mary's",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "st-mary-s"
+  },
+  {
+    "school": "StFX",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "st-francis-x"
+  },
+  {
+    "school": "Toronto",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "toronto"
+  },
+  {
+    "school": "Toronto Metropolitan",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "tmu"
+  },
+  {
+    "school": "Thompson Rivers",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "tru"
+  },
+  {
+    "school": "UBC",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "ubc"
+  },
+  {
+    "school": "UBC Okanagan",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "ubc-okanagan"
+  },
+  {
+    "school": "UFV",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "ufv"
+  },
+  {
+    "school": "UNB",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "unb"
+  },
+  {
+    "school": "UNBC",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "unbc"
+  },
+  {
+    "school": "UPEI",
+    "nickname": "",
+    "conference": "Atlantic University Sport",
+    "slug": "upei"
+  },
+  {
+    "school": "UQAM",
+    "nickname": "",
+    "conference": "RSEQ",
+    "slug": "uqam"
+  },
+  {
+    "school": "Victoria",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "victoria"
+  },
+  {
+    "school": "Waterloo",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "waterloo"
+  },
+  {
+    "school": "Western",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "western"
+  },
+  {
+    "school": "Windsor",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "windsor"
+  },
+  {
+    "school": "Winnipeg",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "winnipeg"
+  },
+  {
+    "school": "York",
+    "nickname": "",
+    "conference": "Ontario University Athletics",
+    "slug": "york"
+  },
+  {
+    "school": "Trinity Western",
+    "nickname": "",
+    "conference": "Canada West",
+    "slug": "twu"
+  }
+]

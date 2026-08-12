@@ -73,6 +73,33 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     regions: ["US"],
     category: "domestic",
   },
+  "ncaa-d3": {
+    display: "NCAA Division III",
+    tier: "Collegiate",
+    description:
+      "The largest NCAA division, featuring non-scholarship collegiate basketball programs across the United States.",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg",
+    regions: ["US"],
+    category: "domestic",
+  },
+  naia: {
+    display: "NAIA",
+    tier: "Collegiate",
+    description:
+      "The National Association of Intercollegiate Athletics — small-college basketball across the United States.",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/en/8/8e/NAIA_logo.svg",
+    regions: ["US"],
+    category: "domestic",
+  },
+  juco: {
+    display: "Junior College",
+    tier: "Collegiate",
+    description:
+      "NJCAA and other junior college basketball programs across the United States.",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/en/4/4e/NJCAA_logo.svg",
+    regions: ["US"],
+    category: "domestic",
+  },
   "u-sports": {
     display: "U Sports",
     tier: "Collegiate",

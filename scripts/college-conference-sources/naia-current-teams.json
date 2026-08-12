@@ -1,0 +1,992 @@
+[
+  {
+    "school": "Abraham Baldwin Agricultural College",
+    "nickname": "Golden Stallions",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Andrew College",
+    "nickname": "Fighting Tigers",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Aquinas College",
+    "nickname": "Saints",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Arizona Christian University",
+    "nickname": "Firestorm",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Arkansas Baptist College",
+    "nickname": "Buffaloes",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Ave Maria University",
+    "nickname": "[[Ave Maria Gyrenes",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "Avila University",
+    "nickname": "Eagles",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Baker University",
+    "nickname": "[[Baker Wildcats",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Bellevue University",
+    "nickname": "Bruins",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Benedictine College",
+    "nickname": "[[Benedictine Ravens",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Benedictine University at Mesa",
+    "nickname": "Redhawks",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Bethany College",
+    "nickname": "[[Bethany Swedes",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Bethel University (IN)",
+    "nickname": "Pilots",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Bethel University (TN)",
+    "nickname": "Wildcats",
+    "conference": "Mid-South Conference"
+  },
+  {
+    "school": "Bismarck State College",
+    "nickname": "Mystics",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Blue Mountain Christian University",
+    "nickname": "Toppers",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Bluefield University",
+    "nickname": "[[Bluefield Rams",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Brenau University",
+    "nickname": "Golden Tigers",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Brescia University",
+    "nickname": "Bearcats",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "Brewton\u2013Parker Christian University",
+    "nickname": "Barons",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Briar Cliff University",
+    "nickname": "Chargers",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "*",
+    "nickname": "[[UBC Thunderbirds",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Bryan College",
+    "nickname": "[[Bryan College Lions",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Bushnell University",
+    "nickname": "Beacons",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Calumet College of St. Joseph (CCSJ)",
+    "nickname": "Crimson Wave",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Campbellsville University",
+    "nickname": "Tigers",
+    "conference": "Mid-South Conference"
+  },
+  {
+    "school": "Carolina University",
+    "nickname": "Bruins",
+    "conference": "(Appalachian Athletic Conference in 2027)}}"
+  },
+  {
+    "school": "Carroll College",
+    "nickname": "Fighting Saints",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Central Baptist College",
+    "nickname": "Mustangs",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Central Christian College of Kansas",
+    "nickname": "Tigers",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Central Methodist University",
+    "nickname": "[[Central Methodist Eagles",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Champion Christian College",
+    "nickname": "Tigers",
+    "conference": "(American Midwest Conference in 2027)}}"
+  },
+  {
+    "school": "Clarke University",
+    "nickname": "Crusaders",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Cleary University",
+    "nickname": "Cougars",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Concordia University\u2013Nebraska",
+    "nickname": "Bulldogs",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Corban University",
+    "nickname": "Warriors",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Cornerstone University",
+    "nickname": "Golden Eagles",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Cottey College",
+    "nickname": "Comets",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Crowley's Ridge College",
+    "nickname": "Pioneers",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Culver\u2013Stockton College",
+    "nickname": "Wildcats",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Cumberland University",
+    "nickname": "Phoenix",
+    "conference": "Mid-South Conference"
+  },
+  {
+    "school": "Dakota State University",
+    "nickname": "[[Dakota State Trojans",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Dakota Wesleyan University",
+    "nickname": "Tigers",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Dalton State College",
+    "nickname": "Roadrunners",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Dickinson State University",
+    "nickname": "Blue Hawks",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Dillard University",
+    "nickname": "[[Dillard Bleu Devils and Lady Bleu Devils",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Doane College",
+    "nickname": "Tigers",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Dordt University",
+    "nickname": "Defenders",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Eastern Oregon University",
+    "nickname": "Mountaineers",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Embry\u2013Riddle Aeronautical University, Prescott",
+    "nickname": "Eagles",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Evangel University",
+    "nickname": "Valor",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Faulkner University",
+    "nickname": "Eagles",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Fisher College",
+    "nickname": "Falcons",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Fisk University",
+    "nickname": "Bulldogs",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Florida College",
+    "nickname": "Falcons",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Florida Memorial University",
+    "nickname": "[[Florida Memorial Lions",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "Florida National University",
+    "nickname": "Conquistadors",
+    "conference": "url-status=dead}}"
+  },
+  {
+    "school": "Freed\u2013Hardeman University",
+    "nickname": "Lions",
+    "conference": "Mid-South Conference"
+  },
+  {
+    "school": "Friends University",
+    "nickname": "[[Friends Falcons",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Georgetown College",
+    "nickname": "[[Georgetown Tigers",
+    "conference": "Mid-South Conference"
+  },
+  {
+    "school": "Georgia Gwinnett College",
+    "nickname": "Grizzlies",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Georgia Southern University\u2013East Georgia Campus",
+    "nickname": "Golden Eagles",
+    "conference": "(Southern States Athletic Conference in 2027)}}"
+  },
+  {
+    "school": "Goshen College",
+    "nickname": "Maple Leafs",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Governors State University",
+    "nickname": "Jaguars",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Grace College & Seminary",
+    "nickname": "Lancers",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Graceland University",
+    "nickname": "[[Graceland Yellowjackets",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Grand View University",
+    "nickname": "[[Grand View Vikings",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Hannibal\u2013LaGrange University",
+    "nickname": "Trojans",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Harris\u2013Stowe State University",
+    "nickname": "Hornets",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Haskell Indian Nations University",
+    "nickname": "[[Haskell Indian Nations Fighting Indians",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Hastings College",
+    "nickname": "Broncos",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Hesston College",
+    "nickname": "Larks",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Holy Cross College",
+    "nickname": "Saints",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Hope International University",
+    "nickname": "Royals",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Huntington University",
+    "nickname": "Foresters",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Huston\u2013Tillotson University",
+    "nickname": "Rams",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Indiana Institute of Technology (Indiana Tech)",
+    "nickname": "Warriors",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "(IU Columbus)",
+    "nickname": "Crimson Pride",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "(IU East)",
+    "nickname": "Red Wolves",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "(IU Kokomo)",
+    "nickname": "Cougars",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "(IU Northwest)",
+    "nickname": "Redhawks",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "(IU South Bend)",
+    "nickname": "Titans",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "(IU Southeast or IUS)",
+    "nickname": "Grenadiers",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "Indiana Wesleyan University",
+    "nickname": "[[Indiana Wesleyan Wildcats",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Jarvis Christian University",
+    "nickname": "Bulldogs",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "John Brown University",
+    "nickname": "Golden Eagles",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Johnson University",
+    "nickname": "Royals",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Judson University",
+    "nickname": "Eagles",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Kansas Wesleyan University",
+    "nickname": "[[Kansas Wesleyan Coyotes",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Keiser University",
+    "nickname": "[[Keiser Seahawks",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "Kentucky Christian University",
+    "nickname": "Knights",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "La Sierra University",
+    "nickname": "Golden Eagles",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Langston University",
+    "nickname": "Lions",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Lawrence Technological University(Lawrence Tech)",
+    "nickname": "Blue Devils",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Lewis\u2013Clark State College",
+    "nickname": "Warriors",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Life University",
+    "nickname": "Eagles",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Life Pacific University",
+    "nickname": "Warriors",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Lindsey Wilson University",
+    "nickname": "Blue Raiders",
+    "conference": "Mid-South Conference"
+  },
+  {
+    "school": "Louisiana Christian University",
+    "nickname": "[[Louisiana Christian Wildcats and Lady Wildcats",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Louisiana State University at Alexandria (LSU Alexandria)",
+    "nickname": "[[LSU\u2013Alexandria Generals",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Louisiana State University in Shreveport (LSU Shreveport)",
+    "nickname": "[[LSU\u2013Shreveport Pilots",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Madonna University",
+    "nickname": "Crusaders",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Marian University",
+    "nickname": "Knights",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Mayville State University",
+    "nickname": "Comets",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "McPherson College",
+    "nickname": "[[McPherson Bulldogs",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "MidAmerica Nazarene University",
+    "nickname": "[[MidAmerica Nazarene Pioneers",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Midland University",
+    "nickname": "Warriors",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Midway University",
+    "nickname": "Eagles",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "Milligan University",
+    "nickname": "[[Milligan Buffaloes",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Mission University",
+    "nickname": "Patriots",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Missouri Baptist University",
+    "nickname": "[[Missouri Baptist Spartans",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Missouri Valley College",
+    "nickname": "Vikings",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Montana State University\u2013Northern",
+    "nickname": "Lights and Skylights",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Montana Technological University(Montana Tech)",
+    "nickname": "Orediggers",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Montreat College",
+    "nickname": "Cavaliers",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Morningside University",
+    "nickname": "Mustangs",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Morris College",
+    "nickname": "Hornets",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Mount Marty University",
+    "nickname": "Lancers",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Mount Mary University",
+    "nickname": "Blue Angels",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Mount Mercy University",
+    "nickname": "Mustangs",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Mount Vernon Nazarene University",
+    "nickname": "Cougars",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Nelson University",
+    "nickname": "Lions",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Nevada State University*",
+    "nickname": "[[Nevada State Scorpions",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "New College of Florida",
+    "nickname": "Mighty Banyans",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "North American University",
+    "nickname": "Stallions",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Northern New Mexico College",
+    "nickname": "Eagles",
+    "conference": "California Pacific Conference"
+  },
+  {
+    "school": "Northwestern College",
+    "nickname": "Red Raiders",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "(UNOH)",
+    "nickname": "Racers",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Oakwood University",
+    "nickname": "Ambassadors & Lady Ambassadors",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Oklahoma City University",
+    "nickname": "[[Oklahoma City Stars",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Oklahoma Panhandle State University",
+    "nickname": "[[Oklahoma Panhandle State Aggies",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Oklahoma Wesleyan University",
+    "nickname": "Eagles",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Olivet Nazarene University",
+    "nickname": "Tigers",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Oregon Institute of Technology(Oregon Tech)",
+    "nickname": "Owls",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Ottawa University",
+    "nickname": "[[Ottawa Braves",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Ottawa University Arizona (OUAZ)",
+    "nickname": "Spirit",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Our Lady of the Lake University",
+    "nickname": "Saints",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Pacific Union College",
+    "nickname": "Pioneers",
+    "conference": "California Pacific Conference"
+  },
+  {
+    "school": "Park University",
+    "nickname": "Pirates",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Park University Gilbert",
+    "nickname": "Buccaneers",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Paul Quinn College",
+    "nickname": "Tigers",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Peru State College",
+    "nickname": "Bobcats",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Philander Smith University",
+    "nickname": "Panthers",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Reinhardt University",
+    "nickname": "[[Reinhardt Eagles",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Rochester Christian University",
+    "nickname": "Warriors",
+    "conference": "Wolverine\u2013Hoosier Athletic Conference"
+  },
+  {
+    "school": "Rocky Mountain College",
+    "nickname": "Battlin' Bears",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "Rust College",
+    "nickname": "Bearcats",
+    "conference": "access-date=September 7, 2019}}"
+  },
+  {
+    "school": "Saint Mary-of-the-Woods College (SMWC)",
+    "nickname": "Pomeroys",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "Saint Xavier University",
+    "nickname": "Cougars",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Savannah College of Art and Design*",
+    "nickname": "[[Savannah College of Art and Design Bees",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "Simpson University",
+    "nickname": "Red Hawks",
+    "conference": "California Pacific Conference"
+  },
+  {
+    "school": "Soka University of America*",
+    "nickname": "Lions",
+    "conference": "Great Southwest Athletic Conference"
+  },
+  {
+    "school": "Southeastern University",
+    "nickname": "[[Southeastern Fire",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "(SUNO)",
+    "nickname": "[[Southern\u2013New Orleans Knights and Lady Knights",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Southern Oregon University",
+    "nickname": "[[Southern Oregon Raiders",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Southwestern College",
+    "nickname": "[[Southwestern Moundbuilders",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Southwestern Christian University",
+    "nickname": "Eagles",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Spartanburg Methodist College",
+    "nickname": "Pioneers",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Spring Arbor University",
+    "nickname": "Cougars",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "Stanton University",
+    "nickname": "Elks",
+    "conference": "California Pacific Conference"
+  },
+  {
+    "school": "Stephens College",
+    "nickname": "Stars",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Sterling College",
+    "nickname": "[[Sterling Warriors",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Stillman College",
+    "nickname": "Tigers",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Tabor College",
+    "nickname": "[[Tabor Bluejays",
+    "conference": "Kansas Collegiate Athletic Conference"
+  },
+  {
+    "school": "Talladega College",
+    "nickname": "Tornadoes",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Taylor University",
+    "nickname": "[[Taylor Trojans",
+    "conference": "Crossroads League"
+  },
+  {
+    "school": "(UT Southern)",
+    "nickname": "FireHawks",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Tennessee Wesleyan University",
+    "nickname": "Bulldogs",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Texas A&M University\u2013San Antonio",
+    "nickname": "Jaguars",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Texas A&M University\u2013Victoria*",
+    "nickname": "[[Texas A&M\u2013Victoria Jaguars",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Texas College",
+    "nickname": "Steers",
+    "conference": "Red River Athletic Conference"
+  },
+  {
+    "school": "Thomas University",
+    "nickname": "[[Thomas University Night Hawks",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "Tougaloo College",
+    "nickname": "Bulldogs",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Trinity Western University*",
+    "nickname": "[[Trinity Western Spartans",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Truett McConnell University",
+    "nickname": "Bears",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "Union Commonwealth University",
+    "nickname": "Bulldogs",
+    "conference": "Appalachian Athletic Conference"
+  },
+  {
+    "school": "United States Sports University*",
+    "nickname": "Eagles",
+    "conference": "(Southern States Athletic Conference in 2027)}}"
+  },
+  {
+    "school": "Valley City State University",
+    "nickname": "Vikings",
+    "conference": "Frontier Conference"
+  },
+  {
+    "school": "*",
+    "nickname": "[[Victoria Vikes",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Viterbo University",
+    "nickname": "V-Hawks",
+    "conference": "Chicagoland Collegiate Athletic Conference"
+  },
+  {
+    "school": "Voorhees University",
+    "nickname": "Tigers",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Waldorf University",
+    "nickname": "Warriors",
+    "conference": "Great Plains Athletic Conference"
+  },
+  {
+    "school": "Walla Walla University",
+    "nickname": "Wolves",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Warner Pacific University",
+    "nickname": "Knights",
+    "conference": "Cascade Collegiate Conference"
+  },
+  {
+    "school": "Washington Adventist University",
+    "nickname": "Shock",
+    "conference": "Continental Athletic Conference"
+  },
+  {
+    "school": "Wayland Baptist University",
+    "nickname": "Pioneers & Flying Queens{{efn",
+    "conference": "Sooner Athletic Conference"
+  },
+  {
+    "school": "Webber International University",
+    "nickname": "[[Webber International University Warriors",
+    "conference": "Sun Conference"
+  },
+  {
+    "school": "Wesleyan College",
+    "nickname": "Wolves",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "West Virginia University Institute of Technology (WVU Tech)",
+    "nickname": "Golden Bears",
+    "conference": "River States Conference"
+  },
+  {
+    "school": "Westcliff University",
+    "nickname": "Warriors",
+    "conference": "California Pacific Conference"
+  },
+  {
+    "school": "Wilberforce University",
+    "nickname": "Bulldogs",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "Wiley University",
+    "nickname": "Wildcats",
+    "conference": "HBCU Athletic Conference"
+  },
+  {
+    "school": "William Carey University",
+    "nickname": "Crusaders",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "William Penn University",
+    "nickname": "Statesmen",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "William Woods University",
+    "nickname": "Owls",
+    "conference": "Heart of America Athletic Conference"
+  },
+  {
+    "school": "Williams Baptist University",
+    "nickname": "Eagles",
+    "conference": "American Midwest Conference"
+  },
+  {
+    "school": "Xavier University of Louisiana",
+    "nickname": "[[Xavier Gold Rush and Gold Nuggets",
+    "conference": "Southern States Athletic Conference"
+  },
+  {
+    "school": "York University",
+    "nickname": "Panthers",
+    "conference": "Kansas Collegiate Athletic Conference"
+  }
+]
