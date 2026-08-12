@@ -28,24 +28,28 @@ export function PlayerSearch() {
   }, [query]);
 
   const enabled = debounced.length >= 2;
+  const isDebouncing = query.trim().length >= 2 && query.trim() !== debounced;
 
-  const { data: playerResults = [] } = useQuery({
+  const { data: playerResults = [], isFetching: playersFetching } = useQuery({
     queryKey: ["search-players", debounced],
     queryFn: () => getPlayers(debounced, undefined, 5),
     enabled,
   });
 
-  const { data: teamResults = [] } = useQuery({
+  const { data: teamResults = [], isFetching: teamsFetching } = useQuery({
     queryKey: ["search-teams", debounced],
     queryFn: () => searchTeams(debounced, 3),
     enabled,
   });
 
-  const { data: leagueResults = [] } = useQuery({
+  const { data: leagueResults = [], isFetching: leaguesFetching } = useQuery({
     queryKey: ["search-leagues", debounced],
     queryFn: () => searchLeagues(debounced, 2),
     enabled,
   });
+
+  const isLoading =
+    isDebouncing || (enabled && (playersFetching || teamsFetching || leaguesFetching));
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -133,6 +137,7 @@ export function PlayerSearch() {
             teams={teamResults}
             players={playerResults}
             hasResults={hasResults}
+            isLoading={isLoading}
             onSelectLeague={goToLeague}
             onSelectTeam={goToTeam}
             onSelectPlayer={goToPlayer}
@@ -148,6 +153,7 @@ function SearchDropdown({
   teams,
   players,
   hasResults,
+  isLoading,
   onSelectLeague,
   onSelectTeam,
   onSelectPlayer,
@@ -156,6 +162,7 @@ function SearchDropdown({
   teams: TeamSummary[];
   players: PlayerCard[];
   hasResults: boolean;
+  isLoading: boolean;
   onSelectLeague: (league: LeagueSummary) => void;
   onSelectTeam: (team: TeamSummary) => void;
   onSelectPlayer: (player: PlayerCard) => void;
@@ -163,7 +170,9 @@ function SearchDropdown({
   return (
     <div className="absolute left-0 right-0 top-full z-[100] mt-2 max-h-[min(24rem,70vh)] overflow-y-auto rounded-2xl border border-border bg-card shadow-xl">
       <div className="py-2">
-        {!hasResults ? (
+        {isLoading ? (
+          <p className="px-4 py-3 text-sm text-muted-foreground">Loading...</p>
+        ) : !hasResults ? (
           <p className="px-4 py-3 text-sm text-muted-foreground">No results found.</p>
         ) : (
           <>
