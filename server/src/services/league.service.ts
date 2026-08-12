@@ -27,6 +27,11 @@ import {
   isLeaguePubliclyVisible,
   isWhitelistedLeagueSlug,
 } from "../utils/league-visibility.js";
+import {
+  countNcaaCollegeTeamsForPage,
+  filterNcaaCollegeTeamsForPage,
+  isNcaaCollegePageLeague,
+} from "../utils/ncaa-college-team-display.js";
 
 const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
   nba: NBA_CURRENT_TEAM_SLUGS,
@@ -67,14 +72,28 @@ export interface LeagueDetail extends LeagueSummary {
 
 let cachedPublicLeagues: LeagueSummary[] | null = null;
 
-function applyTeamCountRules(
+async function applyTeamCountRules(
   row: LeagueSummary,
-  leagueTeams: Array<{ name: string; slug: string }>,
-): void {
+  leagueTeams: Array<{ id?: number; name: string; slug: string }>,
+): Promise<void> {
   const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
   if (canonicalSlugs) {
     row.teamCount = leagueTeams.filter((team) => canonicalSlugs.has(team.slug)).length;
-  } else if (!isWhitelistedLeagueSlug(row.slug)) {
+    return;
+  }
+
+  if (isNcaaCollegePageLeague(row.slug)) {
+    const teamsWithIds = leagueTeams.filter(
+      (team): team is { id: number; name: string; slug: string } => team.id != null,
+    );
+    const playerCounts = await getDistinctPlayerCountByTeamId(
+      teamsWithIds.map((team) => team.id),
+    );
+    row.teamCount = countNcaaCollegeTeamsForPage(row.slug, teamsWithIds, playerCounts);
+    return;
+  }
+
+  if (!isWhitelistedLeagueSlug(row.slug)) {
     row.teamCount = filterVisibleTeams(leagueTeams).length;
   }
 }
@@ -131,7 +150,7 @@ export async function getFeaturedLeagues(): Promise<LeagueSummary[]> {
     if (!row) continue;
 
     const summary = toPublicLeagueSummary(row, slug);
-    applyTeamCountRules(summary, teamsByLeagueId.get(row.id) ?? []);
+    await applyTeamCountRules(summary, teamsByLeagueId.get(row.id) ?? []);
     featured.push(summary);
   }
 
@@ -185,7 +204,7 @@ export async function searchLeagues(params: {
       row,
       responseSlug !== row.slug ? responseSlug : undefined,
     );
-    applyTeamCountRules(summary, teamsByLeagueId.get(row.id) ?? []);
+    await applyTeamCountRules(summary, teamsByLeagueId.get(row.id) ?? []);
 
     const score = scoreLeagueSearchMatch(summary, trimmed);
     if (score === 0) continue;
@@ -283,12 +302,7 @@ export async function getAllLeagues(): Promise<LeagueSummary[]> {
     const leagueTeams = teamsByLeagueId.get(row.id) ?? [];
     if (!publicLeagueIds.has(row.id)) continue;
 
-    const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
-    if (canonicalSlugs) {
-      row.teamCount = leagueTeams.filter((team) => canonicalSlugs.has(team.slug)).length;
-    } else if (!isWhitelistedLeagueSlug(row.slug)) {
-      row.teamCount = filterVisibleTeams(leagueTeams).length;
-    }
+    await applyTeamCountRules(row, leagueTeams);
 
     visibleResults.push(row);
   }
@@ -327,7 +341,11 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
 
   const playerCounts = await getDistinctPlayerCountByTeamId(leagueTeams.map((team) => team.id));
   const browsableTeams = filterVisibleTeams(leagueTeams, playerCounts);
-  const visibleTeams = filterLeagueTeams(responseSlug, browsableTeams).map((team) => {
+  let filteredTeams = filterLeagueTeams(responseSlug, browsableTeams);
+  if (isNcaaCollegePageLeague(responseSlug)) {
+    filteredTeams = filterNcaaCollegeTeamsForPage(responseSlug, filteredTeams, playerCounts);
+  }
+  const visibleTeams = filteredTeams.map((team) => {
     if (responseSlug !== "u-sports") return team;
     const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);
     return displayName ? { ...team, name: displayName } : team;

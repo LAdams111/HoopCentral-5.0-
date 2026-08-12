@@ -31,6 +31,7 @@ async function loadTeamsByLeagueId(): Promise<Map<number, TeamVisibilityInput[]>
   const rows = await db
     .select({
       leagueId: teams.leagueId,
+      id: teams.id,
       name: teams.name,
       slug: teams.slug,
     })
@@ -39,7 +40,7 @@ async function loadTeamsByLeagueId(): Promise<Map<number, TeamVisibilityInput[]>
   const grouped = new Map<number, TeamVisibilityInput[]>();
   for (const row of rows) {
     const list = grouped.get(row.leagueId) ?? [];
-    list.push({ name: row.name, slug: row.slug });
+    list.push({ id: row.id, name: row.name, slug: row.slug });
     grouped.set(row.leagueId, list);
   }
 

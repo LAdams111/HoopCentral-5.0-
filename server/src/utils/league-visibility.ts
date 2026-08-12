@@ -159,6 +159,7 @@ export interface LeagueVisibilityInput {
 }
 
 export interface TeamVisibilityInput {
+  id?: number;
   name: string;
   slug: string;
 }
