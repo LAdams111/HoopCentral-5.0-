@@ -9,7 +9,7 @@ import { devRouter } from "./routes/dev.js";
 import { ingestRouter } from "./routes/ingest.js";
 import { playersRouter, statsRouter } from "./routes/players.js";
 import { teamsRouter } from "./routes/teams.js";
-import { getFeaturedPlayers, runDailySyntheticProfileViews } from "./services/player.service.js";
+import { getFeaturedPlayers, getProspectPlayers, runDailySyntheticProfileViews } from "./services/player.service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "../..");
@@ -44,6 +44,16 @@ app.get("/api/featured-players", async (_req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get featured players" } });
+  }
+});
+
+app.get("/api/prospect-players", async (_req, res) => {
+  try {
+    const players = await getProspectPlayers();
+    res.json(players);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get prospect players" } });
   }
 });
 

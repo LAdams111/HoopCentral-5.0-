@@ -163,6 +163,10 @@ export function getFeaturedPlayers(): Promise<PlayerCard[]> {
   return fetchJson("/api/featured-players");
 }
 
+export function getProspectPlayers(): Promise<PlayerCard[]> {
+  return fetchJson("/api/prospect-players");
+}
+
 export function getPlayerCount(): Promise<{ count: number }> {
   return fetchJson("/api/players/count");
 }

@@ -1,5 +1,6 @@
 import { and, desc, eq, exists, ilike, inArray, isNotNull, sql } from "drizzle-orm";
 import { FEATURED_PLAYER_SLUGS } from "../data/featured-players.js";
+import { PROSPECT_PLAYER_SLUGS } from "../data/prospect-players.js";
 import { db } from "../db/index.js";
 import {
   leagues,
@@ -345,6 +346,40 @@ export async function getFeaturedPlayers(limit = 5): Promise<PlayerCard[]> {
   }
 
   return featured;
+}
+
+export async function getProspectPlayers(): Promise<PlayerCard[]> {
+  const slugs = [...PROSPECT_PLAYER_SLUGS];
+  const rows = await db
+    .select({
+      player: players,
+      teamName: teams.name,
+      teamSlug: teams.slug,
+    })
+    .from(players)
+    .leftJoin(teams, eq(players.currentTeamId, teams.id))
+    .where(inArray(players.slug, slugs));
+
+  const bySlug = new Map(rows.map((row) => [row.player.slug, row]));
+  const prospects: PlayerCard[] = [];
+
+  for (const slug of slugs) {
+    const row = bySlug.get(slug);
+    if (!row) continue;
+
+    let teamName = row.teamName;
+    let teamSlug = row.teamSlug;
+    if (!teamName) {
+      const latestTeams = await getLatestTeamsForPlayers([row.player.id]);
+      const latest = latestTeams.get(row.player.id);
+      teamName = latest?.teamName ?? null;
+      teamSlug = latest?.teamSlug ?? null;
+    }
+
+    prospects.push(toPlayerCard(row.player, teamName, teamSlug));
+  }
+
+  return prospects;
 }
 
 export async function getMostViewedPlayers(limit = 5): Promise<PlayerCard[]> {

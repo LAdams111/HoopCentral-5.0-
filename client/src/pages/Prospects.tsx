@@ -1,28 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
 import { PlayerCard } from "@/components/player/PlayerCard";
-import { getPlayers } from "@/lib/api";
-
-function getAge(birthDate: string | null) {
-  if (!birthDate) return 99;
-  const birth = new Date(birthDate);
-  const now = new Date();
-  let age = now.getFullYear() - birth.getFullYear();
-  const m = now.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
-  return age;
-}
+import { getProspectPlayers } from "@/lib/api";
 
 export function Prospects() {
-  const { data: players = [], isLoading } = useQuery({
-    queryKey: ["prospects"],
-    queryFn: () => getPlayers(),
+  const { data: prospects = [], isLoading } = useQuery({
+    queryKey: ["prospect-players"],
+    queryFn: getProspectPlayers,
   });
-
-  const prospects = players
-    .filter((p) => getAge(p.birthDate) < 20)
-    .sort((a, b) => b.profileViews - a.profileViews)
-    .slice(0, 50);
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-12">
@@ -36,7 +21,7 @@ export function Prospects() {
               Hottest <span className="text-primary">Prospects</span>
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              Top 50 most viewed players under 20
+              Top high school and college basketball prospects
             </p>
           </div>
         </div>
@@ -52,7 +37,7 @@ export function Prospects() {
             <Sparkles className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 className="font-display text-2xl text-muted-foreground">No prospects found</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              No players under 20 in the database yet.
+              Curated prospect profiles are not available yet.
             </p>
           </div>
         ) : (
