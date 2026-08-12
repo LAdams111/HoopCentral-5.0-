@@ -26,6 +26,28 @@ def slugify(value: str) -> str:
     return slug.strip("-")
 
 
+def is_valid_conference_name(name: str) -> bool:
+    lowered = name.strip().lower()
+    if not lowered:
+        return False
+    if any(
+        marker in lowered
+        for marker in (
+            "access-date",
+            "url-status",
+            "cite web",
+            "archive-date",
+            "website=",
+            "}}",
+            "{{",
+        )
+    ):
+        return False
+    if lowered.startswith("(") or lowered.endswith("}}"):
+        return False
+    return True
+
+
 def js_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=True)
 
@@ -129,15 +151,22 @@ def main() -> None:
     output_path = ROOT / "client" / "src" / "lib" / f"{league}-conferences.ts"
 
     display_names: dict[str, str] = {}
+    display_names_path = SOURCES / f"{league}-conference-display-names.json"
     if args.display_names:
         display_names = json.loads(Path(args.display_names).read_text(encoding="utf-8"))
+    elif display_names_path.exists():
+        display_names = json.loads(display_names_path.read_text(encoding="utf-8"))
 
     teams = json.loads(source_path.read_text(encoding="utf-8"))
     db_aliases, current_slugs = load_db_aliases(aliases_path)
     by_conference: dict[str, list[dict[str, str]]] = defaultdict(list)
 
     for team in teams:
-        conference_slug = slugify(team["conference"])
+        conference_name = team["conference"]
+        if not is_valid_conference_name(conference_name):
+            conference_name = "Other"
+            team = {**team, "conference": conference_name}
+        conference_slug = slugify(conference_name)
         by_conference[conference_slug].append(team)
 
     conferences: list[dict[str, object]] = []
