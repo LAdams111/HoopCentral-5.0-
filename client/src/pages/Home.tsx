@@ -56,7 +56,7 @@ export function Home() {
       <PlayerGrid
         title="Featured"
         titleAccent="Athletes"
-        subtitle="Top performers from the current season"
+        subtitle="Standout high school and NCAA Division I profiles"
         players={featured}
         loading={featuredLoading}
         variant="muted"
