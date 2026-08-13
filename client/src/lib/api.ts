@@ -167,6 +167,37 @@ export function getProspectPlayers(): Promise<PlayerCard[]> {
   return fetchJson("/api/prospect-players");
 }
 
+export interface DraftPick {
+  year: number;
+  round: number;
+  roundPick: number;
+  overallPick: number;
+  playerName: string;
+  draftTeam: string;
+  draftTeamLogoName: string;
+  affiliation: string;
+  player: PlayerCard | null;
+}
+
+export interface DraftClassResponse {
+  year: number;
+  pickCount: number;
+  picks: DraftPick[];
+}
+
+export interface DraftYearsResponse {
+  years: number[];
+  defaultYear: number;
+}
+
+export function getDraftYears(): Promise<DraftYearsResponse> {
+  return fetchJson("/api/draft/years");
+}
+
+export function getDraftClass(year: number): Promise<DraftClassResponse> {
+  return fetchJson(`/api/draft/${year}`);
+}
+
 export function getPlayerCount(): Promise<{ count: number }> {
   return fetchJson("/api/players/count");
 }

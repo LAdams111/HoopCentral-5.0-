@@ -1,9 +1,9 @@
 import {
   Calendar,
   Home,
+  ListOrdered,
   Sparkles,
   Trophy,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 import { ncaaTeamLogoUrl, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
@@ -303,5 +303,5 @@ export const NAV_ITEMS: {
   { label: "Leagues", href: "/leagues", icon: Trophy },
   { label: "Prospects", href: "/prospects", icon: Sparkles },
   { label: "Birth Year", href: "/classes", icon: Calendar },
-  { label: "Directory", href: "/players", icon: Users },
+  { label: "Draft", href: "/players", icon: ListOrdered },
 ];

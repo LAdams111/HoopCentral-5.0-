@@ -4,6 +4,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { checkDatabaseConnection } from "./db/index.js";
+import { draftRouter } from "./routes/draft.js";
 import { leaguesRouter } from "./routes/leagues.js";
 import { devRouter } from "./routes/dev.js";
 import { ingestRouter } from "./routes/ingest.js";
@@ -58,6 +59,7 @@ app.get("/api/prospect-players", async (_req, res) => {
 });
 
 app.use("/api/leagues", leaguesRouter);
+app.use("/api/draft", draftRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api/ingest", ingestRouter);

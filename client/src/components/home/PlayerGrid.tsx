@@ -96,7 +96,7 @@ export function PlayerGrid({
         {showMobileCta && actionHref && (
           <div className="mt-12 text-center md:hidden">
             <ButtonLink to={actionHref} variant="outline" className="w-full">
-              View Directory
+              View Draft
             </ButtonLink>
           </div>
         )}

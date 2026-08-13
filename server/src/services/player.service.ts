@@ -103,7 +103,7 @@ export function toPlayerCard(
   };
 }
 
-async function getLatestTeamsForPlayers(
+export async function getLatestTeamsForPlayers(
   playerIds: number[],
 ): Promise<Map<number, { teamName: string; teamSlug: string }>> {
   const latestByPlayer = new Map<number, { teamName: string; teamSlug: string; seasonLabel: string }>();
