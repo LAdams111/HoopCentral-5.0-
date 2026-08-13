@@ -22,6 +22,7 @@ import { normalizeNcaaTeamForIngest } from "../utils/ncaa-team-aliases.js";
 import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../utils/usports-team-aliases.js";
 import { normalizeCcaaTeamForIngest } from "../utils/ccaa-team-aliases.js";
 import { normalizeMaxprepsTeamForIngest } from "../utils/maxpreps-team-aliases.js";
+import { sanitizeBirthDate } from "../utils/birth-date.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
@@ -512,7 +513,10 @@ function buildSeasonIngestPlayerUpdate(
     updatedAt: new Date(),
   };
 
-  if (input.birthDate != null) update.birthDate = input.birthDate;
+  if (input.birthDate != null) {
+    const birthDate = sanitizeBirthDate(input.birthDate);
+    if (birthDate) update.birthDate = birthDate;
+  }
   if (input.position != null) update.position = input.position;
   if (input.heightCm != null) update.heightCm = input.heightCm;
   if (input.weightKg != null) update.weightKg = input.weightKg;
@@ -537,7 +541,7 @@ async function ingestPlayerSeasonOnce(
         source: input.source,
         externalId: input.externalId,
         displayName: input.player.displayName,
-        birthDate: input.player.birthDate,
+        birthDate: sanitizeBirthDate(input.player.birthDate),
       },
       tx,
     );

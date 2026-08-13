@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db, type DbClient } from "../db/index.js";
 import { playerIdentities, players } from "../db/schema/index.js";
+import { sanitizeBirthDate } from "../utils/birth-date.js";
 import { isPostgresUniqueViolation } from "../utils/postgres.js";
 import { nameToSlug } from "../utils/slug.js";
 
@@ -133,7 +134,7 @@ export async function findOrCreatePlayerByIdentity(
         .values({
           slug,
           displayName: input.displayName.trim(),
-          birthDate: input.birthDate ?? null,
+          birthDate: sanitizeBirthDate(input.birthDate),
         })
         .returning();
 

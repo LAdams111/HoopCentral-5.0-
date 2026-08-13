@@ -10,6 +10,7 @@ import {
 import {
   isPostgresTransientError,
 } from "../utils/postgres.js";
+import { sanitizeBirthDate } from "../utils/birth-date.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { formatJerseyNumber } from "../utils/jersey.js";
 import { pickBetterHometown, sanitizeIngestHometown } from "../utils/hometown.js";
@@ -183,10 +184,11 @@ async function resolvePlayerForBioIngest(
     };
   }
 
-  if (input.player.birthDate) {
+  const birthDate = sanitizeBirthDate(input.player.birthDate);
+  if (birthDate) {
     const fuzzyMatch = await findUniquePlayerByNameAndBirthDate(
       input.player.displayName,
-      input.player.birthDate,
+      birthDate,
       database,
     );
     if (fuzzyMatch) {
@@ -206,7 +208,7 @@ async function resolvePlayerForBioIngest(
       source,
       externalId,
       displayName: input.player.displayName,
-      birthDate: input.player.birthDate ?? null,
+      birthDate,
     },
     database,
   );
@@ -228,7 +230,9 @@ function buildBioUpdate(
     updatedAt: new Date(),
   };
 
-  if (input.player.birthDate !== undefined) update.birthDate = input.player.birthDate;
+  if (input.player.birthDate !== undefined) {
+    update.birthDate = sanitizeBirthDate(input.player.birthDate);
+  }
   if (input.player.position !== undefined) update.position = input.player.position;
   if (input.player.heightCm !== undefined) update.heightCm = input.player.heightCm;
   if (input.player.weightKg !== undefined) update.weightKg = input.player.weightKg;

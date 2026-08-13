@@ -8,7 +8,10 @@ import { getPlayersByBirthYear } from "@/lib/api";
 export function ClassYear() {
   const { year = "" } = useParams<{ year: string }>();
   const birthYear = Number(year);
-  const isValidYear = Number.isInteger(birthYear) && birthYear >= 1900 && birthYear <= 2100;
+  // Match server: reject toddler / future years that are almost always bad source DOBs.
+  const maxPlausibleYear = new Date().getFullYear() - 13;
+  const isValidYear =
+    Number.isInteger(birthYear) && birthYear >= 1880 && birthYear <= maxPlausibleYear;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["birth-year", birthYear],

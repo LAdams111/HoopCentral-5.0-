@@ -18,6 +18,11 @@ import { cmToFeetInches, formatStat, kgToLbs } from "../utils/format.js";
 import { formatJerseyNumber } from "../utils/jersey.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { formatPosition } from "../utils/position.js";
+import {
+  isPlausibleBirthYear,
+  maxPlausibleBirthYear,
+  minPlausibleBirthYear,
+} from "../utils/birth-date.js";
 
 export interface PlayerCard {
   id: number;
@@ -253,13 +258,22 @@ export interface BirthYearPlayersResult {
 export const BIRTH_YEAR_TOP_LIMIT = 50;
 
 export async function getBirthYearCounts(): Promise<BirthYearCount[]> {
+  const minYear = minPlausibleBirthYear();
+  const maxYear = maxPlausibleBirthYear();
+
   const rows = await db
     .select({
       year: sql<number>`extract(year from ${players.birthDate})::int`,
       count: sql<number>`count(*)::int`,
     })
     .from(players)
-    .where(isNotNull(players.birthDate))
+    .where(
+      and(
+        isNotNull(players.birthDate),
+        sql`extract(year from ${players.birthDate})::int >= ${minYear}`,
+        sql`extract(year from ${players.birthDate})::int <= ${maxYear}`,
+      ),
+    )
     .groupBy(sql`extract(year from ${players.birthDate})`)
     .orderBy(desc(sql`extract(year from ${players.birthDate})`));
 
@@ -270,6 +284,10 @@ export async function getPlayersByBirthYear(
   year: number,
   params?: { page?: number; limit?: number },
 ): Promise<BirthYearPlayersResult> {
+  if (!isPlausibleBirthYear(year)) {
+    return { year, totalCount: 0, players: [] };
+  }
+
   const page = Math.max(1, params?.page ?? 1);
   const limit = Math.min(BIRTH_YEAR_TOP_LIMIT, Math.max(1, params?.limit ?? BIRTH_YEAR_TOP_LIMIT));
   const offset = (page - 1) * limit;
