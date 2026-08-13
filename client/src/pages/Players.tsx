@@ -20,6 +20,7 @@ function DraftClassView() {
   const { data: yearsData, isLoading: yearsLoading } = useQuery({
     queryKey: ["draft-years"],
     queryFn: getDraftYears,
+    staleTime: 60 * 60 * 1000,
   });
 
   const selectedYear = useMemo(() => {
@@ -32,6 +33,7 @@ function DraftClassView() {
     queryKey: ["draft-class", selectedYear],
     queryFn: () => getDraftClass(selectedYear),
     enabled: Boolean(yearsData),
+    staleTime: 5 * 60 * 1000,
   });
 
   const handleYearChange = (year: number) => {
