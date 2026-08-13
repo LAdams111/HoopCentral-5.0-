@@ -1,4 +1,4 @@
-import { eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { eq, inArray, or, sql } from "drizzle-orm";
 import draftHistoryJson from "../data/draft-history.json" with { type: "json" };
 import {
   draftTeamLogoFranchise,
@@ -31,6 +31,13 @@ interface DraftHistoryFile {
 
 const draftHistory = draftHistoryJson as DraftHistoryFile;
 
+/** Known draft-name aliases → primary DB display names. */
+const DRAFT_NAME_ALIASES: Record<string, string[]> = {
+  "bub carrington": ["Carlton Carrington", "Bub Carrington"],
+  "akeem olajuwon": ["Hakeem Olajuwon", "Akeem Olajuwon"],
+  "ron artest": ["Metta World Peace", "Ron Artest"],
+};
+
 export interface DraftPickRow {
   year: number;
   round: number;
@@ -53,7 +60,15 @@ type MatchedPlayer = typeof players.$inferSelect & {
   teamName: string | null;
   teamSlug: string | null;
   hasNbaStats: boolean;
+  hasProOrCollegeStats: boolean;
+  seasonCount: number;
+  identityCount: number;
+  meaningfulGames: number;
+  teamNames: string[];
 };
+
+const draftClassCache = new Map<number, { expires: number; value: DraftClassResult }>();
+const DRAFT_CACHE_TTL_MS = 5 * 60 * 1000;
 
 export function getDraftYears(): number[] {
   return Object.keys(draftHistory.years)
@@ -73,57 +88,106 @@ function stripDiacritics(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+function stripNameSuffix(value: string): string {
+  return value.replace(/\s+(jr|sr|ii|iii|iv|v)\.?$/i, "").trim();
+}
+
+function normalizePersonKey(value: string): string {
+  return stripNameSuffix(stripDiacritics(value))
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function playerNameCandidates(name: string): string[] {
   const cleaned = stripDiacritics(name)
     .replace(/\./g, "")
     .replace(/'/g, "")
     .replace(/\s+/g, " ")
     .trim();
+  const noSuffix = stripNameSuffix(cleaned);
 
   const slugs = new Set<string>();
-  slugs.add(nameToSlug(name));
-  slugs.add(nameToSlug(cleaned));
-
+  for (const variant of [name, cleaned, noSuffix]) {
+    slugs.add(nameToSlug(variant));
+  }
   const compactInitials = cleaned.replace(/\b([A-Za-z])\s+(?=[A-Za-z]\b)/g, "$1");
   slugs.add(nameToSlug(compactInitials));
-
-  const withoutSuffix = cleaned.replace(/\s+(jr|sr|ii|iii|iv|v)\.?$/i, "").trim();
-  if (withoutSuffix) slugs.add(nameToSlug(withoutSuffix));
-
   return [...slugs].filter(Boolean);
 }
 
-function scoreMatch(playerName: string, row: MatchedPlayer): number {
-  const target = nameToSlug(playerName);
-  const displaySlug = nameToSlug(row.displayName);
+function displayNameVariants(name: string): string[] {
+  const cleaned = stripDiacritics(name).replace(/\./g, " ").replace(/\s+/g, " ").trim();
+  const noSuffix = stripNameSuffix(cleaned);
+  const aliases = DRAFT_NAME_ALIASES[normalizePersonKey(name)] ?? [];
+  return [...new Set([name, cleaned, noSuffix, ...aliases].map((v) => v.trim()).filter(Boolean))];
+}
+
+function affiliationTokens(affiliation: string): string[] {
+  const raw = stripDiacritics(affiliation || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!raw) return [];
+  const stop = new Set(["university", "college", "the", "of", "st", "saint"]);
+  return raw
+    .split(" ")
+    .filter((t) => t.length >= 3 && !stop.has(t));
+}
+
+function scoreMatch(
+  playerName: string,
+  affiliation: string,
+  row: MatchedPlayer,
+): number {
+  const target = nameToSlug(stripNameSuffix(stripDiacritics(playerName)));
+  const displaySlug = nameToSlug(stripNameSuffix(stripDiacritics(row.displayName)));
   let score = 0;
-  if (row.slug === target || displaySlug === target) score += 100;
-  if (row.displayName.toLowerCase() === playerName.toLowerCase()) score += 40;
-  if (row.hasNbaStats) score += 25;
+
+  if (row.slug === nameToSlug(playerName) || row.slug === target) score += 120;
+  else if (displaySlug === target) score += 100;
+
+  if (normalizePersonKey(row.displayName) === normalizePersonKey(playerName)) score += 40;
+  if (row.hasNbaStats) score += 80;
+  if (row.hasProOrCollegeStats) score += 60;
+  // Prefer real box-score seasons over empty roster stubs / contaminated HS piles
+  score += Math.min(100, row.meaningfulGames);
+  score += Math.min(40, row.seasonCount * 2);
+  score += Math.min(40, row.identityCount * 8);
   score += Math.min(10, Math.floor(row.profileViews / 1000));
+
+  const tokens = affiliationTokens(affiliation);
+  if (tokens.length > 0) {
+    const haystack = row.teamNames.join(" ").toLowerCase();
+    const hits = tokens.filter((t) => haystack.includes(t)).length;
+    score += hits * 35;
+  }
+
+  if (!row.hasProOrCollegeStats && row.seasonCount <= 2) score -= 120;
+  if (row.meaningfulGames === 0 && row.seasonCount > 0) score -= 40;
   return score;
 }
 
-async function resolvePlayersByNames(names: string[]): Promise<Map<string, MatchedPlayer>> {
-  const uniqueNames = [...new Set(names.map((n) => n.trim()).filter(Boolean))];
+async function resolvePlayersByNames(
+  picks: { playerName: string; affiliation: string }[],
+): Promise<Map<string, MatchedPlayer>> {
   const result = new Map<string, MatchedPlayer>();
-  if (uniqueNames.length === 0) return result;
+  if (picks.length === 0) return result;
 
   const slugSet = new Set<string>();
-  for (const name of uniqueNames) {
-    for (const slug of playerNameCandidates(name)) slugSet.add(slug);
+  const nameSet = new Set<string>();
+  for (const pick of picks) {
+    for (const slug of playerNameCandidates(pick.playerName)) slugSet.add(slug);
+    for (const variant of displayNameVariants(pick.playerName)) {
+      nameSet.add(variant.toLowerCase());
+      nameSet.add(normalizePersonKey(variant));
+    }
   }
+
   const slugs = [...slugSet];
-
-  const nameFilters = uniqueNames.flatMap((name) => {
-    const cleaned = stripDiacritics(name).replace(/\./g, "").trim();
-    return [ilike(players.displayName, name), ilike(players.displayName, cleaned)];
-  });
-
-  const whereClause = or(
-    slugs.length > 0 ? inArray(players.slug, slugs) : sql`false`,
-    nameFilters.length > 0 ? or(...nameFilters) : sql`false`,
-  );
+  const names = [...nameSet];
 
   const rows = await db
     .select({
@@ -131,40 +195,83 @@ async function resolvePlayersByNames(names: string[]): Promise<Map<string, Match
       teamName: teams.name,
       teamSlug: teams.slug,
       hasNbaStats: sql<boolean>`exists (
-        select 1
+        select 1 from player_season_stats pss
+        join leagues l on l.id = pss.league_id
+        where pss.player_id = ${players.id} and lower(l.slug) = 'nba'
+      )`,
+      hasProOrCollegeStats: sql<boolean>`exists (
+        select 1 from player_season_stats pss
+        join leagues l on l.id = pss.league_id
+        where pss.player_id = ${players.id}
+          and lower(l.slug) not in ('high-school', 'high-school-w', 'aau')
+      )`,
+      seasonCount: sql<number>`(
+        select count(*)::int from player_season_stats pss where pss.player_id = ${players.id}
+      )`,
+      meaningfulGames: sql<number>`(
+        select coalesce(sum(pss.games_played), 0)::int
         from player_season_stats pss
         join leagues l on l.id = pss.league_id
         where pss.player_id = ${players.id}
-          and lower(l.slug) = 'nba'
+          and lower(l.slug) not in ('high-school', 'high-school-w', 'aau')
+          and coalesce(pss.games_played, 0) > 0
       )`,
+      identityCount: sql<number>`(
+        select count(*)::int from player_identities pi where pi.player_id = ${players.id}
+      )`,
+      teamNames: sql<string>`coalesce((
+        select string_agg(distinct tm.name, '||')
+        from player_season_stats pss
+        join teams tm on tm.id = pss.team_id
+        where pss.player_id = ${players.id}
+      ), '')`,
     })
     .from(players)
     .leftJoin(teams, eq(players.currentTeamId, teams.id))
-    .where(whereClause);
+    .where(
+      or(
+        slugs.length > 0 ? inArray(players.slug, slugs) : sql`false`,
+        names.length > 0
+          ? sql`lower(${players.displayName}) in (${sql.join(
+              names.map((n) => sql`${n}`),
+              sql`, `,
+            )})`
+          : sql`false`,
+        names.length > 0
+          ? sql`lower(regexp_replace(${players.displayName}, '\\s+(jr|sr|ii|iii|iv|v)\\.?$', '', 'i')) in (${sql.join(
+              names.map((n) => sql`${n}`),
+              sql`, `,
+            )})`
+          : sql`false`,
+      ),
+    );
 
   const candidates: MatchedPlayer[] = rows.map((r) => ({
     ...r.player,
     teamName: r.teamName,
     teamSlug: r.teamSlug,
     hasNbaStats: Boolean(r.hasNbaStats),
+    hasProOrCollegeStats: Boolean(r.hasProOrCollegeStats),
+    seasonCount: Number(r.seasonCount ?? 0),
+    identityCount: Number(r.identityCount ?? 0),
+    meaningfulGames: Number(r.meaningfulGames ?? 0),
+    teamNames: (r.teamNames ?? "").split("||").filter(Boolean),
   }));
 
-  for (const name of uniqueNames) {
-    const nameSlugs = new Set(playerNameCandidates(name));
-    const compact = stripDiacritics(name).replace(/\./g, "").replace(/\s+/g, " ").trim().toLowerCase();
+  for (const pick of picks) {
+    const nameSlugs = new Set(playerNameCandidates(pick.playerName));
+    const keys = new Set(displayNameVariants(pick.playerName).map(normalizePersonKey));
     const matches = candidates.filter((c) => {
       if (nameSlugs.has(c.slug)) return true;
-      if (nameSlugs.has(nameToSlug(stripDiacritics(c.displayName)))) return true;
-      if (c.displayName.toLowerCase() === name.toLowerCase()) return true;
-      return (
-        stripDiacritics(c.displayName).replace(/\./g, "").replace(/\s+/g, " ").trim().toLowerCase() ===
-        compact
-      );
+      return keys.has(normalizePersonKey(c.displayName));
     });
-
     if (matches.length === 0) continue;
-    matches.sort((a, b) => scoreMatch(name, b) - scoreMatch(name, a));
-    result.set(name, matches[0]!);
+    matches.sort(
+      (a, b) =>
+        scoreMatch(pick.playerName, pick.affiliation, b) -
+        scoreMatch(pick.playerName, pick.affiliation, a),
+    );
+    result.set(pick.playerName, matches[0]!);
   }
 
   return result;
@@ -175,10 +282,15 @@ export async function getDraftClass(year: number): Promise<DraftClassResult | nu
     return null;
   }
 
+  const cached = draftClassCache.get(year);
+  if (cached && cached.expires > Date.now()) return cached.value;
+
   const seeds = draftHistory.years[String(year)] ?? [];
   if (seeds.length === 0) return null;
 
-  const matched = await resolvePlayersByNames(seeds.map((s) => s.playerName));
+  const matched = await resolvePlayersByNames(
+    seeds.map((s) => ({ playerName: s.playerName, affiliation: s.affiliation })),
+  );
   const playerIds = [...matched.values()].map((p) => p.id);
   const latestTeams = await getLatestTeamsForPlayers(playerIds);
 
@@ -217,9 +329,16 @@ export async function getDraftClass(year: number): Promise<DraftClassResult | nu
     });
   }
 
-  return {
+  const value = {
     year,
     pickCount: picks.length,
     picks,
   };
+  draftClassCache.set(year, { expires: Date.now() + DRAFT_CACHE_TTL_MS, value });
+  return value;
+}
+
+/** Test helper / maintenance */
+export function clearDraftClassCache(): void {
+  draftClassCache.clear();
 }
