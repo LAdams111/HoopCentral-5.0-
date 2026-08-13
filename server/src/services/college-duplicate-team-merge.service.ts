@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
+import {
+  NCAA_FULL_SCHOOL_BY_SHORT_SLUG,
+  resolveNcaaFullSchoolIdentity,
+} from "../data/ncaa-full-school-names.js";
 import { db, type DbClient } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
 import {
@@ -80,14 +84,32 @@ function loadNcaaManualAliasSlugPairs(): Array<[string, string]> {
   return pairs;
 }
 
+/** Prefer formal full school names over abbreviations / branded shorts. */
+export function formalCollegeNameScore(name: string): number {
+  const trimmed = name.trim();
+  if (!trimmed) return -10_000;
+  if (trimmed.includes(";")) return -5_000;
+  if (/^[A-Z]{2,6}$/.test(trimmed)) return -2_000;
+  if (/^(NC|UC|UN|US|UT)\s/i.test(trimmed) && !/\bUniversity\b/i.test(trimmed)) {
+    return -500;
+  }
+
+  let score = 0;
+  if (/\bUniversity\b/i.test(trimmed)) score += 5_000;
+  if (/\bCollege\b/i.test(trimmed)) score += 4_000;
+  if (/\bInstitute\b/i.test(trimmed)) score += 4_000;
+  if (/\bPolytechnic\b/i.test(trimmed)) score += 500;
+  // Longer formal names beat short brands when both are "university"
+  score += Math.min(200, trimmed.length);
+  return score;
+}
+
 function teamScore(team: CollegeTeamRow): number {
   return (
+    formalCollegeNameScore(team.name) * 1_000_000 +
     team.stats * 1000 +
-    team.stints * 10 +
-    (/\bUniversity\b/i.test(team.name) ? 8 : 0) +
-    (/\bCollege\b/i.test(team.name) ? 4 : 0) -
-    (/\bSt\./i.test(team.name) ? 4 : 0) -
-    (team.name.includes(";") ? 20 : 0)
+    team.stints * 10 -
+    (/\bSt\./i.test(team.name) ? 4 : 0)
   );
 }
 
@@ -98,8 +120,34 @@ export function pickKeepTeam(group: CollegeTeamRow[]): CollegeTeamRow {
 }
 
 export function pickBestDisplayName(group: CollegeTeamRow[]): string {
-  const sorted = [...group].sort((a, b) => teamScore(b) - teamScore(a));
+  const mapped = group
+    .map((team) => resolveNcaaFullSchoolIdentity(team.slug)?.name)
+    .find((name) => Boolean(name));
+  if (mapped) return mapped;
+
+  const sorted = [...group].sort(
+    (a, b) =>
+      formalCollegeNameScore(b.name) - formalCollegeNameScore(a.name) ||
+      b.stats - a.stats,
+  );
   return sorted[0]?.name ?? group[0]?.name ?? "";
+}
+
+export function pickBestFullSlug(group: CollegeTeamRow[]): string | null {
+  const mapped = group
+    .map((team) => resolveNcaaFullSchoolIdentity(team.slug)?.slug)
+    .find((slug) => Boolean(slug));
+  if (mapped) return mapped;
+
+  const sorted = [...group].sort(
+    (a, b) =>
+      formalCollegeNameScore(b.name) - formalCollegeNameScore(a.name) ||
+      b.stats - a.stats,
+  );
+  const best = sorted[0];
+  if (!best) return null;
+  if (formalCollegeNameScore(best.name) < 4_000) return null;
+  return best.slug;
 }
 
 function linkSlugVariants(
@@ -204,6 +252,202 @@ function linkSunyAbbreviations(uf: UnionFind, teamsInLeague: CollegeTeamRow[]): 
   }
 }
 
+const ACRONYM_STOP_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "at",
+  "for",
+  "in",
+  "of",
+  "the",
+]);
+
+/**
+ * Short codes that map to more than one plausible school unless a preferred
+ * full slug is configured in NCAA_FULL_SCHOOL_BY_SHORT_SLUG.
+ */
+const AMBIGUOUS_SCHOOL_ACRONYMS = new Set([
+  "asu",
+  "cbc",
+  "ccny",
+  "csu",
+  "ecu",
+  "emu",
+  "fsc",
+  "fsu",
+  "gwu",
+  "isu",
+  "jsu",
+  "lmu",
+  "msu",
+  "nsu",
+  "ntu",
+  "osu",
+  "psu",
+  "rwu",
+  "sfc",
+  "sfu",
+  "ssu",
+  "tsu",
+  "usu",
+  "wsu",
+]);
+
+const US_STATE_ABBREV_TO_SLUG: Record<string, string> = {
+  al: "alabama",
+  ak: "alaska",
+  az: "arizona",
+  ar: "arkansas",
+  ca: "california",
+  co: "colorado",
+  ct: "connecticut",
+  de: "delaware",
+  fl: "florida",
+  ga: "georgia",
+  hi: "hawaii",
+  id: "idaho",
+  il: "illinois",
+  in: "indiana",
+  ia: "iowa",
+  ks: "kansas",
+  ky: "kentucky",
+  la: "louisiana",
+  me: "maine",
+  md: "maryland",
+  ma: "massachusetts",
+  mi: "michigan",
+  mn: "minnesota",
+  ms: "mississippi",
+  mo: "missouri",
+  mt: "montana",
+  ne: "nebraska",
+  nv: "nevada",
+  nh: "new-hampshire",
+  nj: "new-jersey",
+  nm: "new-mexico",
+  ny: "new-york",
+  nc: "north-carolina",
+  nd: "north-dakota",
+  oh: "ohio",
+  ok: "oklahoma",
+  or: "oregon",
+  pa: "pennsylvania",
+  ri: "rhode-island",
+  sc: "south-carolina",
+  sd: "south-dakota",
+  tn: "tennessee",
+  tx: "texas",
+  ut: "utah",
+  vt: "vermont",
+  va: "virginia",
+  wa: "washington",
+  wv: "west-virginia",
+  wi: "wisconsin",
+  wy: "wyoming",
+};
+
+const FOREIGN_OR_JUNK_TEAM_RE =
+  /\b(belgacom|spirou|charleroi|nottingham|trent|kk\b|bbc\b|second team|junior team)\b/i;
+
+/** Initials from a full school name/slug, e.g. Southern Methodist University → smu. */
+function schoolNameAcronym(nameOrSlug: string): string | null {
+  const words = nameOrSlug
+    .toLowerCase()
+    .replace(/[_/]+/g, " ")
+    .replace(/-/g, " ")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    // Drop stop words and possessive leftovers like "s" in saint-joseph-s-university
+    .filter((word) => word.length > 1 && !ACRONYM_STOP_WORDS.has(word));
+
+  if (words.length < 2) return null;
+  const acronym = words.map((word) => word[0]!).join("");
+  if (acronym.length < 3 || acronym.length > 5) return null;
+  return acronym;
+}
+
+function isAbbrevStyleTeam(team: CollegeTeamRow): boolean {
+  if (!/^[a-z]{3,5}$/.test(team.slug)) return false;
+  const compactName = team.name.toLowerCase().replace(/[^a-z]/g, "");
+  return compactName === team.slug || compactName.startsWith(team.slug);
+}
+
+function looksLikeExpandableCollegeName(team: CollegeTeamRow): boolean {
+  if (FOREIGN_OR_JUNK_TEAM_RE.test(team.name) || FOREIGN_OR_JUNK_TEAM_RE.test(team.slug)) {
+    return false;
+  }
+  if (team.name.includes(";")) return false;
+  return /\b(university|college|institute)\b/i.test(team.name);
+}
+
+/**
+ * Link abbreviation slugs (smu, byu, tcu, usc) to the matching full-name team.
+ * Uses curated full-name targets when an acronym is otherwise ambiguous.
+ */
+function linkByAcronymExpansion(uf: UnionFind, teamsInLeague: CollegeTeamRow[]): void {
+  const bySlug = new Map(teamsInLeague.map((team) => [team.slug, team]));
+  const fullNamesByAcronym = new Map<string, CollegeTeamRow[]>();
+
+  for (const team of teamsInLeague) {
+    if (/^[a-z]{2,5}$/.test(team.slug)) continue;
+    if (!looksLikeExpandableCollegeName(team)) continue;
+
+    const fromName = schoolNameAcronym(team.name);
+    const fromSlug = schoolNameAcronym(team.slug);
+    for (const acronym of new Set([fromName, fromSlug].filter(Boolean) as string[])) {
+      const bucket = fullNamesByAcronym.get(acronym) ?? [];
+      if (!bucket.some((existing) => existing.id === team.id)) {
+        bucket.push(team);
+      }
+      fullNamesByAcronym.set(acronym, bucket);
+    }
+  }
+
+  for (const [acronym, fullTeams] of fullNamesByAcronym) {
+    const abbrev = bySlug.get(acronym);
+    if (!abbrev || !isAbbrevStyleTeam(abbrev)) continue;
+    if (FOREIGN_OR_JUNK_TEAM_RE.test(abbrev.name)) continue;
+
+    const preferredSlug = resolveNcaaFullSchoolIdentity(acronym)?.slug;
+    const preferred = preferredSlug ? bySlug.get(preferredSlug) : undefined;
+    if (preferred) {
+      uf.union(abbrev.id, preferred.id);
+      continue;
+    }
+
+    if (AMBIGUOUS_SCHOOL_ACRONYMS.has(acronym)) continue;
+    if (fullTeams.length !== 1) continue;
+    uf.union(abbrev.id, fullTeams[0]!.id);
+  }
+}
+
+/** Link nc-state → north-carolina-state-university style pairs. */
+function linkByStateSchoolAbbreviations(
+  uf: UnionFind,
+  bySlug: Map<string, CollegeTeamRow>,
+): void {
+  for (const team of bySlug.values()) {
+    const match = team.slug.match(/^([a-z]{2})-state(?:-university)?$/);
+    if (!match) continue;
+    const stateSlug = US_STATE_ABBREV_TO_SLUG[match[1]!];
+    if (!stateSlug) continue;
+    linkSlugVariants(uf, bySlug, team.slug, `${stateSlug}-state-university`);
+    linkSlugVariants(uf, bySlug, team.slug, `${stateSlug}-state`);
+    linkSlugVariants(uf, bySlug, team.slug, `${stateSlug}-st`);
+  }
+}
+
+/** Link curated short brands (nc-state, smu, ucla, …) to full school slugs. */
+function linkByCuratedFullSchoolNames(
+  uf: UnionFind,
+  bySlug: Map<string, CollegeTeamRow>,
+): void {
+  for (const [shortSlug, full] of Object.entries(NCAA_FULL_SCHOOL_BY_SHORT_SLUG)) {
+    linkSlugVariants(uf, bySlug, shortSlug, full.slug);
+  }
+}
+
 function buildDuplicateGroups(
   leagueSlug: string,
   teamsInLeague: CollegeTeamRow[],
@@ -215,10 +459,9 @@ function buildDuplicateGroups(
     const stateUniversityMatch = team.slug.match(/^(.+)-state-university$/);
     if (stateUniversityMatch) {
       const base = stateUniversityMatch[1];
+      // Link Arizona State University ↔ Arizona St — never bare "Arizona".
       linkSlugVariants(uf, bySlug, team.slug, `${base}-st`);
-      if (bySlug.get(base) && !bySlug.get(`${base}-st`)) {
-        linkSlugVariants(uf, bySlug, team.slug, base);
-      }
+      linkSlugVariants(uf, bySlug, team.slug, `${base}-state`);
     }
 
     const stateUniversityAtMatch = team.slug.match(/^(.+)-state-university-at-(.+)$/);
@@ -440,9 +683,7 @@ function buildDuplicateGroups(
     const stateCollegeMatch = team.slug.match(/^(.+)-state-college$/);
     if (stateCollegeMatch) {
       linkSlugVariants(uf, bySlug, team.slug, `${stateCollegeMatch[1]}-st`);
-      if (!bySlug.get(`${stateCollegeMatch[1]}-st`)) {
-        linkSlugVariants(uf, bySlug, team.slug, stateCollegeMatch[1]);
-      }
+      linkSlugVariants(uf, bySlug, team.slug, `${stateCollegeMatch[1]}-state`);
     }
 
     const techAbbrevMatch = team.slug.match(/^(.+)-tech$/);
@@ -531,6 +772,9 @@ function buildDuplicateGroups(
   linkByNormalizedName(uf, teamsInLeague);
   linkByLooseName(uf, teamsInLeague);
   linkSunyAbbreviations(uf, teamsInLeague);
+  linkByAcronymExpansion(uf, teamsInLeague);
+  linkByStateSchoolAbbreviations(uf, bySlug);
+  linkByCuratedFullSchoolNames(uf, bySlug);
 
   for (const team of teamsInLeague) {
     if (team.slug.endsWith("-united-states")) {
@@ -538,7 +782,7 @@ function buildDuplicateGroups(
     }
   }
 
-  if (leagueSlug === "ncaa") {
+  if (leagueSlug === "ncaa" || leagueSlug === "ncaa-w") {
     for (const [alias, canonical] of loadNcaaManualAliasSlugPairs()) {
       linkSlugVariants(uf, bySlug, alias, canonical);
     }
@@ -647,22 +891,110 @@ export async function executeCollegeDuplicateMergePlan(
   }
 
   const bestName = pickBestDisplayName(groupTeams);
+  const bestSlug = pickBestFullSlug(groupTeams);
   const [current] = await database
-    .select({ name: teams.name })
+    .select({ name: teams.name, slug: teams.slug, leagueId: teams.leagueId })
     .from(teams)
     .where(eq(teams.id, keepTeamId))
     .limit(1);
 
   let nameUpdated = false;
-  if (current && current.name !== bestName) {
-    await database
-      .update(teams)
-      .set({ name: bestName })
-      .where(eq(teams.id, keepTeamId));
-    nameUpdated = true;
+  if (current) {
+    const updates: { name?: string; slug?: string } = {};
+    if (current.name !== bestName) updates.name = bestName;
+    if (bestSlug && current.slug !== bestSlug) {
+      const [slugTaken] = await database
+        .select({ id: teams.id })
+        .from(teams)
+        .where(
+          and(eq(teams.leagueId, current.leagueId), eq(teams.slug, bestSlug)),
+        )
+        .limit(1);
+      if (!slugTaken || slugTaken.id === keepTeamId) {
+        updates.slug = bestSlug;
+      }
+    }
+    if (Object.keys(updates).length > 0) {
+      await database.update(teams).set(updates).where(eq(teams.id, keepTeamId));
+      nameUpdated = true;
+    }
   }
 
-  return { plan: { ...plan, keepTeamId, keepName: bestName }, merges, nameUpdated };
+  return {
+    plan: {
+      ...plan,
+      keepTeamId,
+      keepSlug: bestSlug ?? plan.keepSlug,
+      keepName: bestName,
+    },
+    merges,
+    nameUpdated,
+  };
+}
+
+/** Rename leftover short brands (SMU, UCLA, …) to formal school names when alone. */
+export async function renameAbbrevCollegeTeamsToFullNames(
+  leagueSlugs: readonly string[] = ["ncaa", "ncaa-w"],
+  database: DbClient = db,
+): Promise<Array<{ teamId: number; fromSlug: string; toSlug: string; toName: string }>> {
+  const renamed: Array<{
+    teamId: number;
+    fromSlug: string;
+    toSlug: string;
+    toName: string;
+  }> = [];
+
+  for (const leagueSlug of leagueSlugs) {
+    const loaded = await loadLeagueTeams(leagueSlug, database);
+    if (!loaded) continue;
+
+    for (const team of loaded.teams) {
+      const full = resolveNcaaFullSchoolIdentity(team.slug);
+      if (!full) continue;
+      if (team.slug === full.slug && team.name === full.name) continue;
+
+      const existingFull = loaded.teams.find(
+        (candidate) => candidate.slug === full.slug && candidate.id !== team.id,
+      );
+      if (existingFull) {
+        // Full-name row still exists — merge short into full instead of renaming.
+        await mergeTeamInto(team.id, existingFull.id, database);
+        if (existingFull.name !== full.name || existingFull.slug !== full.slug) {
+          await database
+            .update(teams)
+            .set({ name: full.name, slug: full.slug })
+            .where(eq(teams.id, existingFull.id));
+        }
+        renamed.push({
+          teamId: existingFull.id,
+          fromSlug: team.slug,
+          toSlug: full.slug,
+          toName: full.name,
+        });
+        continue;
+      }
+
+      const [slugTaken] = await database
+        .select({ id: teams.id })
+        .from(teams)
+        .where(and(eq(teams.leagueId, loaded.leagueId), eq(teams.slug, full.slug)))
+        .limit(1);
+      if (slugTaken && slugTaken.id !== team.id) continue;
+
+      await database
+        .update(teams)
+        .set({ name: full.name, slug: full.slug })
+        .where(eq(teams.id, team.id));
+      renamed.push({
+        teamId: team.id,
+        fromSlug: team.slug,
+        toSlug: full.slug,
+        toName: full.name,
+      });
+    }
+  }
+
+  return renamed;
 }
 
 export async function mergeAllCollegeDuplicateTeams(

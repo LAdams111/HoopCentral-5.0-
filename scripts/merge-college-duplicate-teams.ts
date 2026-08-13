@@ -21,29 +21,28 @@ async function main(): Promise<void> {
   const {
     findCollegeDuplicateMergePlans,
     mergeAllCollegeDuplicateTeams,
+    renameAbbrevCollegeTeamsToFullNames,
   } = await import("../server/src/services/college-duplicate-team-merge.service.js");
 
   const plans = await findCollegeDuplicateMergePlans(leagueSlugs);
-  if (plans.length === 0) {
-    console.log("No duplicate college teams found.");
-    await closeDatabaseConnection();
-    return;
-  }
-
   const byLeague = new Map<string, number>();
   for (const plan of plans) {
     byLeague.set(plan.leagueSlug, (byLeague.get(plan.leagueSlug) ?? 0) + 1);
   }
 
-  console.log(`Found ${plans.length} duplicate group(s):`);
-  for (const [leagueSlug, count] of [...byLeague.entries()].sort()) {
-    console.log(`  ${leagueSlug}: ${count}`);
-  }
+  if (plans.length === 0) {
+    console.log("No duplicate college teams found.");
+  } else {
+    console.log(`Found ${plans.length} duplicate group(s):`);
+    for (const [leagueSlug, count] of [...byLeague.entries()].sort()) {
+      console.log(`  ${leagueSlug}: ${count}`);
+    }
 
-  for (const plan of plans) {
-    console.log(
-      `  [${plan.leagueSlug}] ${plan.keepName}: keep #${plan.keepTeamId} [${plan.keepSlug}] <- ${plan.duplicateSlugs.map((slug, i) => `#${plan.duplicateTeamIds[i]} [${slug}]`).join(", ")}`,
-    );
+    for (const plan of plans) {
+      console.log(
+        `  [${plan.leagueSlug}] ${plan.keepName}: keep #${plan.keepTeamId} [${plan.keepSlug}] <- ${plan.duplicateSlugs.map((slug, i) => `#${plan.duplicateTeamIds[i]} [${slug}]`).join(", ")}`,
+      );
+    }
   }
 
   if (dryRun) {
@@ -53,7 +52,8 @@ async function main(): Promise<void> {
   }
 
   console.log("");
-  const results = await mergeAllCollegeDuplicateTeams(leagueSlugs);
+  const results =
+    plans.length > 0 ? await mergeAllCollegeDuplicateTeams(leagueSlugs) : [];
   for (const result of results) {
     for (const merge of result.merges) {
       console.log(
@@ -61,12 +61,26 @@ async function main(): Promise<void> {
       );
     }
     if (result.nameUpdated) {
-      console.log(`  Updated display name -> ${result.plan.keepName}`);
+      console.log(
+        `  Updated identity -> [${result.plan.keepSlug}] ${result.plan.keepName}`,
+      );
     }
   }
 
+  const renameLeagues = leagueSlugs?.filter((slug) =>
+    slug === "ncaa" || slug === "ncaa-w",
+  ) ?? ["ncaa", "ncaa-w"];
+  const renamed = await renameAbbrevCollegeTeamsToFullNames(renameLeagues);
+  for (const row of renamed) {
+    console.log(
+      `Renamed/merged [${row.fromSlug}] -> [${row.toSlug}] ${row.toName} (#${row.teamId})`,
+    );
+  }
+
   await closeDatabaseConnection();
-  console.log(`\nDone. Merged ${results.length} group(s).`);
+  console.log(
+    `\nDone. Merged ${results.length} group(s); renamed ${renamed.length} short brand(s) to full names.`,
+  );
 }
 
 const isMain =

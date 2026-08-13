@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveNcaaFullSchoolIdentity } from "../data/ncaa-full-school-names.js";
 import { normalizeSlugParam } from "./slug.js";
 
 export interface NcaaTeamIdentity {
@@ -443,13 +444,36 @@ export function normalizeNcaaTeamForIngest(
   team: NcaaTeamIdentity,
   report: NcaaTeamAliasReport = loadNcaaTeamAliasReport(),
 ): NcaaTeamIdentity {
-  const slugKey = normalizeSlugParam(team.slug);
   const redirects = buildNcaaIngestSlugToCanonicalMap(report);
-  const canonicalSlug = redirects.get(slugKey);
+  const candidates = [
+    normalizeSlugParam(team.slug),
+    normalizeSlugParam(team.name),
+    normalizeSlugParam(team.abbreviation ?? ""),
+  ].filter(Boolean);
 
-  if (!canonicalSlug || canonicalSlug === slugKey) {
-    return team;
+  for (const key of candidates) {
+    const full = resolveNcaaFullSchoolIdentity(key);
+    if (full) {
+      return {
+        slug: full.slug,
+        name: full.name,
+        abbreviation: team.abbreviation ?? key.toUpperCase(),
+      };
+    }
+
+    const canonicalSlug = redirects.get(key);
+    if (canonicalSlug && canonicalSlug !== key) {
+      const mappedFull = resolveNcaaFullSchoolIdentity(canonicalSlug);
+      if (mappedFull) {
+        return {
+          slug: mappedFull.slug,
+          name: mappedFull.name,
+          abbreviation: team.abbreviation ?? key.toUpperCase(),
+        };
+      }
+      return resolveCanonicalIdentity(canonicalSlug, report);
+    }
   }
 
-  return resolveCanonicalIdentity(canonicalSlug, report);
+  return team;
 }
