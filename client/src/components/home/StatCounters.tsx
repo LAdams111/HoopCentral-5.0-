@@ -8,7 +8,7 @@ interface StatCountersProps {
 
 export function StatCounters({ players, teams, seasons }: StatCountersProps) {
   const stats = [
-    { label: "Active Players", value: `${players.toLocaleString()}+`, icon: Users },
+    { label: "Player Profiles", value: `${players.toLocaleString()}+`, icon: Users },
     { label: "Active Scouts", value: "1.2k", icon: Search },
     { label: "Seasons Tracked", value: seasons > 0 ? String(seasons) : "75", icon: Trophy },
     { label: "Teams", value: `${teams}+`, icon: Users },
