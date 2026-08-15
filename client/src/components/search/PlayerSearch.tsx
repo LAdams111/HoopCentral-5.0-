@@ -24,7 +24,7 @@ export function PlayerSearch() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(query), 250);
+    const t = setTimeout(() => setDebounced(query.trim()), 250);
     return () => clearTimeout(t);
   }, [query]);
 
