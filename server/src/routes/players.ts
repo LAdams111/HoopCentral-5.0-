@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { findDraftPickForPlayer } from "../services/draft.service.js";
 import {
   getBirthYearCounts,
   getPlayerById,
@@ -78,7 +79,13 @@ playersRouter.get("/:id", async (req, res) => {
       return;
     }
 
-    res.json(player);
+    res.json({
+      ...player,
+      draft: findDraftPickForPlayer({
+        name: player.name,
+        birthDate: player.birthDate,
+      }),
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get player" } });

@@ -56,6 +56,15 @@ export interface DraftClassResult {
   picks: DraftPickRow[];
 }
 
+export interface PlayerDraftInfo {
+  year: number;
+  round: number;
+  roundPick: number;
+  overallPick: number;
+  draftTeam: string;
+  draftTeamLogoName: string;
+}
+
 type MatchedPlayer = typeof players.$inferSelect & {
   teamName: string | null;
   teamSlug: string | null;
@@ -341,4 +350,112 @@ export async function getDraftClass(year: number): Promise<DraftClassResult | nu
 /** Test helper / maintenance */
 export function clearDraftClassCache(): void {
   draftClassCache.clear();
+}
+
+interface IndexedDraftPick extends PlayerDraftInfo {
+  playerName: string;
+  nameKeys: Set<string>;
+  hasJr: boolean;
+  hasSr: boolean;
+}
+
+function nameHasSuffix(name: string, suffix: "jr" | "sr"): boolean {
+  return new RegExp(`\\b${suffix}\\.?$`, "i").test(name.trim());
+}
+
+function buildDraftPickIndex(): IndexedDraftPick[] {
+  const index: IndexedDraftPick[] = [];
+
+  for (const seeds of Object.values(draftHistory.years)) {
+    const roundCounters = new Map<number, number>();
+    for (const seed of seeds) {
+      const roundPick = (roundCounters.get(seed.round) ?? 0) + 1;
+      roundCounters.set(seed.round, roundPick);
+      const draftTeam = normalizeDraftTeamName(seed.draftTeam);
+      const nameKeys = new Set<string>();
+      for (const variant of displayNameVariants(seed.playerName)) {
+        nameKeys.add(normalizePersonKey(variant));
+        nameKeys.add(nameToSlug(variant));
+      }
+
+      index.push({
+        year: seed.year,
+        round: seed.round,
+        roundPick,
+        overallPick: seed.overallPick,
+        draftTeam,
+        draftTeamLogoName: draftTeamLogoFranchise(draftTeam),
+        playerName: seed.playerName,
+        nameKeys,
+        hasJr: nameHasSuffix(seed.playerName, "jr"),
+        hasSr: nameHasSuffix(seed.playerName, "sr"),
+      });
+    }
+  }
+
+  return index;
+}
+
+const draftPickIndex = buildDraftPickIndex();
+
+function toPlayerDraftInfo(pick: IndexedDraftPick): PlayerDraftInfo {
+  return {
+    year: pick.year,
+    round: pick.round,
+    roundPick: pick.roundPick,
+    overallPick: pick.overallPick,
+    draftTeam: pick.draftTeam,
+    draftTeamLogoName: pick.draftTeamLogoName,
+  };
+}
+
+/** Look up a player's NBA draft slot from the same history used on the Draft page. */
+export function findDraftPickForPlayer(input: {
+  name: string;
+  slug?: string | null;
+  birthDate?: string | null;
+}): PlayerDraftInfo | null {
+  const keys = new Set<string>();
+  for (const variant of displayNameVariants(input.name)) {
+    keys.add(normalizePersonKey(variant));
+    keys.add(nameToSlug(variant));
+  }
+  if (input.slug) keys.add(input.slug);
+
+  const matches = draftPickIndex.filter((pick) =>
+    [...pick.nameKeys].some((key) => keys.has(key)),
+  );
+  if (matches.length === 0) return null;
+  if (matches.length === 1) return toPlayerDraftInfo(matches[0]!);
+
+  const playerHasJr = nameHasSuffix(input.name, "jr") || Boolean(input.slug?.endsWith("-jr"));
+  const playerHasSr = nameHasSuffix(input.name, "sr") || Boolean(input.slug?.endsWith("-sr"));
+  const suffixMatches = matches.filter((pick) => {
+    if (playerHasJr) return pick.hasJr;
+    if (playerHasSr) return pick.hasSr;
+    return !pick.hasJr && !pick.hasSr;
+  });
+  const narrowed = suffixMatches.length > 0 ? suffixMatches : matches;
+  if (narrowed.length === 1) return toPlayerDraftInfo(narrowed[0]!);
+
+  const birthYear = input.birthDate
+    ? Number.parseInt(input.birthDate.slice(0, 4), 10)
+    : Number.NaN;
+  if (Number.isFinite(birthYear)) {
+    const aged = narrowed.filter((pick) => {
+      const age = pick.year - birthYear;
+      return age >= 17 && age <= 25;
+    });
+    if (aged.length === 1) return toPlayerDraftInfo(aged[0]!);
+    if (aged.length > 1) {
+      aged.sort(
+        (a, b) =>
+          Math.abs(a.year - birthYear - 19) - Math.abs(b.year - birthYear - 19),
+      );
+      return toPlayerDraftInfo(aged[0]!);
+    }
+  }
+
+  narrowed.sort((a, b) => b.year - a.year);
+  return toPlayerDraftInfo(narrowed[0]!);
 }

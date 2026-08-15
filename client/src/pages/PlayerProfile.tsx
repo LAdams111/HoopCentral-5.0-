@@ -6,7 +6,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
 import { getPlayer, incrementProfileView } from "@/lib/api";
-import { rosterPath, displayTeamName } from "@/lib/constants";
+import { rosterPath, displayTeamName, teamLogoUrl } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { formatPosition } from "@/lib/position";
 
@@ -300,17 +300,39 @@ export function PlayerProfile() {
               <h3 className="font-display text-2xl">Awards &amp; Achievements</h3>
             </div>
             <div className="p-6">
-              {player.awards.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {player.awards.map((award, i) => (
-                    <span
-                      key={i}
-                      className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm text-primary"
-                    >
-                      {award.awardName}
-                      {award.season ? ` · ${award.season}` : ""}
-                    </span>
-                  ))}
+              {player.draft || player.awards.length > 0 ? (
+                <div className="space-y-4">
+                  {player.draft && (
+                    <div className="flex items-center gap-4 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3">
+                      <img
+                        src={teamLogoUrl(player.draft.draftTeamLogoName, { leagueSlug: "nba" })}
+                        alt=""
+                        className="h-10 w-10 flex-shrink-0 object-contain"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-display text-lg font-bold text-foreground">
+                          {player.draft.year} NBA Draft
+                        </p>
+                        <p className="font-mono text-sm uppercase tracking-wide text-muted-foreground">
+                          Round {player.draft.round} · Pick {player.draft.overallPick} ·{" "}
+                          {player.draft.draftTeam}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {player.awards.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {player.awards.map((award, i) => (
+                        <span
+                          key={i}
+                          className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm text-primary"
+                        >
+                          {award.awardName}
+                          {award.season ? ` · ${award.season}` : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border py-12 text-muted-foreground">

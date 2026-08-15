@@ -76,6 +76,15 @@ export interface CareerEntry {
   endDate: string | null;
 }
 
+export interface PlayerDraftInfo {
+  year: number;
+  round: number;
+  roundPick: number;
+  overallPick: number;
+  draftTeam: string;
+  draftTeamLogoName: string;
+}
+
 export interface PlayerProfile extends PlayerCard {
   league: string | null;
   leagueSlug: string | null;
@@ -83,6 +92,7 @@ export interface PlayerProfile extends PlayerCard {
   awards: { awardName: string; season: string | null; league: string | null }[];
   career: CareerEntry[];
   leaguesPlayed: string[];
+  draft: PlayerDraftInfo | null;
 }
 
 export function toPlayerCard(
@@ -515,6 +525,7 @@ export async function getPlayerById(
     awards: [],
     career,
     leaguesPlayed,
+    draft: null,
   };
 }
 
