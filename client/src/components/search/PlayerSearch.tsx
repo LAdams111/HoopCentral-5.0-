@@ -10,6 +10,7 @@ import {
   type PlayerCard,
   type TeamSummary,
 } from "@/lib/api";
+import { countryFlagUrl } from "@/lib/country-flag";
 import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
 import { getLeagueDisplay } from "@/lib/leagues";
 import { teamLogoUrl, displayTeamName } from "@/lib/constants";
@@ -306,6 +307,7 @@ function PlayerSearchRow({
   onSelect: (player: PlayerCard) => void;
 }) {
   const teamLabel = displayTeamName(player.team, { slug: player.teamSlug ?? undefined });
+  const flagUrl = countryFlagUrl(player.country);
 
   return (
     <button
@@ -335,6 +337,17 @@ function PlayerSearchRow({
           )}
         </p>
       </div>
+      {flagUrl && (
+        <img
+          src={flagUrl}
+          alt={player.country}
+          title={player.country}
+          className="h-4 w-[1.4rem] flex-shrink-0 rounded-sm border border-border/50 object-cover"
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+        />
+      )}
     </button>
   );
 }
