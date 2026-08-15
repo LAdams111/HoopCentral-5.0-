@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Trophy, Users } from "lucide-react";
+import { Trophy, Users } from "lucide-react";
 import type { PlayerCard as PlayerCardType } from "@/lib/api";
 import { nbaTeamLogoUrl } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
@@ -158,13 +158,6 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
                 ))}
               </div>
             )}
-
-            <Link
-              to="/players"
-              className="group flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border-2 border-dashed border-border transition-all hover:border-primary hover:text-primary"
-            >
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
           </div>
         </div>
       </div>
