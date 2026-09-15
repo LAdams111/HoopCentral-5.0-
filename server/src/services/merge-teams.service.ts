@@ -14,7 +14,10 @@ import {
   resolveCanonicalIdentity,
   type NcaaTeamIdentity,
 } from "../utils/ncaa-team-alias-report.js";
-import type { UsportsTeamIdentity } from "../utils/usports-team-aliases.js";
+import {
+  resolveCanonicalIdentity as resolveUsportsCanonicalIdentity,
+  type UsportsTeamIdentity,
+} from "../utils/usports-team-aliases.js";
 import {
   buildUsportsSlugVariantsByCanonical,
   getUsportsTeamIdentity,

@@ -482,11 +482,11 @@ export function buildUsportsSlugVariantsByCanonical(): Map<string, string[]> {
     byCanonical.set(canonical, variants);
   }
 
-  return new Map(
-    [...byCanonical.entries()]
-      .map(([canonical, variants]) => [canonical, [...variants].sort()])
-      .sort(([a], [b]) => a.localeCompare(b)),
-  );
+  const entries: Array<[string, string[]]> = [...byCanonical.entries()]
+    .map(([canonical, variants]) => [canonical, [...variants].sort()] as [string, string[]])
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  return new Map(entries);
 }
 
 export function resolveUsportsTeamDisplayName(
