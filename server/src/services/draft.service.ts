@@ -38,6 +38,11 @@ const DRAFT_NAME_ALIASES: Record<string, string[]> = {
   "ron artest": ["Metta World Peace", "Ron Artest"],
 };
 
+/** Hard overrides when name matching would pick the wrong era/person. */
+const DRAFT_PLAYER_ID_OVERRIDES: Record<string, number> = {
+  "2026:cameron boozer": 69678,
+};
+
 export interface DraftPickRow {
   year: number;
   round: number;
@@ -73,6 +78,7 @@ type MatchedPlayer = typeof players.$inferSelect & {
   seasonCount: number;
   identityCount: number;
   meaningfulGames: number;
+  earliestCollegeSeasonStart: number | null;
   teamNames: string[];
 };
 
@@ -146,40 +152,65 @@ function affiliationTokens(affiliation: string): string[] {
     .filter((t) => t.length >= 3 && !stop.has(t));
 }
 
+function draftAgeScore(draftYear: number, birthDate: string | null): number {
+  if (!birthDate) return 0;
+  const born = Number.parseInt(birthDate.slice(0, 4), 10);
+  if (!Number.isFinite(born)) return 0;
+  const age = draftYear - born;
+  if (age >= 18 && age <= 23) return 70;
+  if (age >= 17 && age <= 25) return 35;
+  if (age > 30 || age < 16) return -200;
+  return -60;
+}
+
 function scoreMatch(
   playerName: string,
   affiliation: string,
+  draftYear: number,
   row: MatchedPlayer,
 ): number {
   const target = nameToSlug(stripNameSuffix(stripDiacritics(playerName)));
   const displaySlug = nameToSlug(stripNameSuffix(stripDiacritics(row.displayName)));
   let score = 0;
 
-  if (row.slug === nameToSlug(playerName) || row.slug === target) score += 120;
+  if (row.slug === target) score += 160;
+  else if (row.slug === nameToSlug(playerName)) score += 140;
   else if (displaySlug === target) score += 100;
+  else if (/-\d+$/.test(row.slug) && row.slug.startsWith(`${target}-`)) score -= 80;
 
   if (normalizePersonKey(row.displayName) === normalizePersonKey(playerName)) score += 40;
-  if (row.hasNbaStats) score += 80;
-  if (row.hasProOrCollegeStats) score += 60;
-  // Prefer real box-score seasons over empty roster stubs / contaminated HS piles
-  score += Math.min(100, row.meaningfulGames);
-  score += Math.min(40, row.seasonCount * 2);
-  score += Math.min(40, row.identityCount * 8);
+  score += draftAgeScore(draftYear, row.birthDate);
+
+  if (row.hasNbaStats && draftYear >= 2010) score += 40;
+  else if (row.hasNbaStats) score += 80;
+  if (row.hasProOrCollegeStats) score += 40;
+  score += Math.min(80, row.meaningfulGames);
+  score += Math.min(30, row.seasonCount * 2);
+  score += Math.min(20, row.identityCount * 4);
   score += Math.min(10, Math.floor(row.profileViews / 1000));
 
   const tokens = affiliationTokens(affiliation);
   if (tokens.length > 0) {
     const haystack = row.teamNames.join(" ").toLowerCase();
     const hits = tokens.filter((t) => haystack.includes(t)).length;
-    score += hits * 35;
+    score += hits * 50;
+    if (hits === 0 && row.meaningfulGames > 20) score -= 40;
   }
 
-  if (!row.hasProOrCollegeStats && row.seasonCount <= 2) score -= 120;
+  if (row.earliestCollegeSeasonStart != null) {
+    const yearsBeforeDraft = draftYear - row.earliestCollegeSeasonStart;
+    if (yearsBeforeDraft > 25) score -= 250;
+    else if (yearsBeforeDraft > 12) score -= 120;
+    else if (yearsBeforeDraft <= 2) score += 25;
+  }
+
+  if (!row.hasProOrCollegeStats && row.seasonCount <= 2) score -= 80;
   if (row.meaningfulGames === 0 && row.seasonCount > 0) score -= 40;
   return score;
 }
 
 async function resolvePlayersByNames(
+  draftYear: number,
   picks: { playerName: string; affiliation: string }[],
 ): Promise<Map<string, MatchedPlayer>> {
   const result = new Map<string, MatchedPlayer>();
@@ -225,6 +256,17 @@ async function resolvePlayersByNames(
           and lower(l.slug) not in ('high-school', 'high-school-w', 'aau')
           and coalesce(pss.games_played, 0) > 0
       )`,
+      earliestCollegeSeasonStart: sql<number | null>`(
+        select min(
+          nullif(split_part(s.season_label, '-', 1), '')::int
+        )
+        from player_season_stats pss
+        join leagues l on l.id = pss.league_id
+        join seasons s on s.id = pss.season_id
+        where pss.player_id = ${players.id}
+          and lower(l.slug) not in ('high-school', 'high-school-w', 'aau')
+          and coalesce(pss.games_played, 0) > 0
+      )`,
       identityCount: sql<number>`(
         select count(*)::int from player_identities pi where pi.player_id = ${players.id}
       )`,
@@ -264,10 +306,22 @@ async function resolvePlayersByNames(
     seasonCount: Number(r.seasonCount ?? 0),
     identityCount: Number(r.identityCount ?? 0),
     meaningfulGames: Number(r.meaningfulGames ?? 0),
+    earliestCollegeSeasonStart:
+      r.earliestCollegeSeasonStart == null ? null : Number(r.earliestCollegeSeasonStart),
     teamNames: (r.teamNames ?? "").split("||").filter(Boolean),
   }));
 
   for (const pick of picks) {
+    const overrideKey = `${draftYear}:${normalizePersonKey(pick.playerName)}`;
+    const overrideId = DRAFT_PLAYER_ID_OVERRIDES[overrideKey];
+    if (overrideId != null) {
+      const forced = candidates.find((c) => c.id === overrideId);
+      if (forced) {
+        result.set(pick.playerName, forced);
+        continue;
+      }
+    }
+
     const nameSlugs = new Set(playerNameCandidates(pick.playerName));
     const keys = new Set(displayNameVariants(pick.playerName).map(normalizePersonKey));
     const matches = candidates.filter((c) => {
@@ -277,8 +331,8 @@ async function resolvePlayersByNames(
     if (matches.length === 0) continue;
     matches.sort(
       (a, b) =>
-        scoreMatch(pick.playerName, pick.affiliation, b) -
-        scoreMatch(pick.playerName, pick.affiliation, a),
+        scoreMatch(pick.playerName, pick.affiliation, draftYear, b) -
+        scoreMatch(pick.playerName, pick.affiliation, draftYear, a),
     );
     result.set(pick.playerName, matches[0]!);
   }
@@ -298,6 +352,7 @@ export async function getDraftClass(year: number): Promise<DraftClassResult | nu
   if (seeds.length === 0) return null;
 
   const matched = await resolvePlayersByNames(
+    year,
     seeds.map((s) => ({ playerName: s.playerName, affiliation: s.affiliation })),
   );
   const playerIds = [...matched.values()].map((p) => p.id);
