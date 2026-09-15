@@ -1,161 +1,504 @@
+import type { CanonicalLeagueTeamConfig } from "./canonical-league-teams.js";
+import { loadUsportsTeamAliasReport } from "../utils/usports-team-aliases.js";
+import type { UsportsTeamIdentity } from "../utils/usports-team-aliases.js";
+
 /**
  * Current U Sports men's basketball teams (48).
- * Sourced from the official 2025-26 season:
- * https://en.usports.ca/sports/mbkb/2025-26/schedule
+ * Canonical slugs and institution names use the full official school name
+ * to avoid mix-ups (e.g. Western University vs Trinity Western University).
+ *
+ * Source: https://en.usports.ca/sports/mbkb/2025-26/schedule
  */
-export const USPORTS_TEAMS = [
-  { abbrev: "ACADIA", name: "Acadia", displayName: "Acadia Axemen", slug: "acadia" },
-  {
+export interface UsportsTeamDefinition {
+  abbrev: string;
+  institutionName: string;
+  mascot: string;
+  slug: string;
+  legacySlug: string;
+  displayName: string;
+}
+
+function defineUsportsTeam(
+  team: Omit<UsportsTeamDefinition, "displayName"> & { displayName?: string },
+): UsportsTeamDefinition {
+  return {
+    ...team,
+    displayName: team.displayName ?? `${team.institutionName} ${team.mascot}`.trim(),
+  };
+}
+
+export const USPORTS_TEAMS: readonly UsportsTeamDefinition[] = [
+  defineUsportsTeam({
+    abbrev: "ACADIA",
+    institutionName: "Acadia University",
+    mascot: "Axemen",
+    slug: "acadia-university",
+    legacySlug: "acadia",
+  }),
+  defineUsportsTeam({
     abbrev: "ALBERT",
-    name: "Alberta",
-    displayName: "University of Alberta Golden Bears",
-    slug: "alberta",
-  },
-  { abbrev: "ALGOMA", name: "Algoma", displayName: "Algoma Thunderbirds", slug: "algoma" },
-  { abbrev: "BISHOP", name: "Bishop's", displayName: "Bishop's Gaiters", slug: "bishop-s" },
-  { abbrev: "BRANDO", name: "Brandon", displayName: "Brandon Bobcats", slug: "brandon" },
-  { abbrev: "BROCK", name: "Brock", displayName: "Brock Badgers", slug: "brock" },
-  {
+    institutionName: "University of Alberta",
+    mascot: "Golden Bears",
+    slug: "university-of-alberta",
+    legacySlug: "alberta",
+  }),
+  defineUsportsTeam({
+    abbrev: "ALGOMA",
+    institutionName: "Algoma University",
+    mascot: "Thunderbirds",
+    slug: "algoma-university",
+    legacySlug: "algoma",
+  }),
+  defineUsportsTeam({
+    abbrev: "BISHOP",
+    institutionName: "Bishop's University",
+    mascot: "Gaiters",
+    slug: "bishop-s-university",
+    legacySlug: "bishop-s",
+  }),
+  defineUsportsTeam({
+    abbrev: "BRANDO",
+    institutionName: "Brandon University",
+    mascot: "Bobcats",
+    slug: "brandon-university",
+    legacySlug: "brandon",
+  }),
+  defineUsportsTeam({
+    abbrev: "BROCK",
+    institutionName: "Brock University",
+    mascot: "Badgers",
+    slug: "brock-university",
+    legacySlug: "brock",
+  }),
+  defineUsportsTeam({
     abbrev: "CALGAR",
-    name: "Calgary",
-    displayName: "University of Calgary Dinos",
-    slug: "calgary",
-  },
-  { abbrev: "CBU", name: "Cape Breton", displayName: "Cape Breton Capers", slug: "cape-breton" },
-  { abbrev: "CARLET", name: "Carleton", displayName: "Carleton Ravens", slug: "carleton" },
-  { abbrev: "CONC", name: "Concordia", displayName: "Concordia Stingers", slug: "concordia" },
-  { abbrev: "DALHOU", name: "Dalhousie", displayName: "Dalhousie Tigers", slug: "dalhousie" },
-  {
+    institutionName: "University of Calgary",
+    mascot: "Dinos",
+    slug: "university-of-calgary",
+    legacySlug: "calgary",
+  }),
+  defineUsportsTeam({
+    abbrev: "CBU",
+    institutionName: "Cape Breton University",
+    mascot: "Capers",
+    slug: "cape-breton-university",
+    legacySlug: "cape-breton",
+  }),
+  defineUsportsTeam({
+    abbrev: "CARLET",
+    institutionName: "Carleton University",
+    mascot: "Ravens",
+    slug: "carleton-university",
+    legacySlug: "carleton",
+  }),
+  defineUsportsTeam({
+    abbrev: "CONC",
+    institutionName: "Concordia University",
+    mascot: "Stingers",
+    slug: "concordia-university",
+    legacySlug: "concordia",
+  }),
+  defineUsportsTeam({
+    abbrev: "DALHOU",
+    institutionName: "Dalhousie University",
+    mascot: "Tigers",
+    slug: "dalhousie-university",
+    legacySlug: "dalhousie",
+  }),
+  defineUsportsTeam({
     abbrev: "GUELPH",
-    name: "Guelph",
-    displayName: "University of Guelph Gryphons",
-    slug: "guelph",
-  },
-  { abbrev: "LAKEHD", name: "Lakehead", displayName: "Lakehead Thunderwolves", slug: "lakehead" },
-  { abbrev: "LAUREN", name: "Laurentian", displayName: "Laurentian Voyageurs", slug: "laurentian" },
-  {
+    institutionName: "University of Guelph",
+    mascot: "Gryphons",
+    slug: "university-of-guelph",
+    legacySlug: "guelph",
+  }),
+  defineUsportsTeam({
+    abbrev: "LAKEHD",
+    institutionName: "Lakehead University",
+    mascot: "Thunderwolves",
+    slug: "lakehead-university",
+    legacySlug: "lakehead",
+  }),
+  defineUsportsTeam({
+    abbrev: "LAUREN",
+    institutionName: "Laurentian University",
+    mascot: "Voyageurs",
+    slug: "laurentian-university",
+    legacySlug: "laurentian",
+  }),
+  defineUsportsTeam({
     abbrev: "LAURIE",
-    name: "Laurier",
-    displayName: "Wilfrid Laurier Golden Hawks",
-    slug: "laurier",
-  },
-  {
+    institutionName: "Wilfrid Laurier University",
+    mascot: "Golden Hawks",
+    slug: "wilfrid-laurier-university",
+    legacySlug: "laurier",
+  }),
+  defineUsportsTeam({
     abbrev: "LAVAL",
-    name: "Laval",
-    displayName: "Université Laval Rouge et Or",
-    slug: "laval",
-  },
-  {
+    institutionName: "Université Laval",
+    mascot: "Rouge et Or",
+    slug: "universite-laval",
+    legacySlug: "laval",
+  }),
+  defineUsportsTeam({
     abbrev: "LETHBR",
-    name: "Lethbridge",
-    displayName: "University of Lethbridge Pronghorns",
-    slug: "lethbridge",
-  },
-  { abbrev: "MACEWA", name: "MacEwan", displayName: "MacEwan Griffins", slug: "macewan" },
-  {
+    institutionName: "University of Lethbridge",
+    mascot: "Pronghorns",
+    slug: "university-of-lethbridge",
+    legacySlug: "lethbridge",
+  }),
+  defineUsportsTeam({
+    abbrev: "MACEWA",
+    institutionName: "MacEwan University",
+    mascot: "Griffins",
+    slug: "macewan-university",
+    legacySlug: "macewan",
+  }),
+  defineUsportsTeam({
     abbrev: "MANITO",
-    name: "Manitoba",
-    displayName: "University of Manitoba Bisons",
-    slug: "manitoba",
-  },
-  { abbrev: "MCGILL", name: "McGill", displayName: "McGill Redbirds", slug: "mcgill" },
-  { abbrev: "MCMAST", name: "McMaster", displayName: "McMaster Marauders", slug: "mcmaster" },
-  {
+    institutionName: "University of Manitoba",
+    mascot: "Bisons",
+    slug: "university-of-manitoba",
+    legacySlug: "manitoba",
+  }),
+  defineUsportsTeam({
+    abbrev: "MCGILL",
+    institutionName: "McGill University",
+    mascot: "Redbirds",
+    slug: "mcgill-university",
+    legacySlug: "mcgill",
+  }),
+  defineUsportsTeam({
+    abbrev: "MCMAST",
+    institutionName: "McMaster University",
+    mascot: "Marauders",
+    slug: "mcmaster-university",
+    legacySlug: "mcmaster",
+  }),
+  defineUsportsTeam({
     abbrev: "MEMORI",
-    name: "Memorial",
-    displayName: "Memorial Sea-Hawks",
-    slug: "memorial",
-  },
-  { abbrev: "MRU", name: "Mount Royal", displayName: "Mount Royal Cougars", slug: "mount-royal" },
-  { abbrev: "NIPISS", name: "Nipissing", displayName: "Nipissing Lakers", slug: "nipissing" },
-  {
+    institutionName: "Memorial University of Newfoundland",
+    mascot: "Sea-Hawks",
+    slug: "memorial-university-of-newfoundland",
+    legacySlug: "memorial",
+  }),
+  defineUsportsTeam({
+    abbrev: "MRU",
+    institutionName: "Mount Royal University",
+    mascot: "Cougars",
+    slug: "mount-royal-university",
+    legacySlug: "mount-royal",
+  }),
+  defineUsportsTeam({
+    abbrev: "NIPISS",
+    institutionName: "Nipissing University",
+    mascot: "Lakers",
+    slug: "nipissing-university",
+    legacySlug: "nipissing",
+  }),
+  defineUsportsTeam({
     abbrev: "OTU",
-    name: "Ontario Tech",
-    displayName: "Ontario Tech Ridgebacks",
-    slug: "ontario-tech",
-  },
-  { abbrev: "OTTAWA", name: "Ottawa", displayName: "Ottawa Gee-Gees", slug: "ottawa" },
-  { abbrev: "QUEENS", name: "Queen's", displayName: "Queen's Gaels", slug: "queen-s" },
-  {
+    institutionName: "Ontario Tech University",
+    mascot: "Ridgebacks",
+    slug: "ontario-tech-university",
+    legacySlug: "ontario-tech",
+  }),
+  defineUsportsTeam({
+    abbrev: "OTTAWA",
+    institutionName: "University of Ottawa",
+    mascot: "Gee-Gees",
+    slug: "university-of-ottawa",
+    legacySlug: "ottawa",
+  }),
+  defineUsportsTeam({
+    abbrev: "QUEENS",
+    institutionName: "Queen's University",
+    mascot: "Gaels",
+    slug: "queen-s-university",
+    legacySlug: "queen-s",
+  }),
+  defineUsportsTeam({
     abbrev: "REGINA",
-    name: "Regina",
-    displayName: "University of Regina Cougars",
-    slug: "regina",
-  },
-  { abbrev: "STMARY", name: "Saint Mary's", displayName: "Saint Mary's Huskies", slug: "st-mary-s" },
-  {
+    institutionName: "University of Regina",
+    mascot: "Cougars",
+    slug: "university-of-regina",
+    legacySlug: "regina",
+  }),
+  defineUsportsTeam({
+    abbrev: "STMARY",
+    institutionName: "Saint Mary's University",
+    mascot: "Huskies",
+    slug: "saint-mary-s-university",
+    legacySlug: "st-mary-s",
+  }),
+  defineUsportsTeam({
     abbrev: "SASK",
-    name: "Saskatchewan",
-    displayName: "University of Saskatchewan Huskies",
-    slug: "saskatchewan",
-  },
-  { abbrev: "STFX", name: "StFX", displayName: "StFX X-Men", slug: "st-francis-x" },
-  {
+    institutionName: "University of Saskatchewan",
+    mascot: "Huskies",
+    slug: "university-of-saskatchewan",
+    legacySlug: "saskatchewan",
+  }),
+  defineUsportsTeam({
+    abbrev: "STFX",
+    institutionName: "St. Francis Xavier University",
+    mascot: "X-Men",
+    slug: "st-francis-xavier-university",
+    legacySlug: "st-francis-x",
+  }),
+  defineUsportsTeam({
     abbrev: "TRU",
-    name: "Thompson Rivers",
-    displayName: "Thompson Rivers WolfPack",
-    slug: "tru",
-  },
-  {
+    institutionName: "Thompson Rivers University",
+    mascot: "WolfPack",
+    slug: "thompson-rivers-university",
+    legacySlug: "tru",
+  }),
+  defineUsportsTeam({
     abbrev: "TORONT",
-    name: "Toronto",
-    displayName: "University of Toronto Varsity Blues",
-    slug: "toronto",
-  },
-  {
+    institutionName: "University of Toronto",
+    mascot: "Varsity Blues",
+    slug: "university-of-toronto",
+    legacySlug: "toronto",
+  }),
+  defineUsportsTeam({
     abbrev: "TMU",
-    name: "Toronto Metropolitan",
-    displayName: "Toronto Metropolitan Bold",
-    slug: "tmu",
-  },
-  {
+    institutionName: "Toronto Metropolitan University",
+    mascot: "Bold",
+    slug: "toronto-metropolitan-university",
+    legacySlug: "tmu",
+  }),
+  defineUsportsTeam({
     abbrev: "TWU",
-    name: "Trinity Western",
-    displayName: "Trinity Western Spartans",
-    slug: "twu",
-  },
-  { abbrev: "UBC", name: "UBC", displayName: "UBC Thunderbirds", slug: "ubc" },
-  { abbrev: "UBCO", name: "UBCO", displayName: "UBC Okanagan Heat", slug: "ubc-okanagan" },
-  {
+    institutionName: "Trinity Western University",
+    mascot: "Spartans",
+    slug: "trinity-western-university",
+    legacySlug: "twu",
+  }),
+  defineUsportsTeam({
+    abbrev: "UBC",
+    institutionName: "University of British Columbia",
+    mascot: "Thunderbirds",
+    slug: "university-of-british-columbia",
+    legacySlug: "ubc",
+  }),
+  defineUsportsTeam({
+    abbrev: "UBCO",
+    institutionName: "UBC Okanagan",
+    mascot: "Heat",
+    slug: "ubc-okanagan",
+    legacySlug: "ubc-okanagan",
+  }),
+  defineUsportsTeam({
     abbrev: "UFV",
-    name: "UFV",
-    displayName: "University of the Fraser Valley Cascades",
-    slug: "ufv",
-  },
-  { abbrev: "UNB", name: "UNB", displayName: "UNB Reds", slug: "unb" },
-  { abbrev: "UNBC", name: "UNBC", displayName: "UNBC Timberwolves", slug: "unbc" },
-  { abbrev: "UPEI", name: "UPEI", displayName: "UPEI Panthers", slug: "upei" },
-  { abbrev: "UQAM", name: "UQAM", displayName: "UQAM Citadins", slug: "uqam" },
-  {
+    institutionName: "University of the Fraser Valley",
+    mascot: "Cascades",
+    slug: "university-of-the-fraser-valley",
+    legacySlug: "ufv",
+  }),
+  defineUsportsTeam({
+    abbrev: "UNB",
+    institutionName: "University of New Brunswick",
+    mascot: "Reds",
+    slug: "university-of-new-brunswick",
+    legacySlug: "unb",
+  }),
+  defineUsportsTeam({
+    abbrev: "UNBC",
+    institutionName: "University of Northern British Columbia",
+    mascot: "Timberwolves",
+    slug: "university-of-northern-british-columbia",
+    legacySlug: "unbc",
+  }),
+  defineUsportsTeam({
+    abbrev: "UPEI",
+    institutionName: "University of Prince Edward Island",
+    mascot: "Panthers",
+    slug: "university-of-prince-edward-island",
+    legacySlug: "upei",
+  }),
+  defineUsportsTeam({
+    abbrev: "UQAM",
+    institutionName: "Université du Québec à Montréal",
+    mascot: "Citadins",
+    slug: "universite-du-quebec-a-montreal",
+    legacySlug: "uqam",
+  }),
+  defineUsportsTeam({
     abbrev: "VICTOR",
-    name: "Victoria",
-    displayName: "University of Victoria Vikes",
-    slug: "victoria",
-  },
-  {
+    institutionName: "University of Victoria",
+    mascot: "Vikes",
+    slug: "university-of-victoria",
+    legacySlug: "victoria",
+  }),
+  defineUsportsTeam({
     abbrev: "WATERL",
-    name: "Waterloo",
-    displayName: "University of Waterloo Warriors",
-    slug: "waterloo",
-  },
-  { abbrev: "WESTER", name: "Western", displayName: "Western Mustangs", slug: "western" },
-  { abbrev: "WINDSO", name: "Windsor", displayName: "Windsor Lancers", slug: "windsor" },
-  { abbrev: "WINNIP", name: "Winnipeg", displayName: "Winnipeg Wesmen", slug: "winnipeg" },
-  { abbrev: "YORK", name: "York", displayName: "York Lions", slug: "york" },
+    institutionName: "University of Waterloo",
+    mascot: "Warriors",
+    slug: "university-of-waterloo",
+    legacySlug: "waterloo",
+  }),
+  defineUsportsTeam({
+    abbrev: "WESTER",
+    institutionName: "Western University",
+    mascot: "Mustangs",
+    slug: "western-university",
+    legacySlug: "western",
+  }),
+  defineUsportsTeam({
+    abbrev: "WINDSO",
+    institutionName: "University of Windsor",
+    mascot: "Lancers",
+    slug: "university-of-windsor",
+    legacySlug: "windsor",
+  }),
+  defineUsportsTeam({
+    abbrev: "WINNIP",
+    institutionName: "University of Winnipeg",
+    mascot: "Wesmen",
+    slug: "university-of-winnipeg",
+    legacySlug: "winnipeg",
+  }),
+  defineUsportsTeam({
+    abbrev: "YORK",
+    institutionName: "York University",
+    mascot: "Lions",
+    slug: "york-university",
+    legacySlug: "york",
+  }),
 ] as const;
+
+export const USPORTS_TEAM_BY_SLUG = new Map(
+  USPORTS_TEAMS.map((team) => [team.slug, team]),
+);
+
+export const USPORTS_TEAM_BY_LEGACY_SLUG = new Map(
+  USPORTS_TEAMS.map((team) => [team.legacySlug, team]),
+);
 
 export const USPORTS_CURRENT_TEAM_SLUGS = new Set(
   USPORTS_TEAMS.map((team) => team.slug),
 );
 
 export const USPORTS_TEAM_DISPLAY_BY_SLUG = new Map<string, string>(
-  USPORTS_TEAMS.map((team) => [team.slug, team.displayName]),
+  USPORTS_TEAMS.flatMap((team) => [
+    [team.slug, team.displayName],
+    [team.legacySlug, team.displayName],
+  ]),
 );
+
+/** Extra slug variants seen in ingest that are not in the alias report JSON. */
+const USPORTS_EXTRA_SLUG_ALIASES: Record<string, string> = {
+  "cape-breton-h": "cape-breton",
+  "cape-breton-highlanders": "cape-breton",
+  "concordia-university-college": "concordia",
+  "lethbridge-university": "lethbridge",
+  "laurier-university": "laurier",
+  "manitoba-university": "manitoba",
+  "memorial-university": "memorial",
+  "mount-royal-cougars": "mount-royal",
+  "queen-s-college": "queen-s",
+  "regina-university": "regina",
+  "ryerson-college": "tmu",
+  "saint-marys": "st-mary-s",
+  "saint-marys-university": "st-mary-s",
+  "st-mary-s-university": "st-mary-s",
+  "stfrancis-x": "st-francis-x",
+  "stfx": "st-francis-x",
+  "the-university-of-alberta": "alberta",
+  "toronto-univ": "toronto",
+  "ubc-okanagan-heat": "ubc-okanagan",
+  "unbc-timberwolves": "unbc",
+  "university-of-laval": "laval",
+  "university-of-western-ontario": "western",
+  "waterloo-university": "waterloo",
+  "western-ontario": "western",
+  "western-university-canada": "western",
+  "wilfrid-laurier-university": "laurier",
+};
+
+let cachedUsportsTeamConfig: CanonicalLeagueTeamConfig | null = null;
+
+function mapLegacyAliasToCanonicalSlug(legacySlug: string): string | null {
+  return USPORTS_TEAM_BY_LEGACY_SLUG.get(legacySlug)?.slug ?? null;
+}
+
+/** Canonical slug map for the 48 current U Sports schools + common ingest aliases. */
+export function buildUsportsCanonicalTeamConfig(): CanonicalLeagueTeamConfig {
+  if (cachedUsportsTeamConfig) return cachedUsportsTeamConfig;
+
+  const slugAliases: Record<string, string> = {};
+  const displayNames: Record<string, string> = {};
+
+  for (const team of USPORTS_TEAMS) {
+    slugAliases[team.slug] = team.slug;
+    slugAliases[team.legacySlug] = team.slug;
+    displayNames[team.slug] = team.displayName;
+  }
+
+  const report = loadUsportsTeamAliasReport();
+  for (const [aliasSlug, legacyCanonical] of Object.entries(report.aliasMap)) {
+    const canonical = mapLegacyAliasToCanonicalSlug(legacyCanonical.trim().toLowerCase());
+    if (!canonical) continue;
+    slugAliases[aliasSlug.trim().toLowerCase()] = canonical;
+  }
+
+  for (const [aliasSlug, legacyCanonical] of Object.entries(USPORTS_EXTRA_SLUG_ALIASES)) {
+    const canonical = mapLegacyAliasToCanonicalSlug(legacyCanonical);
+    if (canonical) slugAliases[aliasSlug] = canonical;
+  }
+
+  cachedUsportsTeamConfig = { slugAliases, displayNames };
+  return cachedUsportsTeamConfig;
+}
+
+export function resolveUsportsCanonicalSlug(slug?: string | null): string | null {
+  if (!slug) return null;
+  const key = slug.trim().toLowerCase();
+  const config = buildUsportsCanonicalTeamConfig();
+  return config.slugAliases[key] ?? null;
+}
+
+export function getUsportsTeamIdentity(canonicalSlug: string): UsportsTeamIdentity {
+  const team = USPORTS_TEAM_BY_SLUG.get(canonicalSlug);
+  if (!team) {
+    throw new Error(`Unknown U Sports canonical team slug: ${canonicalSlug}`);
+  }
+  return {
+    slug: team.slug,
+    name: team.institutionName,
+    abbreviation: team.abbrev,
+  };
+}
+
+/** All known slug variants grouped by full canonical slug (for DB merge/rename). */
+export function buildUsportsSlugVariantsByCanonical(): Map<string, string[]> {
+  const config = buildUsportsCanonicalTeamConfig();
+  const byCanonical = new Map<string, Set<string>>();
+
+  for (const [alias, canonical] of Object.entries(config.slugAliases)) {
+    if (!USPORTS_CURRENT_TEAM_SLUGS.has(canonical)) continue;
+    const variants = byCanonical.get(canonical) ?? new Set<string>();
+    variants.add(alias);
+    variants.add(canonical);
+    byCanonical.set(canonical, variants);
+  }
+
+  return new Map(
+    [...byCanonical.entries()]
+      .map(([canonical, variants]) => [canonical, [...variants].sort()])
+      .sort(([a], [b]) => a.localeCompare(b)),
+  );
+}
 
 export function resolveUsportsTeamDisplayName(
   slug?: string,
   fallbackName?: string,
 ): string | undefined {
+  const canonicalSlug = resolveUsportsCanonicalSlug(slug);
+  if (canonicalSlug) {
+    const byCanonical = USPORTS_TEAM_DISPLAY_BY_SLUG.get(canonicalSlug);
+    if (byCanonical) return byCanonical;
+  }
+
   if (slug) {
     const bySlug = USPORTS_TEAM_DISPLAY_BY_SLUG.get(slug);
     if (bySlug) return bySlug;
@@ -165,8 +508,9 @@ export function resolveUsportsTeamDisplayName(
     const normalized = fallbackName.trim().toLowerCase();
     for (const team of USPORTS_TEAMS) {
       if (
-        team.name.toLowerCase() === normalized ||
-        team.displayName.toLowerCase() === normalized
+        team.institutionName.toLowerCase() === normalized ||
+        team.displayName.toLowerCase() === normalized ||
+        team.legacySlug === normalized
       ) {
         return team.displayName;
       }

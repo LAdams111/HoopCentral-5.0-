@@ -14,12 +14,12 @@ import {
   resolveCanonicalIdentity,
   type NcaaTeamIdentity,
 } from "../utils/ncaa-team-alias-report.js";
+import type { UsportsTeamIdentity } from "../utils/usports-team-aliases.js";
 import {
-  buildUsportsTeamMergeGroups,
-  loadUsportsTeamAliasReport,
-  resolveCanonicalIdentity as resolveUsportsCanonicalIdentity,
-  type UsportsTeamIdentity,
-} from "../utils/usports-team-aliases.js";
+  buildUsportsSlugVariantsByCanonical,
+  getUsportsTeamIdentity,
+  resolveUsportsCanonicalSlug,
+} from "../data/usports-teams.js";
 import {
   buildCcaaTeamMergeGroups,
   resolveCcaaCanonicalIdentity,
@@ -514,8 +514,12 @@ export async function applyUsportsTeamCanonicalIdentity(
 export async function findUsportsDuplicateMergePlans(
   database: DbClient = db,
 ): Promise<UsportsTeamMergePlan[]> {
-  const report = loadUsportsTeamAliasReport();
-  const mergeGroups = buildUsportsTeamMergeGroups(report);
+  const mergeGroups = [...buildUsportsSlugVariantsByCanonical()].map(
+    ([canonicalSlug, slugVariants]) => ({
+      slugVariants,
+      identity: getUsportsTeamIdentity(canonicalSlug),
+    }),
+  );
   return findDuplicateMergePlansForLeague("u-sports", mergeGroups, database);
 }
 
@@ -563,9 +567,6 @@ export interface UsportsTeamIdentityUpdate {
 export async function findUsportsCanonicalIdentityUpdates(
   database: DbClient = db,
 ): Promise<UsportsTeamIdentityUpdate[]> {
-  const report = loadUsportsTeamAliasReport();
-  const mergeGroups = buildUsportsTeamMergeGroups(report);
-
   const [league] = await database
     .select({ id: leagues.id })
     .from(leagues)
@@ -574,23 +575,32 @@ export async function findUsportsCanonicalIdentityUpdates(
 
   if (!league) return [];
 
+  const leagueTeams = await database
+    .select({
+      id: teams.id,
+      slug: teams.slug,
+      name: teams.name,
+      abbreviation: teams.abbreviation,
+    })
+    .from(teams)
+    .where(eq(teams.leagueId, league.id));
+
+  const teamsByCanonical = new Map<string, typeof leagueTeams>();
+  for (const team of leagueTeams) {
+    const canonicalSlug = resolveUsportsCanonicalSlug(team.slug);
+    if (!canonicalSlug) continue;
+    const bucket = teamsByCanonical.get(canonicalSlug) ?? [];
+    bucket.push(team);
+    teamsByCanonical.set(canonicalSlug, bucket);
+  }
+
   const updates: UsportsTeamIdentityUpdate[] = [];
 
-  for (const group of mergeGroups) {
-    const matchedTeams = await database
-      .select({
-        id: teams.id,
-        slug: teams.slug,
-        name: teams.name,
-        abbreviation: teams.abbreviation,
-      })
-      .from(teams)
-      .where(and(eq(teams.leagueId, league.id), inArray(teams.slug, group.slugVariants)));
-
+  for (const [canonicalSlug, matchedTeams] of teamsByCanonical) {
     if (matchedTeams.length !== 1) continue;
 
     const team = matchedTeams[0];
-    const identity = group.identity;
+    const identity = getUsportsTeamIdentity(canonicalSlug);
     if (
       team.slug === identity.slug &&
       team.name === identity.name &&

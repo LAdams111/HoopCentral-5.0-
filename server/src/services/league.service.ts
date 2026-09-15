@@ -1,8 +1,17 @@
 import { and, eq, inArray, notInArray, or, sql } from "drizzle-orm";
 import { FEATURED_LEAGUE_SLUGS, dbSlugForFeaturedLeague } from "../data/featured-leagues.js";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
+import {
+  CANONICAL_LEAGUE_TEAM_CONFIG,
+  dedupeCanonicalLeagueTeams,
+  getCanonicalTeamDisplayName,
+  getCanonicalTeamSlugs,
+  hasCanonicalTeamAllowlist,
+  resolveCanonicalTeamSlug,
+} from "../data/canonical-league-teams.js";
+import { THE_BASKETBALL_LEAGUE_TEAM_SLUGS } from "../data/the-basketball-league-teams.js";
 import { NBA_CURRENT_TEAM_SLUGS } from "../data/nba-teams.js";
-import { USPORTS_CURRENT_TEAM_SLUGS, resolveUsportsTeamDisplayName } from "../data/usports-teams.js";
+import { resolveUsportsTeamDisplayName } from "../data/usports-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import { leagues, teams } from "../db/schema/index.js";
@@ -25,8 +34,8 @@ import {
 } from "./league-visibility.service.js";
 import {
   isLeaguePubliclyVisible,
-  isWhitelistedLeagueSlug,
 } from "../utils/league-visibility.js";
+import { filterLeagueRosterTeams } from "../utils/league-roster.js";
 import {
   countNcaaCollegeTeamsForPage,
   filterNcaaCollegeTeamsForPage,
@@ -37,18 +46,47 @@ const CANONICAL_TEAM_SLUGS_BY_LEAGUE: Record<string, ReadonlySet<string>> = {
   nba: NBA_CURRENT_TEAM_SLUGS,
   "g-league": G_LEAGUE_CURRENT_TEAM_SLUGS,
   wnba: WNBA_CURRENT_TEAM_SLUGS,
-  "u-sports": USPORTS_CURRENT_TEAM_SLUGS,
+  "the-basketball-league": THE_BASKETBALL_LEAGUE_TEAM_SLUGS,
+  ...Object.fromEntries(
+    Object.keys(CANONICAL_LEAGUE_TEAM_CONFIG).map((slug) => [
+      slug,
+      getCanonicalTeamSlugs(slug)!,
+    ]),
+  ),
 };
 
-function filterLeagueTeams<T extends { slug: string }>(
+function countCanonicalLeagueTeams(
+  leagueSlug: string,
+  leagueTeams: Array<{ slug: string }>,
+): number {
+  const config = CANONICAL_LEAGUE_TEAM_CONFIG[leagueSlug];
+  if (!config) return 0;
+
+  const canonicalSlugs = new Set<string>();
+  for (const team of leagueTeams) {
+    const canonical = config.slugAliases[team.slug.toLowerCase()];
+    if (canonical) canonicalSlugs.add(canonical);
+  }
+  return canonicalSlugs.size;
+}
+
+function filterLeagueTeams<T extends { id?: number; slug: string }>(
   leagueSlug: string,
   teams: T[],
+  playerCountByTeamId?: Map<number, number>,
 ): T[] {
+  const canonicalConfig = CANONICAL_LEAGUE_TEAM_CONFIG[leagueSlug];
+  if (canonicalConfig) {
+    return teams.filter((team) =>
+      Boolean(canonicalConfig.slugAliases[team.slug.toLowerCase()]),
+    );
+  }
+
   const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[leagueSlug];
   if (canonicalSlugs) {
     return teams.filter((team) => canonicalSlugs.has(team.slug));
   }
-  return teams;
+  return filterLeagueRosterTeams(leagueSlug, teams, playerCountByTeamId);
 }
 
 export interface LeagueSummary {
@@ -78,7 +116,9 @@ async function applyTeamCountRules(
 ): Promise<void> {
   const canonicalSlugs = CANONICAL_TEAM_SLUGS_BY_LEAGUE[row.slug];
   if (canonicalSlugs) {
-    row.teamCount = leagueTeams.filter((team) => canonicalSlugs.has(team.slug)).length;
+    row.teamCount = hasCanonicalTeamAllowlist(row.slug)
+      ? countCanonicalLeagueTeams(row.slug, leagueTeams)
+      : leagueTeams.filter((team) => canonicalSlugs.has(team.slug)).length;
     return;
   }
 
@@ -93,9 +133,7 @@ async function applyTeamCountRules(
     return;
   }
 
-  if (!isWhitelistedLeagueSlug(row.slug)) {
-    row.teamCount = filterVisibleTeams(leagueTeams).length;
-  }
+  row.teamCount = filterVisibleTeams(leagueTeams).length;
 }
 
 function toPublicLeagueSummary(
@@ -341,14 +379,23 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
 
   const playerCounts = await getDistinctPlayerCountByTeamId(leagueTeams.map((team) => team.id));
   const browsableTeams = filterVisibleTeams(leagueTeams, playerCounts);
-  let filteredTeams = filterLeagueTeams(responseSlug, browsableTeams);
-  if (isNcaaCollegePageLeague(responseSlug)) {
+  let filteredTeams = filterLeagueTeams(responseSlug, browsableTeams, playerCounts);
+  if (hasCanonicalTeamAllowlist(responseSlug)) {
+    filteredTeams = dedupeCanonicalLeagueTeams(responseSlug, filteredTeams, playerCounts);
+  } else if (isNcaaCollegePageLeague(responseSlug)) {
     filteredTeams = filterNcaaCollegeTeamsForPage(responseSlug, filteredTeams, playerCounts);
   }
   const visibleTeams = filteredTeams.map((team) => {
-    if (responseSlug !== "u-sports") return team;
-    const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);
-    return displayName ? { ...team, name: displayName } : team;
+    if (responseSlug === "u-sports") {
+      const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);
+      return displayName ? { ...team, name: displayName } : team;
+    }
+    if (hasCanonicalTeamAllowlist(responseSlug)) {
+      const canonicalSlug = resolveCanonicalTeamSlug(responseSlug, team.slug) ?? team.slug;
+      const displayName = getCanonicalTeamDisplayName(responseSlug, canonicalSlug);
+      return { ...team, name: displayName };
+    }
+    return team;
   });
 
   return {
