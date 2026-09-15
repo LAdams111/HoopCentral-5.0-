@@ -5,10 +5,14 @@ import { NAV_ITEMS } from "@/lib/constants";
 export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
-  const isActive = (href: string) =>
-    href === "/"
-      ? location.pathname === "/"
-      : location.pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === "/") return location.pathname === "/";
+    // /players/:id profiles are not the Draft page — only /players itself is.
+    if (href === "/players") {
+      return location.pathname === "/players" || location.pathname === "/players/";
+    }
+    return location.pathname.startsWith(href);
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-14 md:pb-0">
