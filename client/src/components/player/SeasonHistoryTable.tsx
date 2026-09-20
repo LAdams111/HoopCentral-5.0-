@@ -17,9 +17,11 @@ type SeasonHistoryTableProps = {
 };
 
 const thCell =
-  "font-medium max-md:px-1.5 max-md:py-2 max-md:text-[9px] max-md:leading-tight md:px-6 md:py-4";
+  "font-medium max-md:px-1 max-md:py-2 max-md:text-[9px] max-md:leading-tight md:px-6 md:py-4";
 const tdCell =
-  "max-md:px-1.5 max-md:py-2 max-md:text-[10px] max-md:leading-snug md:px-6 md:py-4 md:text-base";
+  "max-md:px-1 max-md:py-2 max-md:text-[10px] max-md:leading-snug md:px-6 md:py-4 md:text-base";
+const leagueCell = `${tdCell} max-md:pr-0.5 max-md:pl-1`;
+const teamCell = `${tdCell} max-md:pl-1 max-md:pr-1.5 max-md:align-top max-md:whitespace-normal font-mono`;
 const statCell = `${tdCell} max-md:whitespace-nowrap`;
 
 /** Last word on line 2 for long names (e.g. Houston / Rockets). */
@@ -79,28 +81,21 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
       <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
         <div className="border-b border-border p-4 md:p-6">
           <h3 className="font-display text-xl md:text-2xl">Season History</h3>
-          {demoEnabled ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Demo: use{" "}
-              <ScanSearch className="inline h-3.5 w-3.5 align-text-bottom text-primary" /> on{" "}
-              2023-24 and 2024-25 to preview game-by-game logs.
-            </p>
-          ) : null}
         </div>
         <div className="overflow-x-auto max-md:-mx-1 max-md:px-1">
-          <table className="w-full min-w-full text-left max-md:min-w-[36rem] max-md:text-[10px] md:table-auto md:text-sm">
+          <table className="w-full text-left max-md:w-max max-md:min-w-[31rem] max-md:table-fixed max-md:text-[10px] md:table-auto md:text-sm">
             <colgroup className="md:hidden">
-              <col className="w-[3.25rem]" />
-              <col className="w-[3.5rem]" />
-              <col className="w-[5.75rem]" />
-              <col className="w-[1.85rem]" />
-              <col className="w-[1.85rem]" />
-              <col className="w-[1.85rem]" />
-              <col className="w-[1.85rem]" />
-              <col className="w-[1.75rem]" />
-              <col className="w-[1.75rem]" />
-              <col className="w-[2rem]" />
-              {demoEnabled ? <col className="w-[2rem]" /> : null}
+              <col style={{ width: "3.1rem" }} />
+              <col style={{ width: "2.65rem" }} />
+              <col style={{ width: "5.5rem" }} />
+              <col style={{ width: "1.75rem" }} />
+              <col style={{ width: "1.75rem" }} />
+              <col style={{ width: "1.75rem" }} />
+              <col style={{ width: "1.75rem" }} />
+              <col style={{ width: "1.65rem" }} />
+              <col style={{ width: "1.65rem" }} />
+              <col style={{ width: "1.9rem" }} />
+              {demoEnabled ? <col style={{ width: "1.9rem" }} /> : null}
             </colgroup>
             <thead className="bg-muted font-mono uppercase text-muted-foreground">
               <tr>
@@ -112,7 +107,7 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                   <span className="md:hidden">Lg</span>
                   <span className="hidden md:inline">League</span>
                 </th>
-                <th className={`${thCell} max-md:min-w-[5.75rem]`}>
+                <th className={thCell}>
                   <span className="md:hidden">Tm</span>
                   <span className="hidden md:inline">Team</span>
                 </th>
@@ -159,16 +154,16 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                     <td className={`${tdCell} font-mono font-medium tabular-nums`}>
                       {stat.season}
                     </td>
-                    <td className={`${tdCell} font-mono text-muted-foreground`}>
+                    <td className={`${leagueCell} font-mono text-muted-foreground`}>
                       <Link
                         to={`/leagues/${stat.leagueSlug}`}
-                        className="block truncate text-primary hover:underline max-md:max-w-full"
+                        className="block truncate text-primary hover:underline max-md:max-w-[2.65rem]"
                         title={stat.league}
                       >
                         {stat.league}
                       </Link>
                     </td>
-                    <td className={`${tdCell} max-md:align-top max-md:whitespace-normal font-mono`}>
+                    <td className={teamCell}>
                       <TeamNameCell
                         label={teamLabel}
                         to={rosterPath(stat.teamSlug, stat.season, stat.leagueSlug)}
