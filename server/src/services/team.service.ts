@@ -135,6 +135,45 @@ async function relatedTeamIds(
   return ids.length > 0 ? ids : [team.id];
 }
 
+function officialIdentityExists() {
+  return exists(
+    db
+      .select({ one: sql`1` })
+      .from(playerIdentities)
+      .where(
+        and(
+          eq(playerIdentities.playerId, players.id),
+          or(
+            eq(playerIdentities.source, "daltigers_mbkb"),
+            eq(playerIdentities.source, "usports-official"),
+          ),
+        ),
+      ),
+  );
+}
+
+async function officialRosterCount(teamIds: number[], seasonId: number): Promise<number> {
+  const [authRow] = await db
+    .select({
+      count: sql<number>`count(distinct ${playerSeasonStats.playerId})::int`,
+    })
+    .from(playerSeasonStats)
+    .innerJoin(
+      playerIdentities,
+      and(
+        eq(playerIdentities.playerId, playerSeasonStats.playerId),
+        or(
+          eq(playerIdentities.source, "daltigers_mbkb"),
+          eq(playerIdentities.source, "usports-official"),
+        ),
+      ),
+    )
+    .where(
+      and(inArray(playerSeasonStats.teamId, teamIds), eq(playerSeasonStats.seasonId, seasonId)),
+    );
+  return Number(authRow?.count ?? 0);
+}
+
 async function findTeam(teamKey: string, leagueSlug?: string) {
   const decoded = decodeURIComponent(teamKey).trim();
   const slugCandidate = normalizeSlugParam(decoded);
@@ -386,9 +425,11 @@ export async function getTeamBySlug(
   const row = { team, league: leagueRow };
 
   const latestSeason = await findLatestSeasonForTeam(row.team.id);
+  const teamIds = await relatedTeamIds(row.team, leagueSlug);
   let roster: PlayerCard[] = [];
 
   if (latestSeason) {
+    const useOfficialRoster = (await officialRosterCount(teamIds, latestSeason.id)) >= 10;
     const statRows = await db
       .select({
         player: players,
@@ -399,8 +440,9 @@ export async function getTeamBySlug(
       .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
       .where(
         and(
-          eq(playerSeasonStats.teamId, row.team.id),
+          inArray(playerSeasonStats.teamId, teamIds),
           eq(playerSeasonStats.seasonId, latestSeason.id),
+          useOfficialRoster ? officialIdentityExists() : undefined,
         ),
       )
       .orderBy(players.displayName);
@@ -456,26 +498,7 @@ export async function getTeamRoster(
     };
   }
 
-  const [authRow] = await db
-    .select({
-      count: sql<number>`count(distinct ${playerSeasonStats.playerId})::int`,
-    })
-    .from(playerSeasonStats)
-    .innerJoin(
-      playerIdentities,
-      and(
-        eq(playerIdentities.playerId, playerSeasonStats.playerId),
-        eq(playerIdentities.source, "daltigers_mbkb"),
-      ),
-    )
-    .where(
-      and(
-        inArray(playerSeasonStats.teamId, teamIds),
-        eq(playerSeasonStats.seasonId, season.id),
-      ),
-    );
-
-  const useDaltigersOfficialRoster = (authRow?.count ?? 0) >= 10;
+  const useOfficialRoster = (await officialRosterCount(teamIds, season.id)) >= 10;
 
   const rows = await db
     .select({
@@ -489,19 +512,7 @@ export async function getTeamRoster(
       and(
         inArray(playerSeasonStats.teamId, teamIds),
         eq(playerSeasonStats.seasonId, season.id),
-        useDaltigersOfficialRoster
-          ? exists(
-              db
-                .select({ one: sql`1` })
-                .from(playerIdentities)
-                .where(
-                  and(
-                    eq(playerIdentities.playerId, players.id),
-                    eq(playerIdentities.source, "daltigers_mbkb"),
-                  ),
-                ),
-            )
-          : undefined,
+        useOfficialRoster ? officialIdentityExists() : undefined,
       ),
     )
     .orderBy(players.displayName);
