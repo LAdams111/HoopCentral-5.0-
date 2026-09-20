@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, Trophy } from "lucide-react";
+import { LogIn, Search, Trophy } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Link to="/players">
               <button
                 type="button"
@@ -60,6 +60,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
               >
                 <Search className="h-5 w-5" />
               </button>
+            </Link>
+            <Link
+              to="/login"
+              className="hidden rounded-full border border-border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary sm:inline-flex"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/login"
+              className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary sm:hidden"
+              aria-label="Log in"
+            >
+              <LogIn className="h-5 w-5" />
             </Link>
           </div>
         </div>

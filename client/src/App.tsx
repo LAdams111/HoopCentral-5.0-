@@ -9,6 +9,7 @@ import { PlayerProfile } from "./pages/PlayerProfile";
 import { Players } from "./pages/Players";
 import { Prospects } from "./pages/Prospects";
 import { Roster } from "./pages/Roster";
+import { Login } from "./pages/Login";
 import { Team } from "./pages/Team";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/players" element={<Players />} />
         <Route path="/players/:id" element={<PlayerProfile />} />
         <Route path="/roster/:team/:season" element={<Roster />} />
