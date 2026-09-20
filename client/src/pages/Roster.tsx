@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, ChevronDown } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -12,7 +12,7 @@ import {
   displayTeamName,
 } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
-import { getTeamRecord, getTeamRoster } from "@/lib/api";
+import { getTeamRecord, getTeamRoster, getTeamSeasons } from "@/lib/api";
 
 function TeamRecordHeader({ record }: { record: { wins: number; losses: number } | null | undefined }) {
   if (record != null) {
@@ -80,9 +80,32 @@ export function Roster() {
   const decodedTeam = decodeURIComponent(team);
   const decodedSeason = decodeURIComponent(season);
   const seasonLabel = normalizeSeasonKey(decodedSeason);
-  const seasonLabels = generateSeasonLabels();
-
   const leagueSlug = new URLSearchParams(location.search).get("league") ?? undefined;
+
+  const { data: teamSeasonsFromApi = [] } = useQuery({
+    queryKey: ["team-seasons", decodedTeam, leagueSlug],
+    queryFn: () => getTeamSeasons(decodedTeam, leagueSlug ?? undefined),
+    enabled: Boolean(decodedTeam),
+  });
+
+  const seasonLabels = useMemo(() => {
+    if (teamSeasonsFromApi.length > 0) {
+      return [...teamSeasonsFromApi].sort((a, b) => b.localeCompare(a));
+    }
+    return generateSeasonLabels();
+  }, [teamSeasonsFromApi]);
+
+  useEffect(() => {
+    if (teamSeasonsFromApi.length === 0) return;
+    if (teamSeasonsFromApi.includes(seasonLabel)) return;
+    const leagueQuery = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
+    const fallback = [...teamSeasonsFromApi].sort((a, b) => b.localeCompare(a))[0];
+    if (!fallback) return;
+    navigate(
+      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(fallback)}${leagueQuery}`,
+      { replace: true },
+    );
+  }, [teamSeasonsFromApi, seasonLabel, decodedTeam, leagueSlug, navigate]);
 
   useEffect(() => {
     if (!team || !season || decodedSeason === seasonLabel) return;

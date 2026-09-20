@@ -454,12 +454,24 @@ export function LeagueDetail() {
             <EmptyState message="No provinces with teams yet" />
           )
         ) : teams.length > 0 ? (
-          <TeamGrid
-            teams={teams}
-            leagueSlug={apiSlug}
-            leagueLabel={displayMeta.display}
-            seasonLabel={currentSeasonLabel}
-          />
+          <>
+            {isHsProvinceView && activeStateSlug === "ontario" ? (
+              <p className="mb-6 text-sm text-muted-foreground">
+                Ontario Trillium rosters are available for{" "}
+                <span className="font-medium text-foreground">2023-24</span>,{" "}
+                <span className="font-medium text-foreground">2024-25</span>, and{" "}
+                <span className="font-medium text-foreground">2025-26</span> where OSBA
+                published them. Team names can change year to year — open a team and use the
+                season menu to see past rosters.
+              </p>
+            ) : null}
+            <TeamGrid
+              teams={teams}
+              leagueSlug={apiSlug}
+              leagueLabel={displayMeta.display}
+              seasonLabel={currentSeasonLabel}
+            />
+          </>
         ) : (
           <EmptyState message="No teams found in this league yet" />
         )}

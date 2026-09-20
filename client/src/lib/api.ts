@@ -264,8 +264,9 @@ export function getTeamRoster(
   );
 }
 
-export function getTeamSeasons(team: string): Promise<string[]> {
-  return fetchJson(`/api/teams/${encodeURIComponent(team)}/seasons`);
+export function getTeamSeasons(team: string, league?: string): Promise<string[]> {
+  const qs = league ? `?league=${encodeURIComponent(league)}` : "";
+  return fetchJson(`/api/teams/${encodeURIComponent(team)}/seasons${qs}`);
 }
 
 export function getTeamRecord(
