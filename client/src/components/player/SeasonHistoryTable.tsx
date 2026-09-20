@@ -17,9 +17,39 @@ type SeasonHistoryTableProps = {
 };
 
 const thCell =
-  "font-medium max-md:px-1 max-md:py-2 max-md:text-[9px] max-md:leading-tight md:px-6 md:py-4";
+  "font-medium max-md:px-1.5 max-md:py-2 max-md:text-[9px] max-md:leading-tight md:px-6 md:py-4";
 const tdCell =
-  "max-md:px-1 max-md:py-1.5 max-md:text-[10px] max-md:leading-snug md:px-6 md:py-4 md:text-base";
+  "max-md:px-1.5 max-md:py-2 max-md:text-[10px] max-md:leading-snug md:px-6 md:py-4 md:text-base";
+const statCell = `${tdCell} max-md:whitespace-nowrap`;
+
+/** Last word on line 2 for long names (e.g. Houston / Rockets). */
+function stackTeamName(name: string): string[] {
+  const trimmed = name.trim();
+  if (!trimmed.includes(" ") || trimmed.length <= 16) {
+    return [trimmed];
+  }
+  const splitAt = trimmed.lastIndexOf(" ");
+  return [trimmed.slice(0, splitAt), trimmed.slice(splitAt + 1)];
+}
+
+function TeamNameCell({ label, to }: { label: string; to: string }) {
+  const stacked = stackTeamName(label);
+  return (
+    <Link to={to} className="text-primary hover:underline" title={label}>
+      <span className="hidden md:inline">{label}</span>
+      <span className="flex flex-col gap-0 leading-[1.2] md:hidden">
+        {stacked.map((line, index) => (
+          <span
+            key={`${line}-${index}`}
+            className={index === 1 ? "font-medium text-primary/85" : "font-medium"}
+          >
+            {line}
+          </span>
+        ))}
+      </span>
+    </Link>
+  );
+}
 
 export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
   const demoEnabled = player ? isLebronGameLogDemoPlayer(player) : false;
@@ -57,52 +87,62 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
             </p>
           ) : null}
         </div>
-        <div className="overflow-x-auto max-md:overflow-x-visible">
-          <table className="w-full table-fixed text-left max-md:text-[10px] md:table-auto md:text-sm">
+        <div className="overflow-x-auto max-md:-mx-1 max-md:px-1">
+          <table className="w-full min-w-full text-left max-md:min-w-[36rem] max-md:text-[10px] md:table-auto md:text-sm">
+            <colgroup className="md:hidden">
+              <col className="w-[3.25rem]" />
+              <col className="w-[3.5rem]" />
+              <col className="w-[5.75rem]" />
+              <col className="w-[1.85rem]" />
+              <col className="w-[1.85rem]" />
+              <col className="w-[1.85rem]" />
+              <col className="w-[1.85rem]" />
+              <col className="w-[1.75rem]" />
+              <col className="w-[1.75rem]" />
+              <col className="w-[2rem]" />
+              {demoEnabled ? <col className="w-[2rem]" /> : null}
+            </colgroup>
             <thead className="bg-muted font-mono uppercase text-muted-foreground">
               <tr>
-                <th className={`${thCell} max-md:w-[13%] md:w-auto`}>
+                <th className={thCell}>
                   <span className="md:hidden">Szn</span>
                   <span className="hidden md:inline">Season</span>
                 </th>
-                <th className={`${thCell} max-md:w-[14%] md:w-auto`}>
+                <th className={thCell}>
                   <span className="md:hidden">Lg</span>
                   <span className="hidden md:inline">League</span>
                 </th>
-                <th className={`${thCell} max-md:w-[16%] md:w-auto`}>
+                <th className={`${thCell} max-md:min-w-[5.75rem]`}>
                   <span className="md:hidden">Tm</span>
                   <span className="hidden md:inline">Team</span>
                 </th>
-                <th className={`${thCell} max-md:w-[7%] md:w-auto`}>GP</th>
-                <th className={`${thCell} max-md:w-[8%] text-primary md:w-auto`}>
+                <th className={thCell}>GP</th>
+                <th className={`${thCell} text-primary`}>
                   <span className="md:hidden">P</span>
                   <span className="hidden md:inline">PTS</span>
                 </th>
-                <th className={`${thCell} max-md:w-[8%] md:w-auto`}>
+                <th className={thCell}>
                   <span className="md:hidden">R</span>
                   <span className="hidden md:inline">REB</span>
                 </th>
-                <th className={`${thCell} max-md:w-[8%] text-accent md:w-auto`}>
+                <th className={`${thCell} text-accent`}>
                   <span className="md:hidden">A</span>
                   <span className="hidden md:inline">AST</span>
                 </th>
-                <th className={`${thCell} max-md:w-[7%] md:w-auto`}>
+                <th className={thCell}>
                   <span className="md:hidden">B</span>
                   <span className="hidden md:inline">BLK</span>
                 </th>
-                <th className={`${thCell} max-md:w-[7%] md:w-auto`}>
+                <th className={thCell}>
                   <span className="md:hidden">S</span>
                   <span className="hidden md:inline">STL</span>
                 </th>
-                <th className={`${thCell} max-md:w-[9%] text-primary md:w-auto`}>
+                <th className={`${thCell} text-primary`}>
                   <span className="md:hidden">FG</span>
                   <span className="hidden md:inline">FG%</span>
                 </th>
                 {demoEnabled ? (
-                  <th className={`${thCell} max-md:w-[8%] text-right md:px-4`}>
-                    <span className="md:hidden">Log</span>
-                    <span className="hidden md:inline">Log</span>
-                  </th>
+                  <th className={`${thCell} text-right md:px-4`}>Log</th>
                 ) : null}
               </tr>
             </thead>
@@ -128,34 +168,31 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                         {stat.league}
                       </Link>
                     </td>
-                    <td className={`${tdCell} font-mono`}>
-                      <Link
+                    <td className={`${tdCell} max-md:align-top max-md:whitespace-normal font-mono`}>
+                      <TeamNameCell
+                        label={teamLabel}
                         to={rosterPath(stat.teamSlug, stat.season, stat.leagueSlug)}
-                        className="block truncate text-primary hover:underline"
-                        title={teamLabel}
-                      >
-                        {teamLabel}
-                      </Link>
+                      />
                     </td>
-                    <td className={`${tdCell} tabular-nums text-muted-foreground md:text-base`}>
+                    <td className={`${statCell} tabular-nums text-muted-foreground md:text-base`}>
                       {formatGamesPlayed(stat.games_played)}
                     </td>
-                    <td className={`${tdCell} font-bold tabular-nums text-foreground md:font-bold`}>
+                    <td className={`${statCell} font-bold tabular-nums text-foreground md:font-bold`}>
                       {stat.pts_per_g}
                     </td>
-                    <td className={`${tdCell} tabular-nums text-muted-foreground`}>
+                    <td className={`${statCell} tabular-nums text-muted-foreground`}>
                       {stat.trb_per_g}
                     </td>
-                    <td className={`${tdCell} tabular-nums text-muted-foreground`}>
+                    <td className={`${statCell} tabular-nums text-muted-foreground`}>
                       {stat.ast_per_g}
                     </td>
-                    <td className={`${tdCell} tabular-nums text-muted-foreground`}>
+                    <td className={`${statCell} tabular-nums text-muted-foreground`}>
                       {stat.blk_per_g}
                     </td>
-                    <td className={`${tdCell} tabular-nums text-muted-foreground`}>
+                    <td className={`${statCell} tabular-nums text-muted-foreground`}>
                       {stat.stl_per_g}
                     </td>
-                    <td className={`${tdCell} tabular-nums text-accent`}>{stat.fg_pct}</td>
+                    <td className={`${statCell} tabular-nums text-accent`}>{stat.fg_pct}</td>
                     {demoEnabled ? (
                       <td className="max-md:px-0.5 max-md:py-1 md:px-4 md:py-4 text-right">
                         {showGameLog ? (
