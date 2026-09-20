@@ -1,32 +1,15 @@
 import { LogIn } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 
 export type LoginRole = "player" | "parent" | "coach" | "scout";
 
-const ROLES: { id: LoginRole; label: string; description: string }[] = [
-  {
-    id: "player",
-    label: "Player",
-    description: "Claim your profile, update bio, and track your career.",
-  },
-  {
-    id: "parent",
-    label: "Parent",
-    description: "Link to your athlete and manage recruiting visibility.",
-  },
-  {
-    id: "coach",
-    label: "Coach",
-    description: "Claim or add your team, manage roster, and stats.",
-  },
-  {
-    id: "scout",
-    label: "Scout",
-    description:
-      "Exclusive access to stats, save lists, and follow prospects across leagues.",
-  },
+const ROLES: { id: LoginRole; label: string }[] = [
+  { id: "player", label: "Player" },
+  { id: "parent", label: "Parent" },
+  { id: "coach", label: "Coach" },
+  { id: "scout", label: "Scout" },
 ];
 
 function parseRole(value: string | null): LoginRole {
@@ -87,11 +70,7 @@ export function Login() {
             })}
           </div>
 
-          <div className="px-6 py-4">
-            <p className="text-sm text-muted-foreground">{activeRole.description}</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4 px-6 pb-6">
+          <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6 pb-6">
             <div>
               <label htmlFor="login-email" className="mb-1.5 block font-mono text-xs uppercase text-muted-foreground">
                 Email
@@ -138,21 +117,9 @@ export function Login() {
               Log in as {activeRole.label}
             </button>
 
-            <p className="text-center text-xs text-muted-foreground">
-              No account yet?{" "}
-              <span className="text-foreground">Registration</span> will open with coach and player
-              claiming — same roles as above.
-            </p>
+            <p className="text-center text-sm font-medium text-primary">Create account</p>
           </form>
         </div>
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Browsing profiles?{" "}
-          <Link to="/players" className="text-primary hover:underline">
-            Search players
-          </Link>{" "}
-          without an account.
-        </p>
       </div>
     </div>
   );
