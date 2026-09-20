@@ -8,7 +8,7 @@ import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
 import { getPlayer, incrementProfileView } from "@/lib/api";
 import { rosterPath, displayTeamName, teamLogoUrl } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
-import { formatPosition } from "@/lib/position";
+import { formatPositionLong } from "@/lib/position";
 
 const FAVORITES_KEY = "hoopcentral-favorites";
 
@@ -114,7 +114,7 @@ export function PlayerProfile() {
 
   const age = player.birthDate ? calcAge(player.birthDate) : null;
   const headshot = resolvePlayerHeadshot(player.headshotUrl);
-  const positionLabel = formatPosition(player.position);
+  const positionLabel = formatPositionLong(player.position);
   const jerseyLabel = player.jerseyNumber ? `#${player.jerseyNumber}` : null;
   const teamDisplayName = player.team
     ? displayTeamName(player.team, {

@@ -26,10 +26,14 @@
     "db:apply-osba-trillium-names": "npm run db:apply-osba-trillium-names -w server",
     "db:merge-osba-trillium-teams": "npm run db:merge-osba-trillium-teams -w server",
     "fetch:osba-trillium": "node scripts/fetch-osba-trillium-rosters.mjs",
+    "fetch:daltigers-roster": "node scripts/fetch-daltigers-roster.mjs",
+    "ingest:daltigers-roster": "tsx --tsconfig server/tsconfig.json scripts/ingest-daltigers-roster.ts",
+    "reconcile:daltigers-roster": "tsx --tsconfig server/tsconfig.json scripts/reconcile-daltigers-roster.ts",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "db:studio": "npm run db:studio -w server"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "playwright": "^1.63.0"
   }
 }

@@ -24,6 +24,7 @@ import {
   minPlausibleBirthYear,
 } from "../utils/birth-date.js";
 import { isPlausibleHsClassOf } from "../utils/hs-class-of.js";
+import { filterPublicPlayerSeasonStats } from "../utils/public-season-stats.js";
 
 export interface PlayerCard {
   id: number;
@@ -586,23 +587,25 @@ export async function getPlayerById(
     endDate: s.stint.endDate ?? null,
   }));
 
-  const leaguesPlayed = [...new Set(statRows.map((s) => s.leagueName))];
+  const statList = statRows.map((s) =>
+    toStatRow(
+      s.stat,
+      s.seasonLabel,
+      s.teamName,
+      s.teamSlug,
+      s.leagueName,
+      s.leagueSlug,
+      leagueGenderForSlug(s.leagueSlug) ?? s.leagueGender ?? null,
+    ),
+  );
+  const publicStats = filterPublicPlayerSeasonStats(statList);
+  const leaguesPlayed = [...new Set(publicStats.map((s) => s.league))];
 
   return {
     ...toPlayerCard(row.player, row.teamName, row.teamSlug),
     league: row.leagueName ?? null,
     leagueSlug: row.leagueSlug ?? null,
-    stats: statRows.map((s) =>
-      toStatRow(
-        s.stat,
-        s.seasonLabel,
-        s.teamName,
-        s.teamSlug,
-        s.leagueName,
-        s.leagueSlug,
-        leagueGenderForSlug(s.leagueSlug) ?? s.leagueGender ?? null,
-      ),
-    ),
+    stats: publicStats,
     awards: [],
     career,
     leaguesPlayed,

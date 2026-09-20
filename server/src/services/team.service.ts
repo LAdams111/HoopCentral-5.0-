@@ -1,10 +1,11 @@
-import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, exists, inArray, or, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
 import { THE_BASKETBALL_LEAGUE_TEAM_SLUGS } from "../data/the-basketball-league-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import {
   leagues,
+  playerIdentities,
   playerSeasonStats,
   players,
   seasons,
@@ -455,6 +456,27 @@ export async function getTeamRoster(
     };
   }
 
+  const [authRow] = await db
+    .select({
+      count: sql<number>`count(distinct ${playerSeasonStats.playerId})::int`,
+    })
+    .from(playerSeasonStats)
+    .innerJoin(
+      playerIdentities,
+      and(
+        eq(playerIdentities.playerId, playerSeasonStats.playerId),
+        eq(playerIdentities.source, "daltigers_mbkb"),
+      ),
+    )
+    .where(
+      and(
+        inArray(playerSeasonStats.teamId, teamIds),
+        eq(playerSeasonStats.seasonId, season.id),
+      ),
+    );
+
+  const useDaltigersOfficialRoster = (authRow?.count ?? 0) >= 10;
+
   const rows = await db
     .select({
       player: players,
@@ -467,6 +489,19 @@ export async function getTeamRoster(
       and(
         inArray(playerSeasonStats.teamId, teamIds),
         eq(playerSeasonStats.seasonId, season.id),
+        useDaltigersOfficialRoster
+          ? exists(
+              db
+                .select({ one: sql`1` })
+                .from(playerIdentities)
+                .where(
+                  and(
+                    eq(playerIdentities.playerId, players.id),
+                    eq(playerIdentities.source, "daltigers_mbkb"),
+                  ),
+                ),
+            )
+          : undefined,
       ),
     )
     .orderBy(players.displayName);

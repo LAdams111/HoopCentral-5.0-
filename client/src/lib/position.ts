@@ -81,3 +81,28 @@ export function formatPositionLabel(position: string | null | undefined): string
   const formatted = formatPosition(position);
   return formatted || "PLAYER";
 }
+
+const POSITION_LONG_NAMES: Record<string, string> = {
+  PG: "Point Guard",
+  SG: "Shooting Guard",
+  SF: "Small Forward",
+  PF: "Power Forward",
+  C: "Center",
+  G: "Guard",
+  F: "Forward",
+  "G-F": "Guard-Forward",
+  "F-G": "Forward-Guard",
+  "F-C": "Forward-Center",
+  "C-F": "Center-Forward",
+};
+
+/** Full words for profile/detail views (cards/lists keep abbreviations). */
+export function formatPositionLong(position: string | null | undefined): string {
+  const abbreviated = formatPosition(position);
+  if (!abbreviated) return "";
+
+  return abbreviated
+    .split("/")
+    .map((code) => POSITION_LONG_NAMES[code] ?? code)
+    .join(" / ");
+}
