@@ -25,7 +25,7 @@ const ROLES: { id: LoginRole; label: string; description: string }[] = [
     id: "scout",
     label: "Scout",
     description:
-      "Exclusive access to save lists, notes, and follow prospects across leagues.",
+      "Exclusive access to stats, save lists, and follow prospects across leagues.",
   },
 ];
 
