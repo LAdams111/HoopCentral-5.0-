@@ -2,9 +2,11 @@ import { Router } from "express";
 import { findDraftPickForPlayer } from "../services/draft.service.js";
 import {
   getBirthYearCounts,
+  getClassOfCounts,
   getPlayerById,
   getPlayerCount,
   getPlayersByBirthYear,
+  getPlayersByClassOf,
   getSeasonCount,
   incrementProfileViews,
   searchPlayers,
@@ -43,6 +45,34 @@ playersRouter.get("/birth-year-counts", async (_req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get birth year counts" } });
+  }
+});
+
+playersRouter.get("/class-of-counts", async (_req, res) => {
+  try {
+    const counts = await getClassOfCounts();
+    res.json(counts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get class counts" } });
+  }
+});
+
+playersRouter.get("/class-of/:year", async (req, res) => {
+  try {
+    const year = Number(req.params.year);
+    if (Number.isNaN(year) || year < 1950 || year > 2040) {
+      res.status(400).json({ error: { code: "INVALID_YEAR", message: "Class year must be a valid graduation year" } });
+      return;
+    }
+
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const result = await getPlayersByClassOf(year, { page, limit });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get players by class" } });
   }
 });
 

@@ -1,21 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { Calendar } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 import { PlayerCard } from "@/components/player/PlayerCard";
-import { getPlayersByBirthYear } from "@/lib/api";
+import { getPlayersByClassOf } from "@/lib/api";
+
+const MIN_CLASS_YEAR = 1950;
+const MAX_CLASS_YEAR = 2040;
 
 export function ClassYear() {
   const { year = "" } = useParams<{ year: string }>();
-  const birthYear = Number(year);
-  // Match server: reject toddler / future years that are almost always bad source DOBs.
-  const maxPlausibleYear = new Date().getFullYear() - 13;
+  const classYear = Number(year);
   const isValidYear =
-    Number.isInteger(birthYear) && birthYear >= 1880 && birthYear <= maxPlausibleYear;
+    Number.isInteger(classYear) && classYear >= MIN_CLASS_YEAR && classYear <= MAX_CLASS_YEAR;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["birth-year", birthYear],
-    queryFn: () => getPlayersByBirthYear(birthYear),
+    queryKey: ["class-of", classYear],
+    queryFn: () => getPlayersByClassOf(classYear),
     enabled: isValidYear,
   });
 
@@ -25,8 +26,8 @@ export function ClassYear() {
   if (!isValidYear) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <p className="text-muted-foreground">Invalid birth year.</p>
-        <BackButton fallback="/classes" className="mt-4 text-primary hover:underline" label="Back to Birth Year" />
+        <p className="text-muted-foreground">Invalid graduation class year.</p>
+        <BackButton fallback="/classes" className="mt-4 text-primary hover:underline" label="Back to Classes" />
       </div>
     );
   }
@@ -34,21 +35,21 @@ export function ClassYear() {
   return (
     <div className="min-h-screen bg-background pb-24 pt-12">
       <div className="container mx-auto px-4">
-        <BackButton fallback="/classes" label="Back to Birth Year" />
+        <BackButton fallback="/classes" label="Back to Classes" />
 
         <div className="mb-12 flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <Calendar className="h-7 w-7" />
+            <GraduationCap className="h-7 w-7" />
           </div>
           <div>
             <div className="mb-1 font-mono text-xs uppercase tracking-widest text-primary">
-              Birth Year
+              High school class
             </div>
             <h1 className="font-display text-4xl uppercase tracking-tighter text-foreground md:text-6xl">
-              {birthYear}
+              Class of {classYear}
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              Top 50 most viewed players born in {birthYear}
+              Top 50 most viewed players in the Class of {classYear}
             </p>
           </div>
         </div>
@@ -64,11 +65,11 @@ export function ClassYear() {
           </div>
         ) : error ? (
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
-            Unable to load players for this birth year.
+            Unable to load players for this class.
           </div>
         ) : totalCount === 0 ? (
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
-            No players found for {birthYear}.
+            No players found for Class of {classYear}.
           </div>
         ) : (
           <>

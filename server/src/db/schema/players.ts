@@ -18,6 +18,8 @@ export const players = pgTable("players", {
   heightCm: integer("height_cm"),
   weightKg: integer("weight_kg"),
   birthDate: date("birth_date"),
+  /** US high school graduation class year (Class of 20XX). */
+  hsClassOf: integer("hs_class_of"),
   hometown: text("hometown"),
   country: text("country"),
   jerseyNumber: text("jersey_number"),

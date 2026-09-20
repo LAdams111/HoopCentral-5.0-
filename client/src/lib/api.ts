@@ -13,6 +13,8 @@ export interface PlayerCard {
   profileViews: number;
   hometown: string;
   birthDate: string | null;
+  birthYear: number | null;
+  hsClassOf: number | null;
 }
 
 export interface PlayerStat {
@@ -139,6 +141,17 @@ export interface BirthYearPlayersResponse {
   players: PlayerCard[];
 }
 
+export interface ClassOfCount {
+  year: number;
+  count: number;
+}
+
+export interface ClassOfPlayersResponse {
+  year: number;
+  totalCount: number;
+  players: PlayerCard[];
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) {
@@ -162,6 +175,14 @@ export function getBirthYearCounts(): Promise<BirthYearCount[]> {
 
 export function getPlayersByBirthYear(year: number): Promise<BirthYearPlayersResponse> {
   return fetchJson(`/api/players/birth-year/${year}?limit=50`);
+}
+
+export function getClassOfCounts(): Promise<ClassOfCount[]> {
+  return fetchJson("/api/players/class-of-counts");
+}
+
+export function getPlayersByClassOf(year: number): Promise<ClassOfPlayersResponse> {
+  return fetchJson(`/api/players/class-of/${year}?limit=50`);
 }
 
 export function getPlayer(id: number, league?: string): Promise<PlayerProfile> {

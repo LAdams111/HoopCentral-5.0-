@@ -23,6 +23,7 @@ import {
   maxPlausibleBirthYear,
   minPlausibleBirthYear,
 } from "../utils/birth-date.js";
+import { isPlausibleHsClassOf } from "../utils/hs-class-of.js";
 
 export interface PlayerCard {
   id: number;
@@ -39,6 +40,8 @@ export interface PlayerCard {
   profileViews: number;
   hometown: string;
   birthDate: string | null;
+  birthYear: number | null;
+  hsClassOf: number | null;
 }
 
 export interface PlayerStatRow {
@@ -115,7 +118,15 @@ export function toPlayerCard(
     profileViews: player.profileViews,
     hometown: player.hometown ?? "",
     birthDate: player.birthDate ?? null,
+    birthYear: birthYearFromStoredDate(player.birthDate),
+    hsClassOf: player.hsClassOf ?? null,
   };
+}
+
+function birthYearFromStoredDate(birthDate: string | null | undefined): number | null {
+  if (!birthDate) return null;
+  const year = Number(String(birthDate).slice(0, 4));
+  return Number.isInteger(year) ? year : null;
 }
 
 export async function getLatestTeamsForPlayers(
@@ -265,7 +276,19 @@ export interface BirthYearPlayersResult {
   players: PlayerCard[];
 }
 
+export interface ClassOfCount {
+  year: number;
+  count: number;
+}
+
+export interface ClassOfPlayersResult {
+  year: number;
+  totalCount: number;
+  players: PlayerCard[];
+}
+
 export const BIRTH_YEAR_TOP_LIMIT = 50;
+export const CLASS_OF_TOP_LIMIT = 50;
 
 export async function getBirthYearCounts(): Promise<BirthYearCount[]> {
   const minYear = minPlausibleBirthYear();
@@ -327,6 +350,64 @@ export async function getPlayersByBirthYear(
 
   return {
     year,
+    totalCount: countRow?.count ?? 0,
+    players: rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug)),
+  };
+}
+
+export async function getClassOfCounts(): Promise<ClassOfCount[]> {
+  const rows = await db
+    .select({
+      year: players.hsClassOf,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(players)
+    .where(isNotNull(players.hsClassOf))
+    .groupBy(players.hsClassOf)
+    .orderBy(desc(players.hsClassOf));
+
+  return rows
+    .filter((row) => row.year != null && isPlausibleHsClassOf(row.year))
+    .map((row) => ({ year: row.year!, count: row.count }));
+}
+
+export async function getPlayersByClassOf(
+  classYear: number,
+  params?: { page?: number; limit?: number },
+): Promise<ClassOfPlayersResult> {
+  if (!isPlausibleHsClassOf(classYear)) {
+    return { year: classYear, totalCount: 0, players: [] };
+  }
+
+  const page = Math.max(1, params?.page ?? 1);
+  const limit = Math.min(
+    CLASS_OF_TOP_LIMIT,
+    Math.max(1, params?.limit ?? CLASS_OF_TOP_LIMIT),
+  );
+  const offset = (page - 1) * limit;
+
+  const classFilter = eq(players.hsClassOf, classYear);
+
+  const [countRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(players)
+    .where(classFilter);
+
+  const rows = await db
+    .select({
+      player: players,
+      teamName: teams.name,
+      teamSlug: teams.slug,
+    })
+    .from(players)
+    .leftJoin(teams, eq(players.currentTeamId, teams.id))
+    .where(classFilter)
+    .orderBy(desc(players.profileViews))
+    .limit(limit)
+    .offset(offset);
+
+  return {
+    year: classYear,
     totalCount: countRow?.count ?? 0,
     players: rows.map((r) => toPlayerCard(r.player, r.teamName, r.teamSlug)),
   };

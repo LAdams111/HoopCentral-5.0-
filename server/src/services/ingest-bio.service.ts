@@ -11,6 +11,7 @@ import {
   isPostgresTransientError,
 } from "../utils/postgres.js";
 import { sanitizeBirthDate } from "../utils/birth-date.js";
+import { inferHsClassOfFromBirthDate } from "../utils/hs-class-of.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
 import { formatJerseyNumber } from "../utils/jersey.js";
 import { pickBetterHometown, sanitizeIngestHometown } from "../utils/hometown.js";
@@ -231,7 +232,12 @@ function buildBioUpdate(
   };
 
   if (input.player.birthDate !== undefined) {
-    update.birthDate = sanitizeBirthDate(input.player.birthDate);
+    const birthDate = sanitizeBirthDate(input.player.birthDate);
+    update.birthDate = birthDate;
+    if (birthDate) {
+      const classOf = inferHsClassOfFromBirthDate(birthDate);
+      if (classOf != null) update.hsClassOf = classOf;
+    }
   }
   if (input.player.position !== undefined) update.position = input.player.position;
   if (input.player.heightCm !== undefined) update.heightCm = input.player.heightCm;

@@ -23,7 +23,9 @@ import { normalizeUsportsTeamForIngest, UsportsTeamRejectedError } from "../util
 import { normalizeCcaaTeamForIngest } from "../utils/ccaa-team-aliases.js";
 import { normalizeMaxprepsTeamForIngest } from "../utils/maxpreps-team-aliases.js";
 import { sanitizeBirthDate } from "../utils/birth-date.js";
+import { inferHsClassOfFromBirthDate } from "../utils/hs-class-of.js";
 import { sanitizeHeadshotUrl } from "../utils/headshot.js";
+import { isNarrativeJunkTeamName, sanitizeTeamDisplayName } from "../utils/team-name.js";
 import { findOrCreatePlayerByIdentity } from "./player-identity.service.js";
 import {
   isPostgresTransientError,
@@ -250,11 +252,20 @@ export function parseIngestPlayerSeasonBody(body: unknown): IngestPlayerSeasonIn
       slug: normalizeSlugParam(requireString(leagueObj.slug, "league.slug")),
       name: requireString(leagueObj.name, "league.name"),
     },
-    team: {
-      slug: normalizeSlugParam(requireString(teamObj.slug, "team.slug")),
-      name: requireString(teamObj.name, "team.name"),
-      abbreviation: requireString(teamObj.abbreviation, "team.abbreviation"),
-    },
+    team: (() => {
+      const slug = normalizeSlugParam(requireString(teamObj.slug, "team.slug"));
+      const name = sanitizeTeamDisplayName(requireString(teamObj.name, "team.name"));
+      if (isNarrativeJunkTeamName(name, slug)) {
+        throw new IngestValidationError(
+          `Rejected narrative/junk team name: ${name}`,
+        );
+      }
+      return {
+        slug,
+        name,
+        abbreviation: requireString(teamObj.abbreviation, "team.abbreviation"),
+      };
+    })(),
     season: {
       label: requireString(seasonObj.label, "season.label"),
     },
@@ -515,7 +526,11 @@ function buildSeasonIngestPlayerUpdate(
 
   if (input.birthDate != null) {
     const birthDate = sanitizeBirthDate(input.birthDate);
-    if (birthDate) update.birthDate = birthDate;
+    if (birthDate) {
+      update.birthDate = birthDate;
+      const classOf = inferHsClassOfFromBirthDate(birthDate);
+      if (classOf != null) update.hsClassOf = classOf;
+    }
   }
   if (input.position != null) update.position = input.position;
   if (input.heightCm != null) update.heightCm = input.heightCm;

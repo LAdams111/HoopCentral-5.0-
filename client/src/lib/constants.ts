@@ -302,6 +302,6 @@ export const NAV_ITEMS: {
   { label: "Home", href: "/", icon: Home },
   { label: "Leagues", href: "/leagues", icon: Trophy },
   { label: "Prospects", href: "/prospects", icon: Sparkles },
-  { label: "Birth Year", href: "/classes", icon: Calendar },
+  { label: "Classes", href: "/classes", icon: Calendar },
   { label: "Draft", href: "/players", icon: ListOrdered },
 ];

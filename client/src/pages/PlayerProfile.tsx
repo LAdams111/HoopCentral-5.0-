@@ -241,6 +241,21 @@ export function PlayerProfile() {
                       {formatBirthDate(player.birthDate)}
                     </div>
                   )}
+                  {player.birthYear != null && (
+                    <div className="flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1">
+                      <span className="font-bold text-primary">BORN</span>
+                      {player.birthYear}
+                    </div>
+                  )}
+                  {player.hsClassOf != null && (
+                    <Link
+                      to={`/classes/${player.hsClassOf}`}
+                      className="flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                    >
+                      <span className="font-bold text-primary">CLASS</span>
+                      {player.hsClassOf}
+                    </Link>
+                  )}
                 </div>
 
                 {player.hometown && (
