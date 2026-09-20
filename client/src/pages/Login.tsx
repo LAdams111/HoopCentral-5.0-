@@ -117,7 +117,12 @@ export function Login() {
               Log in as {activeRole.label}
             </button>
 
-            <p className="text-center text-sm font-medium text-primary">Create account</p>
+            <button
+              type="button"
+              className="w-full rounded-xl border border-border bg-muted/40 py-2.5 font-display text-sm font-bold uppercase tracking-wide text-foreground underline decoration-primary/60 underline-offset-4 transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+            >
+              Create account
+            </button>
           </form>
         </div>
       </div>
