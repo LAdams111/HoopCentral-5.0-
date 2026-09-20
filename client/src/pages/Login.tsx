@@ -65,9 +65,6 @@ export function Login() {
               Account
             </div>
             <h1 className="font-display text-3xl font-bold tracking-tight">Log in</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Choose how you use Hoop Central, then sign in with email.
-            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 border-b border-border p-4 sm:grid-cols-4">
