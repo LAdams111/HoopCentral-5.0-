@@ -20,6 +20,10 @@ import {
   seasons,
   teams,
 } from "../server/src/db/schema/index.js";
+import {
+  abbrevFromCanonicalName,
+  canonicalTeamName,
+} from "./osba-trillium-canonical-names.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -82,17 +86,31 @@ async function main() {
     teamIdBySlug.set(row.slug, row.id);
   }
 
+  for (const team of payload.teams) {
+    const name = canonicalTeamName(team.slug, team.name);
+    const abbreviation = abbrevFromCanonicalName(name);
+    if (teamIdBySlug.has(team.slug)) {
+      await db
+        .update(teams)
+        .set({ name, abbreviation })
+        .where(and(eq(teams.leagueId, hsLeague.id), eq(teams.slug, team.slug)));
+    }
+  }
+
   const teamsToInsert = payload.teams.filter((team) => !teamIdBySlug.has(team.slug));
   if (teamsToInsert.length > 0) {
     const inserted = await db
       .insert(teams)
       .values(
-        teamsToInsert.map((team) => ({
-          name: team.name,
-          abbreviation: team.abbreviation,
-          slug: team.slug,
-          leagueId: hsLeague.id,
-        })),
+        teamsToInsert.map((team) => {
+          const name = canonicalTeamName(team.slug, team.name);
+          return {
+            name,
+            abbreviation: abbrevFromCanonicalName(name),
+            slug: team.slug,
+            leagueId: hsLeague.id,
+          };
+        }),
       )
       .returning();
     for (const row of inserted) {

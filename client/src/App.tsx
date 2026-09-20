@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
 import { Classes } from "./pages/Classes";
 import { ClassYear } from "./pages/ClassYear";
@@ -18,6 +18,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Navigate to="/login?mode=signup" replace />} />
         <Route path="/players" element={<Players />} />
         <Route path="/players/:id" element={<PlayerProfile />} />
         <Route path="/roster/:team/:season" element={<Roster />} />

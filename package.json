@@ -23,6 +23,8 @@
     "db:push": "npm run db:push -w server",
     "db:seed": "npm run db:seed -w server",
     "db:seed-osba-trillium": "npm run db:seed-osba-trillium -w server",
+    "db:apply-osba-trillium-names": "npm run db:apply-osba-trillium-names -w server",
+    "db:merge-osba-trillium-teams": "npm run db:merge-osba-trillium-teams -w server",
     "fetch:osba-trillium": "node scripts/fetch-osba-trillium-rosters.mjs",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "db:studio": "npm run db:studio -w server"

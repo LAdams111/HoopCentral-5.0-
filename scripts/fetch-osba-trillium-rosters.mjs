@@ -6,6 +6,10 @@ import { writeFileSync, mkdirSync } from "fs";
 import https from "https";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  abbrevFromCanonicalName,
+  canonicalTeamName,
+} from "./osba-trillium-canonical-names.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIVISION_URL = "https://www.ontariosba.ca/division/0/33064/rosters";
@@ -43,18 +47,6 @@ function teamSlug(name) {
   return `${slugify(name)}-ca-on`;
 }
 
-function abbrev(name) {
-  const words = decodeHtml(name)
-    .replace(/[^a-zA-Z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean);
-  if (words.length === 1) return words[0].slice(0, 5).toUpperCase();
-  return words
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 5)
-    .toUpperCase();
-}
 
 /** OSBA "2025-2026" → Hoop Central "2025-26" */
 function toHcSeasonLabel(osbaLabel) {
@@ -79,12 +71,19 @@ function parseRosterTable(html) {
     const [teamName, jersey, playerName, position] = cells;
     if (!teamName || !playerName || teamName === "Team") continue;
     const tSlug = teamSlug(teamName);
+    const canonicalName = canonicalTeamName(tSlug, teamName);
     if (!teamSet.has(tSlug)) {
-      teamSet.set(tSlug, { name: teamName, slug: tSlug, abbreviation: abbrev(teamName) });
+      teamSet.set(tSlug, {
+        name: canonicalName,
+        slug: tSlug,
+        abbreviation: abbrevFromCanonicalName(canonicalName),
+        osbaRosterLabel: teamName,
+      });
     }
     roster.push({
       teamSlug: tSlug,
-      teamName,
+      teamName: canonicalName,
+      osbaRosterLabel: teamName,
       jersey,
       name: playerName,
       position,

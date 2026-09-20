@@ -133,6 +133,15 @@ export function Roster() {
     enabled: Boolean(team && season),
   });
 
+  useEffect(() => {
+    if (!roster?.team.slug || roster.team.slug === decodedTeam) return;
+    const params = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
+    navigate(
+      `/roster/${encodeURIComponent(roster.team.slug)}/${encodeURIComponent(seasonLabel)}${params}`,
+      { replace: true, state: location.state },
+    );
+  }, [roster?.team.slug, decodedTeam, seasonLabel, leagueSlug, navigate, location.state]);
+
   const teamName = roster?.team.name ?? decodedTeam;
   const teamDisplayName = displayTeamName(teamName, {
     leagueSlug,

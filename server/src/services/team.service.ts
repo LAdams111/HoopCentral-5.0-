@@ -1,5 +1,6 @@
 import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { G_LEAGUE_CURRENT_TEAM_SLUGS } from "../data/g-league-teams.js";
+import { THE_BASKETBALL_LEAGUE_TEAM_SLUGS } from "../data/the-basketball-league-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
 import {
@@ -18,6 +19,10 @@ import { isBrowsableTeam } from "../utils/league-visibility.js";
 import { isLeagueIdPublic } from "./league-visibility.service.js";
 import { resolveNcaaTeamSlugVariants } from "../utils/ncaa-team-aliases.js";
 import { resolveCcaaTeamSlugVariants } from "../utils/ccaa-team-aliases.js";
+import {
+  isOsbaTrilliumCanonicalSlug,
+  resolveOsbaTrilliumSlugVariants,
+} from "../utils/osba-trillium-team-aliases.js";
 import { NORTH_AMERICAN_LEAGUE_SLUGS } from "../utils/league-regions.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
@@ -78,9 +83,24 @@ async function pickBestTeamMatch(
     })),
   );
 
-  return withStats.reduce((best, current) =>
-    current.stats > best.stats ? current : best,
+  const scored = withStats.map((entry) => {
+    let score = entry.stats;
+    if (isOsbaTrilliumCanonicalSlug(entry.team.slug)) score += 10_000;
+    return { ...entry, score };
+  });
+
+  return scored.reduce((best, current) =>
+    current.score > best.score ? current : best,
   ).team;
+}
+
+function resolveTeamSlugVariants(slugCandidate: string, leagueSlug: string | undefined): string[] {
+  const isNcaaMen =
+    leagueSlug === LEGACY_NCAA_MENS_SLUG || leagueSlug === "ncaa-m";
+  if (isNcaaMen) return resolveNcaaTeamSlugVariants(slugCandidate);
+  if (leagueSlug === "ccaa") return resolveCcaaTeamSlugVariants(slugCandidate);
+  if (leagueSlug === "high-school") return resolveOsbaTrilliumSlugVariants(slugCandidate);
+  return [slugCandidate];
 }
 
 function slugVariantPredicates(slugVariants: string[]) {
@@ -98,12 +118,7 @@ async function relatedTeamIds(
       )
     : null;
 
-  const slugVariants =
-    leagueRow?.slug === LEGACY_NCAA_MENS_SLUG || leagueRow?.slug === "ncaa-m"
-      ? resolveNcaaTeamSlugVariants(team.slug)
-      : leagueRow?.slug === "ccaa"
-        ? resolveCcaaTeamSlugVariants(team.slug)
-        : [team.slug];
+  const slugVariants = resolveTeamSlugVariants(team.slug, leagueRow?.slug);
 
   const rows = await db
     .select({ id: teams.id })
@@ -129,14 +144,16 @@ async function findTeam(teamKey: string, leagueSlug?: string) {
       )
     : null;
 
-  const isNcaaMen =
-    leagueRow?.slug === LEGACY_NCAA_MENS_SLUG || leagueRow?.slug === "ncaa-m";
-  const isCcaa = leagueRow?.slug === "ccaa";
-  const slugVariants = isNcaaMen
-    ? resolveNcaaTeamSlugVariants(slugCandidate)
-    : isCcaa
-      ? resolveCcaaTeamSlugVariants(slugCandidate)
-      : [slugCandidate];
+  const slugVariants = leagueRow
+    ? resolveTeamSlugVariants(slugCandidate, leagueRow.slug)
+    : [
+        ...new Set([
+          slugCandidate,
+          ...resolveOsbaTrilliumSlugVariants(slugCandidate),
+          ...resolveNcaaTeamSlugVariants(slugCandidate),
+          ...resolveCcaaTeamSlugVariants(slugCandidate),
+        ]),
+      ];
 
   const matchPredicates = [
     ...slugVariantPredicates(slugVariants),
@@ -260,7 +277,9 @@ export async function getAllTeams(leagueSlug?: string): Promise<TeamSummary[]> {
       ? G_LEAGUE_CURRENT_TEAM_SLUGS
       : normalizedLeague === "wnba"
         ? WNBA_CURRENT_TEAM_SLUGS
-        : null
+        : normalizedLeague === "the-basketball-league"
+          ? THE_BASKETBALL_LEAGUE_TEAM_SLUGS
+          : null
     : null;
 
   const rows = await db
@@ -346,31 +365,24 @@ export async function getTeamBySlug(
   slug: string,
   leagueSlug?: string,
 ): Promise<TeamDetail | null> {
-  const normalized = normalizeSlugParam(slug);
+  const team = await findTeam(slug, leagueSlug);
+  if (!team) return null;
+
   const leagueRow = leagueSlug
     ? await findLeagueRowBySlug(
         db,
         resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
       )
-    : null;
+    : await db
+        .select()
+        .from(leagues)
+        .where(eq(leagues.id, team.leagueId))
+        .limit(1)
+        .then((r) => r[0] ?? null);
 
-  const rows = await db
-    .select({
-      team: teams,
-      league: leagues,
-    })
-    .from(teams)
-    .innerJoin(leagues, eq(teams.leagueId, leagues.id))
-    .where(
-      and(
-        eq(teams.slug, normalized),
-        leagueRow ? eq(teams.leagueId, leagueRow.id) : undefined,
-      ),
-    )
-    .limit(leagueRow ? 1 : 2);
+  if (!leagueRow) return null;
 
-  const row = rows[0];
-  if (!row) return null;
+  const row = { team, league: leagueRow };
 
   const latestSeason = await findLatestSeasonForTeam(row.team.id);
   let roster: PlayerCard[] = [];

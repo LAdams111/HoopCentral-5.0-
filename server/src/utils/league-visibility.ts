@@ -1,6 +1,7 @@
 import { SEED_LEAGUES } from "../data/leagues.js";
 import { CANONICAL_LEAGUE_NAMES } from "./league-slug.js";
 import { isHiddenMontverdeDuplicateSlug } from "./maxpreps-team-aliases.js";
+import { isHiddenOsbaTrilliumAliasSlug } from "./osba-trillium-team-aliases.js";
 
 /** Minimum teams for a discovered (non-whitelisted) league to appear publicly. */
 export const MIN_PUBLIC_TEAM_COUNT = 4;
@@ -30,6 +31,45 @@ const JUNK_TEAM_NAME_PATTERNS: RegExp[] = [
   /^in feb/i,
   /missed most/i,
   /then moved to/i,
+  /then moved\b/i,
+  /then joined\b/i,
+  /then went to\b/i,
+  /then signed\b/i,
+  /then he enrolled\b/i,
+  /at the beginning\b/i,
+  /played shortly\b/i,
+  /played briefly\b/i,
+  /played brefly\b/i,
+  /played mostly\b/i,
+  /played also\b/i,
+  /played the season\b/i,
+  /^played\b/i,
+  /left at the beginning\b/i,
+  /only pre[- ]?season\b/i,
+  /mid[- ]?season joined\b/i,
+  /\bloaned to\b/i,
+  /^loaned to\b/i,
+  /^started the season\b/i,
+  /started the season with\b/i,
+  /but dnp\b/i,
+  /supposed to attend\b/i,
+  /injured in\b/i,
+  /enrolled in\b/i,
+  /replaced .+ at\b/i,
+  // Transaction / bio notes mis-parsed as club names
+  /^was signed by\b/i,
+  /^was tested by\b/i,
+  /^was tested at\b/i,
+  /^was activated by\b/i,
+  /^was suspended\b/i,
+  /^was going to\b/i,
+  /^was about to\b/i,
+  /^tried to enroll\b/i,
+  /^plays also at\b/i,
+  /^plays in\b/i,
+  /\bhad also (a )?licen[cs]e\b/i,
+  /\bdecided to go pro\b/i,
+  /\breturned home due to\b/i,
   /\d+\s*games\b/i,
   /school year/i,
   /co[- ]?captain/i,
@@ -82,6 +122,10 @@ const JUNK_TEAM_NAME_PATTERNS: RegExp[] = [
   /\(starting five\)/i,
 ];
 
+/** Long bio-sentence team names (verbs + enough words) even if a real school name is embedded. */
+const NARRATIVE_SENTENCE_CUES =
+  /\b(then|joined|joining|join|played|plays|play|shortly|briefly|brefly|beginning|season|loaned|moved|signed|signing|left|went|going|enrolled|enroll|injured|attended|attend|replaced|dnp|mostly|tested|activated|suspended|license|licence|decided|returned)\b/i;
+
 const JUNK_TEAM_SLUG_PATTERNS: RegExp[] = [
   /signed-at-/,
   /missed-most/,
@@ -89,11 +133,38 @@ const JUNK_TEAM_SLUG_PATTERNS: RegExp[] = [
   /co-captain/,
   /school-year/,
   /then-moved-to/,
+  /then-joined/,
+  /then-went-to/,
+  /at-the-beginning/,
+  /played-shortly/,
+  /played-briefly/,
+  /played-brefly/,
+  /played-mostly/,
+  /played-also/,
+  /left-at-the-beginning/,
+  /only-pre-season/,
+  /mid-season-joined/,
+  /loaned-to/,
+  /started-the-season/,
+  /supposed-to-attend/,
+  /injured-in/,
+  /enrolled-in/,
   /left-in-/,
   /joined-in-/,
   /signed-in-/,
   /released-in-/,
   /not-drafted/,
+  /^was-signed-by/,
+  /^was-tested-by/,
+  /^was-tested-at/,
+  /^was-activated-by/,
+  /^was-suspended/,
+  /^was-going-to/,
+  /^was-about-to/,
+  /^tried-to-enroll/,
+  /^plays-also-at/,
+  /^plays-in-/,
+  /had-also-(a-)?licen[cs]e/,
 ];
 
 /** Softer narrative cues — hide only when the team has a single linked player. */
@@ -177,7 +248,13 @@ export function isWhitelistedLeagueSlug(slug: string): boolean {
 export function isJunkTeamName(name: string): boolean {
   const trimmed = name.trim();
   if (!trimmed) return true;
-  return JUNK_TEAM_NAME_PATTERNS.some((pattern) => pattern.test(trimmed));
+  if (JUNK_TEAM_NAME_PATTERNS.some((pattern) => pattern.test(trimmed))) return true;
+
+  // Bio sentences mis-parsed as team names (often embed "University" / "College").
+  const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
+  if (wordCount >= 8 && NARRATIVE_SENTENCE_CUES.test(trimmed)) return true;
+
+  return false;
 }
 
 export function isJunkTeamSlug(slug: string): boolean {
@@ -189,7 +266,16 @@ export function isSinglePlayerNarrativeTeam(team: TeamVisibilityInput): boolean 
   const name = team.name.trim();
   const slug = team.slug.toLowerCase();
 
-  if (REAL_TEAM_NAME_HINTS.some((pattern) => pattern.test(name)) && !/[<>]/.test(name)) {
+  // Hard junk / bio-sentence names already handled by isJunkTeamName.
+  // Do not exempt long narrative strings just because they embed "University".
+  const wordCount = name.split(/\s+/).filter(Boolean).length;
+  const looksLikeRealShortName =
+    wordCount <= 6 &&
+    REAL_TEAM_NAME_HINTS.some((pattern) => pattern.test(name)) &&
+    !/[<>]/.test(name) &&
+    !NARRATIVE_SENTENCE_CUES.test(name);
+
+  if (looksLikeRealShortName) {
     return false;
   }
 
@@ -207,6 +293,7 @@ export function isBrowsableTeam(
   context: TeamBrowseContext = {},
 ): boolean {
   if (isHiddenMontverdeDuplicateSlug(team.slug)) return false;
+  if (isHiddenOsbaTrilliumAliasSlug(team.slug)) return false;
   if (isJunkTeam(team)) return false;
 
   if (context.distinctPlayerCount === 1 && isSinglePlayerNarrativeTeam(team)) {

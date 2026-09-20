@@ -11,6 +11,8 @@
     "db:push": "drizzle-kit push --config drizzle.config.cjs",
     "db:seed": "tsx --tsconfig tsconfig.json ../scripts/seed.ts",
     "db:seed-osba-trillium": "tsx --tsconfig tsconfig.json ../scripts/seed-osba-trillium.ts",
+    "db:apply-osba-trillium-names": "tsx --tsconfig tsconfig.json ../scripts/apply-osba-trillium-canonical-names.ts",
+    "db:merge-osba-trillium-teams": "tsx --tsconfig tsconfig.json ../scripts/merge-osba-trillium-duplicate-teams.ts",
     "db:ensure-teams": "tsx --tsconfig tsconfig.json ../scripts/ensure-teams.ts",
     "db:ensure-identities": "tsx --tsconfig tsconfig.json ../scripts/ensure-identities.ts",
     "db:test-ingest": "tsx --tsconfig tsconfig.json ../scripts/test-ingest.ts",
