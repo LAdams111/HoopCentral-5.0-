@@ -117,6 +117,7 @@ export function Roster() {
     slug: roster?.team.slug,
   });
   const players = roster?.players ?? [];
+  const isCanadianHsTeam = roster?.team.slug?.endsWith("-ca-on") ?? decodedTeam.endsWith("-ca-on");
 
   const handleBack = () => {
     const previous = (location.state as { from?: string } | null)?.from;
@@ -252,6 +253,27 @@ export function Roster() {
       </div>
 
       <div className="container mx-auto mt-12 px-4">
+        {isCanadianHsTeam && leagueSlug === "high-school" ? (
+          <div className="mb-6 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-primary">
+              OSBA · Trillium Mens
+            </span>
+            <p className="mt-1">
+              Roster seeded from{" "}
+              <a
+                href="https://www.ontariosba.ca/division/0/33064/rosters"
+                className="text-primary underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ontario SBA
+              </a>
+              . Coach{" "}
+              <span className="font-medium text-foreground">Claim this team</span> (coming soon) to
+              manage roster and stats.
+            </p>
+          </div>
+        ) : null}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <div className="flex flex-wrap items-center gap-3">
             <h2

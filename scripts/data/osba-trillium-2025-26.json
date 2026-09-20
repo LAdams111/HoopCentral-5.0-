@@ -1,0 +1,2725 @@
+{
+  "sourceUrl": "https://www.ontariosba.ca/division/0/33064/rosters",
+  "division": "Trillium Mens",
+  "association": "OSBA",
+  "province": "ON",
+  "seasonLabel": "2025-26",
+  "teams": [
+    {
+      "name": "Ace Acumen Heights",
+      "slug": "ace-acumen-heights-ca-on",
+      "abbreviation": "AAH"
+    },
+    {
+      "name": "Brampton City Prep Provincial",
+      "slug": "brampton-city-prep-provincial-ca-on",
+      "abbreviation": "BCPP"
+    },
+    {
+      "name": "Brampton City Prep Regional",
+      "slug": "brampton-city-prep-regional-ca-on",
+      "abbreviation": "BCPR"
+    },
+    {
+      "name": "C.O.D.E. International",
+      "slug": "c-o-d-e-international-ca-on",
+      "abbreviation": "CODEI"
+    },
+    {
+      "name": "C.O.D.E. Provincial",
+      "slug": "c-o-d-e-provincial-ca-on",
+      "abbreviation": "CODEP"
+    },
+    {
+      "name": "Canada Topflight Academy Red",
+      "slug": "canada-topflight-academy-red-ca-on",
+      "abbreviation": "CTAR"
+    },
+    {
+      "name": "Father Henry Carr",
+      "slug": "father-henry-carr-ca-on",
+      "abbreviation": "FHC"
+    },
+    {
+      "name": "Full Circle Basketball Academy",
+      "slug": "full-circle-basketball-academy-ca-on",
+      "abbreviation": "FCBA"
+    },
+    {
+      "name": "Future Hope Academy",
+      "slug": "future-hope-academy-ca-on",
+      "abbreviation": "FHA"
+    },
+    {
+      "name": "Hodan Nighthawks",
+      "slug": "hodan-nighthawks-ca-on",
+      "abbreviation": "HN"
+    },
+    {
+      "name": "J.Addison School",
+      "slug": "j-addison-school-ca-on",
+      "abbreviation": "JAS"
+    },
+    {
+      "name": "James Cardinal McGuigan",
+      "slug": "james-cardinal-mcguigan-ca-on",
+      "abbreviation": "JCM"
+    },
+    {
+      "name": "King Heights Academy",
+      "slug": "king-heights-academy-ca-on",
+      "abbreviation": "KHA"
+    },
+    {
+      "name": "Louis-Riel Academy",
+      "slug": "louis-riel-academy-ca-on",
+      "abbreviation": "LRA"
+    },
+    {
+      "name": "Orangeville Varsity",
+      "slug": "orangeville-varsity-ca-on",
+      "abbreviation": "OV"
+    },
+    {
+      "name": "Polaris Prep Academy Black",
+      "slug": "polaris-prep-academy-black-ca-on",
+      "abbreviation": "PPAB"
+    },
+    {
+      "name": "Polaris Prep Academy Gold",
+      "slug": "polaris-prep-academy-gold-ca-on",
+      "abbreviation": "PPAG"
+    },
+    {
+      "name": "Richmond Hill Ascend Prep",
+      "slug": "richmond-hill-ascend-prep-ca-on",
+      "abbreviation": "RHAP"
+    },
+    {
+      "name": "St. Jude's Academy Blue",
+      "slug": "st-judes-academy-blue-ca-on",
+      "abbreviation": "SJSAB"
+    },
+    {
+      "name": "St. Jude's Academy White",
+      "slug": "st-judes-academy-white-ca-on",
+      "abbreviation": "SJSAW"
+    },
+    {
+      "name": "Tall Pines Academy",
+      "slug": "tall-pines-academy-ca-on",
+      "abbreviation": "TPA"
+    },
+    {
+      "name": "Tri-City Prep",
+      "slug": "tri-city-prep-ca-on",
+      "abbreviation": "TCP"
+    },
+    {
+      "name": "Uchenna Academy",
+      "slug": "uchenna-academy-ca-on",
+      "abbreviation": "UA"
+    },
+    {
+      "name": "Victory Prep Academy East",
+      "slug": "victory-prep-academy-east-ca-on",
+      "abbreviation": "VPAE"
+    },
+    {
+      "name": "Victory Prep Academy West",
+      "slug": "victory-prep-academy-west-ca-on",
+      "abbreviation": "VPAW"
+    },
+    {
+      "name": "William Academy Cobourg",
+      "slug": "william-academy-cobourg-ca-on",
+      "abbreviation": "WAC"
+    }
+  ],
+  "roster": [
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "0",
+      "name": "Mateo Pepin-Duret",
+      "position": "Point Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-mateo-pepin-duret"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "1",
+      "name": "Jaiden Ashman-St.Kitts",
+      "position": "Shooting Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-jaiden-ashman-st-kitts"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "2",
+      "name": "Emmanuel Eyeoyibo",
+      "position": "Point Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-emmanuel-eyeoyibo"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "3",
+      "name": "Isaac Hunter",
+      "position": "Shooting Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-isaac-hunter"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "4",
+      "name": "Makai Thorpe",
+      "position": "Power Forward",
+      "playerSlug": "ace-acumen-heights-ca-on-makai-thorpe"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "5",
+      "name": "Keon Reid",
+      "position": "Shooting Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-keon-reid"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "8",
+      "name": "Jaime Phillips",
+      "position": "Point Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-jaime-phillips"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "9",
+      "name": "Aiden Stewart",
+      "position": "Point Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-aiden-stewart"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "10",
+      "name": "Corda&#xE9; McKain",
+      "position": "Point Guard",
+      "playerSlug": "ace-acumen-heights-ca-on-corda-xe9-mckain"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "11",
+      "name": "Chayse Dimaandal",
+      "position": "Small Forward",
+      "playerSlug": "ace-acumen-heights-ca-on-chayse-dimaandal"
+    },
+    {
+      "teamSlug": "ace-acumen-heights-ca-on",
+      "teamName": "Ace Acumen Heights",
+      "jersey": "27",
+      "name": "Jehdeil Lawrence",
+      "position": "Small Forward",
+      "playerSlug": "ace-acumen-heights-ca-on-jehdeil-lawrence"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "1",
+      "name": "Bryce Dennis",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-bryce-dennis"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "2",
+      "name": "Cole Larin",
+      "position": "Shooting Guard",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-cole-larin"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "3",
+      "name": "Jonah Ellwood",
+      "position": "Small Forward",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-jonah-ellwood"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "4",
+      "name": "Eseosa Ogbeiwi",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-eseosa-ogbeiwi"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "6",
+      "name": "Uttej Ghuman",
+      "position": "Shooting Guard",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-uttej-ghuman"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "8",
+      "name": "Delvin Ugbadamun",
+      "position": "Shooting Guard",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-delvin-ugbadamun"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "12",
+      "name": "Kaiden Wright-Kralidis",
+      "position": "Small Forward",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-kaiden-wright-kralidis"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "14",
+      "name": "Darius Miller",
+      "position": "Shooting Guard",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-darius-miller"
+    },
+    {
+      "teamSlug": "brampton-city-prep-provincial-ca-on",
+      "teamName": "Brampton City Prep Provincial",
+      "jersey": "25",
+      "name": "Kingston Ayres",
+      "position": "Center",
+      "playerSlug": "brampton-city-prep-provincial-ca-on-kingston-ayres"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "0",
+      "name": "Pasquale Iannuccilli",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-pasquale-iannuccilli"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "1",
+      "name": "Armin Ramez",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-armin-ramez"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "4",
+      "name": "Quincy Kabongo",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-quincy-kabongo"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "7",
+      "name": "Karman Aujla",
+      "position": "Shooting Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-karman-aujla"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "8",
+      "name": "Vardhan Dhillon",
+      "position": "Power Forward",
+      "playerSlug": "brampton-city-prep-regional-ca-on-vardhan-dhillon"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "11",
+      "name": "Kalaun Malcolm",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-kalaun-malcolm"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "12",
+      "name": "Mohammed Ibrahim",
+      "position": "Point Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-mohammed-ibrahim"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "13",
+      "name": "Sky Verma",
+      "position": "Shooting Guard",
+      "playerSlug": "brampton-city-prep-regional-ca-on-sky-verma"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "14",
+      "name": "Andrew Chin",
+      "position": "Small Forward",
+      "playerSlug": "brampton-city-prep-regional-ca-on-andrew-chin"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "15",
+      "name": "Sidak Lamba",
+      "position": "Small Forward",
+      "playerSlug": "brampton-city-prep-regional-ca-on-sidak-lamba"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "23",
+      "name": "George Damigos",
+      "position": "Center",
+      "playerSlug": "brampton-city-prep-regional-ca-on-george-damigos"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "24",
+      "name": "Manraj Kalsi",
+      "position": "Small Forward",
+      "playerSlug": "brampton-city-prep-regional-ca-on-manraj-kalsi"
+    },
+    {
+      "teamSlug": "brampton-city-prep-regional-ca-on",
+      "teamName": "Brampton City Prep Regional",
+      "jersey": "30",
+      "name": "Upvansh Mander",
+      "position": "Small Forward",
+      "playerSlug": "brampton-city-prep-regional-ca-on-upvansh-mander"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "0",
+      "name": "Luis Berukas",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-luis-berukas"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "4",
+      "name": "Riel Lee",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-riel-lee"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "7",
+      "name": "Stephane Ambroise",
+      "position": "Center",
+      "playerSlug": "c-o-d-e-international-ca-on-stephane-ambroise"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "8",
+      "name": "Elijah Edwards",
+      "position": "Power Forward",
+      "playerSlug": "c-o-d-e-international-ca-on-elijah-edwards"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "10",
+      "name": "Alesjo Mucaj",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-alesjo-mucaj"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "11",
+      "name": "Romero Adderley",
+      "position": "Small Forward",
+      "playerSlug": "c-o-d-e-international-ca-on-romero-adderley"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "12",
+      "name": "Isais Sejour",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-isais-sejour"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "21",
+      "name": "Ulrich Tonfack",
+      "position": "Small Forward",
+      "playerSlug": "c-o-d-e-international-ca-on-ulrich-tonfack"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "22",
+      "name": "Micah Marsan",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-micah-marsan"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "31",
+      "name": "Emmanuel Obeto",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-emmanuel-obeto"
+    },
+    {
+      "teamSlug": "c-o-d-e-international-ca-on",
+      "teamName": "C.O.D.E. International",
+      "jersey": "32",
+      "name": "Kordell Styles",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-international-ca-on-kordell-styles"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "0",
+      "name": "Jahmari Burke",
+      "position": "Small Forward",
+      "playerSlug": "c-o-d-e-provincial-ca-on-jahmari-burke"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "1",
+      "name": "Joshua Mariera",
+      "position": "Power Forward",
+      "playerSlug": "c-o-d-e-provincial-ca-on-joshua-mariera"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "2",
+      "name": "Dellon Laflamme",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-dellon-laflamme"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "3",
+      "name": "Efrain Obazee",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-efrain-obazee"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "5",
+      "name": "Aviel Hassan",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-aviel-hassan"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "7",
+      "name": "Stephen St. Amand",
+      "position": "Shooting Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-stephen-st-amand"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "10",
+      "name": "Ethan Overholt-Carmino",
+      "position": "Small Forward",
+      "playerSlug": "c-o-d-e-provincial-ca-on-ethan-overholt-carmino"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "11",
+      "name": "Roman Nyarko",
+      "position": "Small Forward",
+      "playerSlug": "c-o-d-e-provincial-ca-on-roman-nyarko"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "12",
+      "name": "Daniel Igbokwe",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-daniel-igbokwe"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "13",
+      "name": "Lyric Lachapelle",
+      "position": "Small Forward",
+      "playerSlug": "c-o-d-e-provincial-ca-on-lyric-lachapelle"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "22",
+      "name": "Caleb Fernandez-Ventura",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-caleb-fernandez-ventura"
+    },
+    {
+      "teamSlug": "c-o-d-e-provincial-ca-on",
+      "teamName": "C.O.D.E. Provincial",
+      "jersey": "24",
+      "name": "Gabriel Anderson",
+      "position": "Point Guard",
+      "playerSlug": "c-o-d-e-provincial-ca-on-gabriel-anderson"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "1",
+      "name": "Ibrahim Oumarou",
+      "position": "Small Forward",
+      "playerSlug": "canada-topflight-academy-red-ca-on-ibrahim-oumarou"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "2",
+      "name": "Willy Nambajimana",
+      "position": "Small Forward",
+      "playerSlug": "canada-topflight-academy-red-ca-on-willy-nambajimana"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "3",
+      "name": "TJ Whelan",
+      "position": "Small Forward",
+      "playerSlug": "canada-topflight-academy-red-ca-on-tj-whelan"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "4",
+      "name": "Devlin Taillon",
+      "position": "Shooting Guard",
+      "playerSlug": "canada-topflight-academy-red-ca-on-devlin-taillon"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "6",
+      "name": "Justin Jeanty",
+      "position": "Shooting Guard",
+      "playerSlug": "canada-topflight-academy-red-ca-on-justin-jeanty"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "11",
+      "name": "Emery Jean",
+      "position": "Small Forward",
+      "playerSlug": "canada-topflight-academy-red-ca-on-emery-jean"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "13",
+      "name": "Elliott Hartell",
+      "position": "Point Guard",
+      "playerSlug": "canada-topflight-academy-red-ca-on-elliott-hartell"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "18",
+      "name": "Enoch Eyeoyibo",
+      "position": "Point Guard",
+      "playerSlug": "canada-topflight-academy-red-ca-on-enoch-eyeoyibo"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "21",
+      "name": "Christian Raphael Abotnes",
+      "position": "Center",
+      "playerSlug": "canada-topflight-academy-red-ca-on-christian-raphael-abotnes"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "22",
+      "name": "Brennan Hinds",
+      "position": "Shooting Guard",
+      "playerSlug": "canada-topflight-academy-red-ca-on-brennan-hinds"
+    },
+    {
+      "teamSlug": "canada-topflight-academy-red-ca-on",
+      "teamName": "Canada Topflight Academy Red",
+      "jersey": "25",
+      "name": "Jan Abotnes",
+      "position": "Power Forward",
+      "playerSlug": "canada-topflight-academy-red-ca-on-jan-abotnes"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "0",
+      "name": "Nana Gyekye",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-nana-gyekye"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "1",
+      "name": "Presley Idada",
+      "position": "Point Guard",
+      "playerSlug": "father-henry-carr-ca-on-presley-idada"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "2",
+      "name": "Kaden Jonas",
+      "position": "Point Guard",
+      "playerSlug": "father-henry-carr-ca-on-kaden-jonas"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "3",
+      "name": "Dre&#x2019;kel Clayton",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-dre-x2019-kel-clayton"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "4",
+      "name": "Kahlil Bower",
+      "position": "Point Guard",
+      "playerSlug": "father-henry-carr-ca-on-kahlil-bower"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "5",
+      "name": "Tristan Brathwaite Dixon",
+      "position": "Small Forward",
+      "playerSlug": "father-henry-carr-ca-on-tristan-brathwaite-dixon"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "10",
+      "name": "Miles Wu",
+      "position": "Point Guard",
+      "playerSlug": "father-henry-carr-ca-on-miles-wu"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "11",
+      "name": "Kemarion Erskine-Taylor",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-kemarion-erskine-taylor"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "12",
+      "name": "Delano Hanchard",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-delano-hanchard"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "13",
+      "name": "Adrian Aquino",
+      "position": "Small Forward",
+      "playerSlug": "father-henry-carr-ca-on-adrian-aquino"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "14",
+      "name": "Aaron Aikoroje",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-aaron-aikoroje"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "15",
+      "name": "Alexander Fuller",
+      "position": "Point Guard",
+      "playerSlug": "father-henry-carr-ca-on-alexander-fuller"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "20",
+      "name": "Emeka Iwuafor",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-emeka-iwuafor"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "21",
+      "name": "Joel Phillips",
+      "position": "Power Forward",
+      "playerSlug": "father-henry-carr-ca-on-joel-phillips"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "31",
+      "name": "Marquez Escobar-Wallace",
+      "position": "Point Guard",
+      "playerSlug": "father-henry-carr-ca-on-marquez-escobar-wallace"
+    },
+    {
+      "teamSlug": "father-henry-carr-ca-on",
+      "teamName": "Father Henry Carr",
+      "jersey": "32",
+      "name": "Trust Odia",
+      "position": "Shooting Guard",
+      "playerSlug": "father-henry-carr-ca-on-trust-odia"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "0",
+      "name": "Isaiah Coscarella-Knight",
+      "position": "Point Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-isaiah-coscarella-knight"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "2",
+      "name": "Ari Anderson",
+      "position": "Point Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-ari-anderson"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "4",
+      "name": "Ayden Thomas-Sybbliss",
+      "position": "Point Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-ayden-thomas-sybbliss"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "8",
+      "name": "Amare Afriyie",
+      "position": "Point Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-amare-afriyie"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "9",
+      "name": "Elijah Lubansa",
+      "position": "Small Forward",
+      "playerSlug": "full-circle-basketball-academy-ca-on-elijah-lubansa"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "10",
+      "name": "Brian Lam",
+      "position": "Shooting Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-brian-lam"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "11",
+      "name": "Kaden Lati",
+      "position": "Shooting Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-kaden-lati"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "13",
+      "name": "Baldeep Khatkar",
+      "position": "Small Forward",
+      "playerSlug": "full-circle-basketball-academy-ca-on-baldeep-khatkar"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "15",
+      "name": "Elijah Anderson",
+      "position": "Point Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-elijah-anderson"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "17",
+      "name": "Ben Jang",
+      "position": "Shooting Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-ben-jang"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "20",
+      "name": "Darius Lewis",
+      "position": "Shooting Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-darius-lewis"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "21",
+      "name": "Zachary Osman-Kayo",
+      "position": "Point Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-zachary-osman-kayo"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "24",
+      "name": "Zakarya Hussaini",
+      "position": "Small Forward",
+      "playerSlug": "full-circle-basketball-academy-ca-on-zakarya-hussaini"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "29",
+      "name": "Caden Hopkins",
+      "position": "Shooting Guard",
+      "playerSlug": "full-circle-basketball-academy-ca-on-caden-hopkins"
+    },
+    {
+      "teamSlug": "full-circle-basketball-academy-ca-on",
+      "teamName": "Full Circle Basketball Academy",
+      "jersey": "34",
+      "name": "Eru Akiri",
+      "position": "Power Forward",
+      "playerSlug": "full-circle-basketball-academy-ca-on-eru-akiri"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "1",
+      "name": "Izayah Ellsworth",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-izayah-ellsworth"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "4",
+      "name": "Jahziah Bennette",
+      "position": "Shooting Guard",
+      "playerSlug": "future-hope-academy-ca-on-jahziah-bennette"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "6",
+      "name": "Jelani Watson",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-jelani-watson"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "9",
+      "name": "Jahzye Lem",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-jahzye-lem"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "13",
+      "name": "Jaiven Smith",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-jaiven-smith"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "15",
+      "name": "Damain Walters-Beason",
+      "position": "Power Forward",
+      "playerSlug": "future-hope-academy-ca-on-damain-walters-beason"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "17",
+      "name": "Marley Ollivierre-Taylor",
+      "position": "Shooting Guard",
+      "playerSlug": "future-hope-academy-ca-on-marley-ollivierre-taylor"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "21",
+      "name": "Marcus Whyte",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-marcus-whyte"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "23",
+      "name": "Zavoy Harris",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-zavoy-harris"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "24",
+      "name": "Isaac Wheatle",
+      "position": "Power Forward",
+      "playerSlug": "future-hope-academy-ca-on-isaac-wheatle"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "28",
+      "name": "Luciano Leslie",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-luciano-leslie"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "34",
+      "name": "Jonathan Kabongo",
+      "position": "Center",
+      "playerSlug": "future-hope-academy-ca-on-jonathan-kabongo"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "36",
+      "name": "Thristan Needham-Peddie",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-thristan-needham-peddie"
+    },
+    {
+      "teamSlug": "future-hope-academy-ca-on",
+      "teamName": "Future Hope Academy",
+      "jersey": "45",
+      "name": "Joel Girma",
+      "position": "Point Guard",
+      "playerSlug": "future-hope-academy-ca-on-joel-girma"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "6",
+      "name": "Cameron Otto-Goldman",
+      "position": "Point Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-cameron-otto-goldman"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "7",
+      "name": "Malcolm Guthrie",
+      "position": "Shooting Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-malcolm-guthrie"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "8",
+      "name": "Nathaniel Pesachov",
+      "position": "Shooting Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-nathaniel-pesachov"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "11",
+      "name": "Jaden Censori-Hercules",
+      "position": "Small Forward",
+      "playerSlug": "hodan-nighthawks-ca-on-jaden-censori-hercules"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "14",
+      "name": "Landen Downer",
+      "position": "Point Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-landen-downer"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "20",
+      "name": "Umar Chaudhry",
+      "position": "Small Forward",
+      "playerSlug": "hodan-nighthawks-ca-on-umar-chaudhry"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "25",
+      "name": "Jonah Layne",
+      "position": "Small Forward",
+      "playerSlug": "hodan-nighthawks-ca-on-jonah-layne"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "27",
+      "name": "Quentin Bernard",
+      "position": "Shooting Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-quentin-bernard"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "34",
+      "name": "Filip Golubovic",
+      "position": "Point Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-filip-golubovic"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "39",
+      "name": "Rolan Yandulov",
+      "position": "Center",
+      "playerSlug": "hodan-nighthawks-ca-on-rolan-yandulov"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "43",
+      "name": "Shaan Sharma",
+      "position": "Small Forward",
+      "playerSlug": "hodan-nighthawks-ca-on-shaan-sharma"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "44",
+      "name": "Noah Papailiadis",
+      "position": "Point Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-noah-papailiadis"
+    },
+    {
+      "teamSlug": "hodan-nighthawks-ca-on",
+      "teamName": "Hodan Nighthawks",
+      "jersey": "45",
+      "name": "Ethan Brown",
+      "position": "Point Guard",
+      "playerSlug": "hodan-nighthawks-ca-on-ethan-brown"
+    },
+    {
+      "teamSlug": "j-addison-school-ca-on",
+      "teamName": "J.Addison School",
+      "jersey": "0",
+      "name": "Elyas Miller-Zaabar",
+      "position": "Shooting Guard",
+      "playerSlug": "j-addison-school-ca-on-elyas-miller-zaabar"
+    },
+    {
+      "teamSlug": "j-addison-school-ca-on",
+      "teamName": "J.Addison School",
+      "jersey": "2",
+      "name": "Saleem Ibikunle",
+      "position": "Shooting Guard",
+      "playerSlug": "j-addison-school-ca-on-saleem-ibikunle"
+    },
+    {
+      "teamSlug": "j-addison-school-ca-on",
+      "teamName": "J.Addison School",
+      "jersey": "4",
+      "name": "Arda Kara",
+      "position": "Point Guard",
+      "playerSlug": "j-addison-school-ca-on-arda-kara"
+    },
+    {
+      "teamSlug": "j-addison-school-ca-on",
+      "teamName": "J.Addison School",
+      "jersey": "9",
+      "name": "Daniel Lopes",
+      "position": "Small Forward",
+      "playerSlug": "j-addison-school-ca-on-daniel-lopes"
+    },
+    {
+      "teamSlug": "j-addison-school-ca-on",
+      "teamName": "J.Addison School",
+      "jersey": "13",
+      "name": "Daren-Kenan Ngnadjo",
+      "position": "Shooting Guard",
+      "playerSlug": "j-addison-school-ca-on-daren-kenan-ngnadjo"
+    },
+    {
+      "teamSlug": "j-addison-school-ca-on",
+      "teamName": "J.Addison School",
+      "jersey": "14",
+      "name": "Jakson Hawke",
+      "position": "Power Forward",
+      "playerSlug": "j-addison-school-ca-on-jakson-hawke"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "0",
+      "name": "Cerdic Orobor",
+      "position": "Point Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-cerdic-orobor"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "1",
+      "name": "Prince Appau",
+      "position": "Point Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-prince-appau"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "2",
+      "name": "Ta&#x2019;Quan Philbert",
+      "position": "Point Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-ta-x2019-quan-philbert"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "3",
+      "name": "Elijah Michael Thompson",
+      "position": "Point Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-elijah-michael-thompson"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "5",
+      "name": "Mateo Bennett",
+      "position": "Small Forward",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-mateo-bennett"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "6",
+      "name": "Jerrel Duker",
+      "position": "Shooting Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-jerrel-duker"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "7",
+      "name": "Sandy Duan",
+      "position": "Point Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-sandy-duan"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "8",
+      "name": "Antonio Ray Sempiira",
+      "position": "Small Forward",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-antonio-ray-sempiira"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "9",
+      "name": "Michael Obiefuna",
+      "position": "Small Forward",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-michael-obiefuna"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "10",
+      "name": "Lucas Wabola",
+      "position": "Small Forward",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-lucas-wabola"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "15",
+      "name": "Xavier Campbell",
+      "position": "Point Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-xavier-campbell"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "18",
+      "name": "Kiefer Jansen",
+      "position": "Shooting Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-kiefer-jansen"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "24",
+      "name": "Matei Golea",
+      "position": "Shooting Guard",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-matei-golea"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "25",
+      "name": "Jisiah Guthrie",
+      "position": "Small Forward",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-jisiah-guthrie"
+    },
+    {
+      "teamSlug": "james-cardinal-mcguigan-ca-on",
+      "teamName": "James Cardinal McGuigan",
+      "jersey": "30",
+      "name": "Arthur Bodden",
+      "position": "Power Forward",
+      "playerSlug": "james-cardinal-mcguigan-ca-on-arthur-bodden"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "1",
+      "name": "Praise Badejo",
+      "position": "Point Guard",
+      "playerSlug": "king-heights-academy-ca-on-praise-badejo"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "2",
+      "name": "Nicholas Wuthrich",
+      "position": "Point Guard",
+      "playerSlug": "king-heights-academy-ca-on-nicholas-wuthrich"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "3",
+      "name": "Ooritselaju Gbenebitse",
+      "position": "Center",
+      "playerSlug": "king-heights-academy-ca-on-ooritselaju-gbenebitse"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "4",
+      "name": "Jayden Hope Goring",
+      "position": "Point Guard",
+      "playerSlug": "king-heights-academy-ca-on-jayden-hope-goring"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "5",
+      "name": "Pedro Wamba",
+      "position": "Small Forward",
+      "playerSlug": "king-heights-academy-ca-on-pedro-wamba"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "8",
+      "name": "Blake Feldman",
+      "position": "Point Guard",
+      "playerSlug": "king-heights-academy-ca-on-blake-feldman"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "9",
+      "name": "Kenan Gilao",
+      "position": "Small Forward",
+      "playerSlug": "king-heights-academy-ca-on-kenan-gilao"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "15",
+      "name": "Nicolas Logan",
+      "position": "Shooting Guard",
+      "playerSlug": "king-heights-academy-ca-on-nicolas-logan"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "17",
+      "name": "Osarenoma Osarenkhoe",
+      "position": "Point Guard",
+      "playerSlug": "king-heights-academy-ca-on-osarenoma-osarenkhoe"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "21",
+      "name": "Elijah O'Connor",
+      "position": "Small Forward",
+      "playerSlug": "king-heights-academy-ca-on-elijah-oconnor"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "35",
+      "name": "Jaidyn Cornick",
+      "position": "Point Guard",
+      "playerSlug": "king-heights-academy-ca-on-jaidyn-cornick"
+    },
+    {
+      "teamSlug": "king-heights-academy-ca-on",
+      "teamName": "King Heights Academy",
+      "jersey": "50",
+      "name": "Demetre Assikopoulos",
+      "position": "Shooting Guard",
+      "playerSlug": "king-heights-academy-ca-on-demetre-assikopoulos"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "0",
+      "name": "Marcus Mbabazi",
+      "position": "Shooting Guard",
+      "playerSlug": "louis-riel-academy-ca-on-marcus-mbabazi"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "1",
+      "name": "Alens Pierre",
+      "position": "Power Forward",
+      "playerSlug": "louis-riel-academy-ca-on-alens-pierre"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "4",
+      "name": "Dan Itangitekanziza",
+      "position": "Small Forward",
+      "playerSlug": "louis-riel-academy-ca-on-dan-itangitekanziza"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "5",
+      "name": "Cameron Mwana Nteba",
+      "position": "Point Guard",
+      "playerSlug": "louis-riel-academy-ca-on-cameron-mwana-nteba"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "7",
+      "name": "Kayden Dayal",
+      "position": "Point Guard",
+      "playerSlug": "louis-riel-academy-ca-on-kayden-dayal"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "9",
+      "name": "Quinton Robinson-Holder",
+      "position": "Shooting Guard",
+      "playerSlug": "louis-riel-academy-ca-on-quinton-robinson-holder"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "10",
+      "name": "Jayden Nyabuhoro",
+      "position": "Point Guard",
+      "playerSlug": "louis-riel-academy-ca-on-jayden-nyabuhoro"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "11",
+      "name": "Yothan Mutonkole",
+      "position": "Point Guard",
+      "playerSlug": "louis-riel-academy-ca-on-yothan-mutonkole"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "13",
+      "name": "Wadensky Mervilus",
+      "position": "Center",
+      "playerSlug": "louis-riel-academy-ca-on-wadensky-mervilus"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "30",
+      "name": "Keo Neptune",
+      "position": "Point Guard",
+      "playerSlug": "louis-riel-academy-ca-on-keo-neptune"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "33",
+      "name": "Loic Njeuga",
+      "position": "Center",
+      "playerSlug": "louis-riel-academy-ca-on-loic-njeuga"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "34",
+      "name": "Ishmael Carson",
+      "position": "Power Forward",
+      "playerSlug": "louis-riel-academy-ca-on-ishmael-carson"
+    },
+    {
+      "teamSlug": "louis-riel-academy-ca-on",
+      "teamName": "Louis-Riel Academy",
+      "jersey": "55",
+      "name": "Arsene Bambanga",
+      "position": "Power Forward",
+      "playerSlug": "louis-riel-academy-ca-on-arsene-bambanga"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "0",
+      "name": "Yassin Abdelkarim",
+      "position": "Point Guard",
+      "playerSlug": "orangeville-varsity-ca-on-yassin-abdelkarim"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "1",
+      "name": "Matthew Fromme",
+      "position": "Power Forward",
+      "playerSlug": "orangeville-varsity-ca-on-matthew-fromme"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "2",
+      "name": "Akhmad Beterbiev",
+      "position": "Point Guard",
+      "playerSlug": "orangeville-varsity-ca-on-akhmad-beterbiev"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "3",
+      "name": "Gabriel Bignell",
+      "position": "Shooting Guard",
+      "playerSlug": "orangeville-varsity-ca-on-gabriel-bignell"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "4",
+      "name": "Jacob Basdeo",
+      "position": "Shooting Guard",
+      "playerSlug": "orangeville-varsity-ca-on-jacob-basdeo"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "5",
+      "name": "Adam Harvey",
+      "position": "Power Forward",
+      "playerSlug": "orangeville-varsity-ca-on-adam-harvey"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "6",
+      "name": "Carl Weber",
+      "position": "Shooting Guard",
+      "playerSlug": "orangeville-varsity-ca-on-carl-weber"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "7",
+      "name": "Osa Emokpae",
+      "position": "Point Guard",
+      "playerSlug": "orangeville-varsity-ca-on-osa-emokpae"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "8",
+      "name": "Liam Grignano",
+      "position": "Shooting Guard",
+      "playerSlug": "orangeville-varsity-ca-on-liam-grignano"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "9",
+      "name": "Jayden Miranda",
+      "position": "Point Guard",
+      "playerSlug": "orangeville-varsity-ca-on-jayden-miranda"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "10",
+      "name": "Osemudiamen Okhiria",
+      "position": "Power Forward",
+      "playerSlug": "orangeville-varsity-ca-on-osemudiamen-okhiria"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "11",
+      "name": "Grayson Levy",
+      "position": "Point Guard",
+      "playerSlug": "orangeville-varsity-ca-on-grayson-levy"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "12",
+      "name": "Alistair Mackinnon",
+      "position": "Shooting Guard",
+      "playerSlug": "orangeville-varsity-ca-on-alistair-mackinnon"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "15",
+      "name": "Malthe Mikkelsen",
+      "position": "Small Forward",
+      "playerSlug": "orangeville-varsity-ca-on-malthe-mikkelsen"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "21",
+      "name": "Kameron Stuckey",
+      "position": "Power Forward",
+      "playerSlug": "orangeville-varsity-ca-on-kameron-stuckey"
+    },
+    {
+      "teamSlug": "orangeville-varsity-ca-on",
+      "teamName": "Orangeville Varsity",
+      "jersey": "40",
+      "name": "Daniel Anderson",
+      "position": "Small Forward",
+      "playerSlug": "orangeville-varsity-ca-on-daniel-anderson"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "0",
+      "name": "Anderson Hildebrand",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-anderson-hildebrand"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "1",
+      "name": "Aaron Sanchez Jr",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-aaron-sanchez-jr"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "5",
+      "name": "Krishiv Patel",
+      "position": "Shooting Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-krishiv-patel"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "7",
+      "name": "Joshua Muntu",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-joshua-muntu"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "11",
+      "name": "Zhikan Ghorbani",
+      "position": "Shooting Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-zhikan-ghorbani"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "13",
+      "name": "Connor Dobrowolski",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-connor-dobrowolski"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "15",
+      "name": "Abdullah Celik",
+      "position": "Shooting Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-abdullah-celik"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "20",
+      "name": "Liam Duchaine",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-black-ca-on-liam-duchaine"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "23",
+      "name": "Kadar Walton",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-black-ca-on-kadar-walton"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-black-ca-on",
+      "teamName": "Polaris Prep Academy Black",
+      "jersey": "33",
+      "name": "Yigit Yoleri",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-black-ca-on-yigit-yoleri"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "0",
+      "name": "Lukas Krzywicki",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-lukas-krzywicki"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "1",
+      "name": "Romel Trotman",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-romel-trotman"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "2",
+      "name": "Luend Arapi",
+      "position": "Shooting Guard",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-luend-arapi"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "3",
+      "name": "Luka Kapor",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-luka-kapor"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "5",
+      "name": "Luke Hartman",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-luke-hartman"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "7",
+      "name": "Anthony Webber",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-anthony-webber"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "10",
+      "name": "Perrin Taylor",
+      "position": "Power Forward",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-perrin-taylor"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "11",
+      "name": "Austin Caesar",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-austin-caesar"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "12",
+      "name": "Udonis Dennis",
+      "position": "Shooting Guard",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-udonis-dennis"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "20",
+      "name": "Bogdan Vuckovic",
+      "position": "Small Forward",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-bogdan-vuckovic"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "21",
+      "name": "Charles Dart",
+      "position": "Center",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-charles-dart"
+    },
+    {
+      "teamSlug": "polaris-prep-academy-gold-ca-on",
+      "teamName": "Polaris Prep Academy Gold",
+      "jersey": "22",
+      "name": "Antonio Blanco",
+      "position": "Point Guard",
+      "playerSlug": "polaris-prep-academy-gold-ca-on-antonio-blanco"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "0",
+      "name": "Dwayne Smith Jr",
+      "position": "Shooting Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-dwayne-smith-jr"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "0",
+      "name": "Nick Dawson",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-nick-dawson"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "1",
+      "name": "Ifechukwude Emordi",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-ifechukwude-emordi"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "2",
+      "name": "Jazz Stewart",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-jazz-stewart"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "3",
+      "name": "Ayuel Mangaaar",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-ayuel-mangaaar"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "5",
+      "name": "Quintyn Calder",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-quintyn-calder"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "6",
+      "name": "Shaheem Tantawi",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-shaheem-tantawi"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "10",
+      "name": "John Goulbourne",
+      "position": "Power Forward",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-john-goulbourne"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "11",
+      "name": "Chayse Dimaandal",
+      "position": "Small Forward",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-chayse-dimaandal"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "13",
+      "name": "Dana Dadvand",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-dana-dadvand"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "21",
+      "name": "King Andy Kevine Kabasele",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-king-andy-kevine-kabasele"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "25",
+      "name": "Christian Carinci",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-christian-carinci"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "30",
+      "name": "Jaideep Gill",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-jaideep-gill"
+    },
+    {
+      "teamSlug": "richmond-hill-ascend-prep-ca-on",
+      "teamName": "Richmond Hill Ascend Prep",
+      "jersey": "55",
+      "name": "Abdulazeem Adekeye",
+      "position": "Point Guard",
+      "playerSlug": "richmond-hill-ascend-prep-ca-on-abdulazeem-adekeye"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "0",
+      "name": "Kyle Dorsey",
+      "position": "Shooting Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-kyle-dorsey"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "0",
+      "name": "Marcus Halstead",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-marcus-halstead"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "1",
+      "name": "Elijah Patterson",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-elijah-patterson"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "2",
+      "name": "CJ Nelson",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-cj-nelson"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "3",
+      "name": "Matt Loucks",
+      "position": "Small Forward",
+      "playerSlug": "st-judes-academy-blue-ca-on-matt-loucks"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "4",
+      "name": "Kaiden Thomas",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-kaiden-thomas"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "5",
+      "name": "Kemar Grant",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-kemar-grant"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "6",
+      "name": "Tristan Jones",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-tristan-jones"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "8",
+      "name": "Christian Case",
+      "position": "Power Forward",
+      "playerSlug": "st-judes-academy-blue-ca-on-christian-case"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "9",
+      "name": "Yak-Itoro Olaye",
+      "position": "Small Forward",
+      "playerSlug": "st-judes-academy-blue-ca-on-yak-itoro-olaye"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "15",
+      "name": "Otis Onink",
+      "position": "Power Forward",
+      "playerSlug": "st-judes-academy-blue-ca-on-otis-onink"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "16",
+      "name": "Usaym Khan",
+      "position": "Shooting Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-usaym-khan"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "17",
+      "name": "Jimmy Simwanza",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-jimmy-simwanza"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "18",
+      "name": "Isaiah Osei-Boateng",
+      "position": "Small Forward",
+      "playerSlug": "st-judes-academy-blue-ca-on-isaiah-osei-boateng"
+    },
+    {
+      "teamSlug": "st-judes-academy-blue-ca-on",
+      "teamName": "St. Jude's Academy Blue",
+      "jersey": "30",
+      "name": "Sarim Khan",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-blue-ca-on-sarim-khan"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "1",
+      "name": "Java Luke",
+      "position": "Small Forward",
+      "playerSlug": "st-judes-academy-white-ca-on-java-luke"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "5",
+      "name": "Isaiah Blackwood",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-isaiah-blackwood"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "7",
+      "name": "Micah Ebenezer",
+      "position": "Shooting Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-micah-ebenezer"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "13",
+      "name": "Michael Balog-Sipos",
+      "position": "Power Forward",
+      "playerSlug": "st-judes-academy-white-ca-on-michael-balog-sipos"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "14",
+      "name": "Sebastian Stinson",
+      "position": "Power Forward",
+      "playerSlug": "st-judes-academy-white-ca-on-sebastian-stinson"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "20",
+      "name": "Bradlee Ball",
+      "position": "Shooting Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-bradlee-ball"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "21",
+      "name": "Alex Pannunzio",
+      "position": "Shooting Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-alex-pannunzio"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "24",
+      "name": "Kai Walker",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-kai-walker"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "26",
+      "name": "Naeem Miller",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-naeem-miller"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "33",
+      "name": "Daniel Killingbeck",
+      "position": "Point Guard",
+      "playerSlug": "st-judes-academy-white-ca-on-daniel-killingbeck"
+    },
+    {
+      "teamSlug": "st-judes-academy-white-ca-on",
+      "teamName": "St. Jude's Academy White",
+      "jersey": "36",
+      "name": "Marko Milunovic",
+      "position": "Power Forward",
+      "playerSlug": "st-judes-academy-white-ca-on-marko-milunovic"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "0",
+      "name": "Janoy Walkes",
+      "position": "Point Guard",
+      "playerSlug": "tall-pines-academy-ca-on-janoy-walkes"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "1",
+      "name": "Isaiah Webb",
+      "position": "Point Guard",
+      "playerSlug": "tall-pines-academy-ca-on-isaiah-webb"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "2",
+      "name": "Nosa Lawani",
+      "position": "Small Forward",
+      "playerSlug": "tall-pines-academy-ca-on-nosa-lawani"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "3",
+      "name": "Cai Cameron",
+      "position": "Point Guard",
+      "playerSlug": "tall-pines-academy-ca-on-cai-cameron"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "5",
+      "name": "Shubh Pandit",
+      "position": "Power Forward",
+      "playerSlug": "tall-pines-academy-ca-on-shubh-pandit"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "10",
+      "name": "Devaughn Lewis",
+      "position": "Shooting Guard",
+      "playerSlug": "tall-pines-academy-ca-on-devaughn-lewis"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "11",
+      "name": "Temilade Jegele",
+      "position": "Shooting Guard",
+      "playerSlug": "tall-pines-academy-ca-on-temilade-jegele"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "13",
+      "name": "Canaan Owusu",
+      "position": "Shooting Guard",
+      "playerSlug": "tall-pines-academy-ca-on-canaan-owusu"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "15",
+      "name": "Jedidiah Henry",
+      "position": "Shooting Guard",
+      "playerSlug": "tall-pines-academy-ca-on-jedidiah-henry"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "22",
+      "name": "Ezra Akuamoah",
+      "position": "Center",
+      "playerSlug": "tall-pines-academy-ca-on-ezra-akuamoah"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "23",
+      "name": "David Bottomley",
+      "position": "Point Guard",
+      "playerSlug": "tall-pines-academy-ca-on-david-bottomley"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "30",
+      "name": "Joaquin Brooks",
+      "position": "Point Guard",
+      "playerSlug": "tall-pines-academy-ca-on-joaquin-brooks"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "31",
+      "name": "Noah Hanson",
+      "position": "Shooting Guard",
+      "playerSlug": "tall-pines-academy-ca-on-noah-hanson"
+    },
+    {
+      "teamSlug": "tall-pines-academy-ca-on",
+      "teamName": "Tall Pines Academy",
+      "jersey": "35",
+      "name": "Soua Drame",
+      "position": "Shooting Guard",
+      "playerSlug": "tall-pines-academy-ca-on-soua-drame"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "0",
+      "name": "David Kouadio",
+      "position": "Point Guard",
+      "playerSlug": "tri-city-prep-ca-on-david-kouadio"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "1",
+      "name": "Kodi Angelo",
+      "position": "Point Guard",
+      "playerSlug": "tri-city-prep-ca-on-kodi-angelo"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "2",
+      "name": "Joshua Hinds",
+      "position": "Shooting Guard",
+      "playerSlug": "tri-city-prep-ca-on-joshua-hinds"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "3",
+      "name": "Joram Shepherd",
+      "position": "Point Guard",
+      "playerSlug": "tri-city-prep-ca-on-joram-shepherd"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "4",
+      "name": "Caleb Zorko",
+      "position": "Shooting Guard",
+      "playerSlug": "tri-city-prep-ca-on-caleb-zorko"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "5",
+      "name": "Juju Bior",
+      "position": "Shooting Guard",
+      "playerSlug": "tri-city-prep-ca-on-juju-bior"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "6",
+      "name": "Fola Uthman",
+      "position": "Small Forward",
+      "playerSlug": "tri-city-prep-ca-on-fola-uthman"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "7",
+      "name": "Mateo Wyke",
+      "position": "Shooting Guard",
+      "playerSlug": "tri-city-prep-ca-on-mateo-wyke"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "8",
+      "name": "Noah Clements",
+      "position": "Point Guard",
+      "playerSlug": "tri-city-prep-ca-on-noah-clements"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "9",
+      "name": "Austin Van Riet Paap",
+      "position": "Point Guard",
+      "playerSlug": "tri-city-prep-ca-on-austin-van-riet-paap"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "10",
+      "name": "Aleksandr Bolotayev",
+      "position": "Power Forward",
+      "playerSlug": "tri-city-prep-ca-on-aleksandr-bolotayev"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "11",
+      "name": "Marquel Ward",
+      "position": "Small Forward",
+      "playerSlug": "tri-city-prep-ca-on-marquel-ward"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "12",
+      "name": "Damian Runjaic",
+      "position": "Small Forward",
+      "playerSlug": "tri-city-prep-ca-on-damian-runjaic"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "13",
+      "name": "Divine Anyikwa",
+      "position": "Small Forward",
+      "playerSlug": "tri-city-prep-ca-on-divine-anyikwa"
+    },
+    {
+      "teamSlug": "tri-city-prep-ca-on",
+      "teamName": "Tri-City Prep",
+      "jersey": "",
+      "name": "Maksimir Radisic",
+      "position": "Power Forward",
+      "playerSlug": "tri-city-prep-ca-on-maksimir-radisic"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "1",
+      "name": "Anthony Whitter",
+      "position": "Point Guard",
+      "playerSlug": "uchenna-academy-ca-on-anthony-whitter"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "2",
+      "name": "Severyn Borshch",
+      "position": "Shooting Guard",
+      "playerSlug": "uchenna-academy-ca-on-severyn-borshch"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "3",
+      "name": "Diego Imbert",
+      "position": "Point Guard",
+      "playerSlug": "uchenna-academy-ca-on-diego-imbert"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "4",
+      "name": "Julian Sharkawi",
+      "position": "Shooting Guard",
+      "playerSlug": "uchenna-academy-ca-on-julian-sharkawi"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "5",
+      "name": "Illya Kramar",
+      "position": "Shooting Guard",
+      "playerSlug": "uchenna-academy-ca-on-illya-kramar"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "8",
+      "name": "Sekou Tunkara",
+      "position": "Small Forward",
+      "playerSlug": "uchenna-academy-ca-on-sekou-tunkara"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "11",
+      "name": "Johan Naoux",
+      "position": "Point Guard",
+      "playerSlug": "uchenna-academy-ca-on-johan-naoux"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "12",
+      "name": "Loris Monteil",
+      "position": "Shooting Guard",
+      "playerSlug": "uchenna-academy-ca-on-loris-monteil"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "15",
+      "name": "Wens Marcelin",
+      "position": "Point Guard",
+      "playerSlug": "uchenna-academy-ca-on-wens-marcelin"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "21",
+      "name": "John Ogiramoi",
+      "position": "Point Guard",
+      "playerSlug": "uchenna-academy-ca-on-john-ogiramoi"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "22",
+      "name": "Mamadou Sacko",
+      "position": "Small Forward",
+      "playerSlug": "uchenna-academy-ca-on-mamadou-sacko"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "23",
+      "name": "Grayson Ritzand",
+      "position": "Point Guard",
+      "playerSlug": "uchenna-academy-ca-on-grayson-ritzand"
+    },
+    {
+      "teamSlug": "uchenna-academy-ca-on",
+      "teamName": "Uchenna Academy",
+      "jersey": "24",
+      "name": "Mohammed Hamza Bavu Lukau",
+      "position": "Shooting Guard",
+      "playerSlug": "uchenna-academy-ca-on-mohammed-hamza-bavu-lukau"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "0",
+      "name": "Adris Noorestani",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-east-ca-on-adris-noorestani"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "1",
+      "name": "Carter Bowers",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-east-ca-on-carter-bowers"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "2",
+      "name": "Angelo Yap",
+      "position": "Point Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-angelo-yap"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "4",
+      "name": "Khamani Stewart",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-khamani-stewart"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "5",
+      "name": "Tyrus Tyghter",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-tyrus-tyghter"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "8",
+      "name": "Cwentun Mcleod",
+      "position": "Point Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-cwentun-mcleod"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "9",
+      "name": "Khalfani Azzopardi Simpson",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-khalfani-azzopardi-simpson"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "10",
+      "name": "Tristan Steele",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-east-ca-on-tristan-steele"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "11",
+      "name": "Djissa Tizie",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-djissa-tizie"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "14",
+      "name": "King Oladipo",
+      "position": "Center",
+      "playerSlug": "victory-prep-academy-east-ca-on-king-oladipo"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "20",
+      "name": "Ryan Jones",
+      "position": "Point Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-ryan-jones"
+    },
+    {
+      "teamSlug": "victory-prep-academy-east-ca-on",
+      "teamName": "Victory Prep Academy East",
+      "jersey": "22",
+      "name": "Andrew Mutuma",
+      "position": "Point Guard",
+      "playerSlug": "victory-prep-academy-east-ca-on-andrew-mutuma"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "0",
+      "name": "Prince Okorafor",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-west-ca-on-prince-okorafor"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "1",
+      "name": "Kevonne Fuller",
+      "position": "Point Guard",
+      "playerSlug": "victory-prep-academy-west-ca-on-kevonne-fuller"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "2",
+      "name": "Shemar Brown",
+      "position": "Power Forward",
+      "playerSlug": "victory-prep-academy-west-ca-on-shemar-brown"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "3",
+      "name": "Daniel Samuels",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-west-ca-on-daniel-samuels"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "4",
+      "name": "Tayshon Mulrain",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-west-ca-on-tayshon-mulrain"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "8",
+      "name": "Mikhail Crooks-Facey",
+      "position": "Point Guard",
+      "playerSlug": "victory-prep-academy-west-ca-on-mikhail-crooks-facey"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "13",
+      "name": "Prabhnoor Deol",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-west-ca-on-prabhnoor-deol"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "15",
+      "name": "Lukas Layne",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-west-ca-on-lukas-layne"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "27",
+      "name": "Osose Okundonor",
+      "position": "Center",
+      "playerSlug": "victory-prep-academy-west-ca-on-osose-okundonor"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "29",
+      "name": "Veer Malik",
+      "position": "Shooting Guard",
+      "playerSlug": "victory-prep-academy-west-ca-on-veer-malik"
+    },
+    {
+      "teamSlug": "victory-prep-academy-west-ca-on",
+      "teamName": "Victory Prep Academy West",
+      "jersey": "34",
+      "name": "Joshua Jones",
+      "position": "Small Forward",
+      "playerSlug": "victory-prep-academy-west-ca-on-joshua-jones"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "3",
+      "name": "Caleb Smith",
+      "position": "Point Guard",
+      "playerSlug": "william-academy-cobourg-ca-on-caleb-smith"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "8",
+      "name": "Symon Theramene-Georges",
+      "position": "Power Forward",
+      "playerSlug": "william-academy-cobourg-ca-on-symon-theramene-georges"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "10",
+      "name": "Jace Spencer",
+      "position": "Point Guard",
+      "playerSlug": "william-academy-cobourg-ca-on-jace-spencer"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "12",
+      "name": "Eleazar Grant-Bobb",
+      "position": "Small Forward",
+      "playerSlug": "william-academy-cobourg-ca-on-eleazar-grant-bobb"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "17",
+      "name": "Henok Daniel",
+      "position": "Small Forward",
+      "playerSlug": "william-academy-cobourg-ca-on-henok-daniel"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "20",
+      "name": "Elisha Iluobe",
+      "position": "Shooting Guard",
+      "playerSlug": "william-academy-cobourg-ca-on-elisha-iluobe"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "21",
+      "name": "Jamary Onanga",
+      "position": "Shooting Guard",
+      "playerSlug": "william-academy-cobourg-ca-on-jamary-onanga"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "23",
+      "name": "Lakshan Ramanan",
+      "position": "Point Guard",
+      "playerSlug": "william-academy-cobourg-ca-on-lakshan-ramanan"
+    },
+    {
+      "teamSlug": "william-academy-cobourg-ca-on",
+      "teamName": "William Academy Cobourg",
+      "jersey": "33",
+      "name": "Edric Onebunne",
+      "position": "Point Guard",
+      "playerSlug": "william-academy-cobourg-ca-on-edric-onebunne"
+    }
+  ]
+}

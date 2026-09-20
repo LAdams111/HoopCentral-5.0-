@@ -9,10 +9,15 @@ import { getLeagueDisplay } from "@/lib/leagues";
 import {
   getHighSchoolRegion,
   getHighSchoolRegions,
+  groupHighSchoolTeamsByProvince,
   groupHighSchoolTeamsByState,
+  HS_CANADA_REGION_SLUG,
+  HS_USA_REGION_SLUG,
+  hsAreaNameFromSlug,
   isHighSchoolLeague,
+  isKnownHsAreaSlug,
 } from "@/lib/hs-league-groups";
-import { HS_USA_REGION_SLUG, isKnownHsStateSlug, stateNameFromSlug } from "@/lib/hs-us-states";
+import { isKnownHsProvinceSlug } from "@/lib/hs-ca-provinces";
 import {
   getNcaaLeagueConference,
   groupNcaaLeagueTeams,
@@ -44,8 +49,11 @@ export function LeagueDetail() {
 
   const isHighSchool = isHighSchoolLeague(apiSlug);
   const isHsRegionList = isHighSchool && !activeRegionSlug && !activeStateSlug;
-  const isHsStateList = isHighSchool && activeRegionSlug === HS_USA_REGION_SLUG && !activeStateSlug;
+  const isHsUsStateList = isHighSchool && activeRegionSlug === HS_USA_REGION_SLUG && !activeStateSlug;
+  const isHsProvinceList =
+    isHighSchool && activeRegionSlug === HS_CANADA_REGION_SLUG && !activeStateSlug;
   const isHsStateView = isHighSchool && Boolean(activeStateSlug);
+  const isHsProvinceView = isHsStateView && isKnownHsProvinceSlug(activeStateSlug);
 
   const isNcaaGrouped = isNcaaGroupedLeague(apiSlug);
   const ncaaGroupedSlug: NcaaGroupedLeagueSlug | null = isNcaaGrouped ? apiSlug : null;
@@ -61,12 +69,17 @@ export function LeagueDetail() {
   );
 
   const hsRegions = useMemo(
-    () => getHighSchoolRegions(dbLeague?.teams.length ?? 0),
-    [dbLeague?.teams.length],
+    () => getHighSchoolRegions(dbLeague?.teams ?? []),
+    [dbLeague?.teams],
   );
 
   const hsStateGroups = useMemo(
     () => groupHighSchoolTeamsByState(dbLeague?.teams ?? []),
+    [dbLeague?.teams],
+  );
+
+  const hsProvinceGroups = useMemo(
+    () => groupHighSchoolTeamsByProvince(dbLeague?.teams ?? []),
     [dbLeague?.teams],
   );
 
@@ -80,15 +93,23 @@ export function LeagueDetail() {
 
   const activeHsStateGroup = useMemo(
     () =>
-      isHsStateView
+      isHsStateView && !isHsProvinceView
         ? hsStateGroups.find((group) => group.state.slug === activeStateSlug)
         : undefined,
-    [isHsStateView, hsStateGroups, activeStateSlug],
+    [isHsStateView, isHsProvinceView, hsStateGroups, activeStateSlug],
+  );
+
+  const activeHsProvinceGroup = useMemo(
+    () =>
+      isHsProvinceView
+        ? hsProvinceGroups.find((group) => group.province.slug === activeStateSlug)
+        : undefined,
+    [isHsProvinceView, hsProvinceGroups, activeStateSlug],
   );
 
   const activeHsRegion = useMemo(
-    () => (isHsStateList ? getHighSchoolRegion(activeRegionSlug) : undefined),
-    [isHsStateList, activeRegionSlug],
+    () => (isHsUsStateList || isHsProvinceList ? getHighSchoolRegion(activeRegionSlug) : undefined),
+    [isHsUsStateList, isHsProvinceList, activeRegionSlug],
   );
 
   const visibleConferences = useMemo(() => {
@@ -107,19 +128,29 @@ export function LeagueDetail() {
   }, [isHsRegionList, hsRegions, query]);
 
   const visibleHsStates = useMemo(() => {
-    if (!isHsStateList) return [];
+    if (!isHsUsStateList) return [];
     const trimmed = query.trim().toLowerCase();
     const populated = hsStateGroups.filter((group) => group.teams.length > 0);
     if (!trimmed) return populated;
     return populated.filter((group) => group.state.name.toLowerCase().includes(trimmed));
-  }, [isHsStateList, hsStateGroups, query]);
+  }, [isHsUsStateList, hsStateGroups, query]);
+
+  const visibleHsProvinces = useMemo(() => {
+    if (!isHsProvinceList) return [];
+    const trimmed = query.trim().toLowerCase();
+    const populated = hsProvinceGroups.filter((group) => group.teams.length > 0);
+    if (!trimmed) return populated;
+    return populated.filter((group) => group.province.name.toLowerCase().includes(trimmed));
+  }, [isHsProvinceList, hsProvinceGroups, query]);
 
   const teams = useMemo(() => {
-    if (isConferenceList || isHsRegionList || isHsStateList) return [];
+    if (isConferenceList || isHsRegionList || isHsUsStateList || isHsProvinceList) return [];
 
     let source: LeagueTeam[] = [];
     if (isConferenceView) {
       source = activeConferenceGroup?.teams ?? [];
+    } else if (isHsProvinceView) {
+      source = activeHsProvinceGroup?.teams ?? [];
     } else if (isHsStateView) {
       source = activeHsStateGroup?.teams ?? [];
     } else {
@@ -136,11 +167,14 @@ export function LeagueDetail() {
   }, [
     isConferenceList,
     isHsRegionList,
-    isHsStateList,
+    isHsUsStateList,
+    isHsProvinceList,
     isConferenceView,
     isHsStateView,
+    isHsProvinceView,
     activeConferenceGroup?.teams,
     activeHsStateGroup?.teams,
+    activeHsProvinceGroup?.teams,
     dbLeague?.teams,
     query,
   ]);
@@ -171,20 +205,15 @@ export function LeagueDetail() {
     return <ConferenceNotFound leagueSlug={apiSlug} />;
   }
 
-  if (isHsStateList && !isLoading && !activeHsRegion) {
+  if ((isHsUsStateList || isHsProvinceList) && !isLoading && !activeHsRegion) {
     return <RegionNotFound leagueSlug={apiSlug} />;
   }
 
-  if (
-    isHsStateView &&
-    !isLoading &&
-    activeStateSlug !== "other" &&
-    !isKnownHsStateSlug(activeStateSlug)
-  ) {
+  if (isHsStateView && !isLoading && !isKnownHsAreaSlug(activeStateSlug)) {
     return <StateNotFound leagueSlug={apiSlug} />;
   }
 
-  if (isHsStateView && !isLoading && !activeHsStateGroup) {
+  if (isHsStateView && !isLoading && !activeHsStateGroup && !activeHsProvinceGroup) {
     return <StateNotFound leagueSlug={apiSlug} />;
   }
 
@@ -195,24 +224,31 @@ export function LeagueDetail() {
   const totalTeams = dbLeague?.teams.length ?? 0;
   const currentSeasonLabel = seasonYearToLabel(getCurrentSeasonYear());
   const conferenceTitle = activeConferenceGroup?.conference.name ?? "Conference";
-  const hsStateTitle = activeHsStateGroup?.state.name ?? stateNameFromSlug(activeStateSlug);
-  const hsRegionTitle = activeHsRegion?.name ?? "USA";
+  const hsAreaTitle =
+    activeHsProvinceGroup?.province.name ??
+    activeHsStateGroup?.state.name ??
+    hsAreaNameFromSlug(activeStateSlug);
+  const hsRegionTitle = activeHsRegion?.name ?? "Region";
 
   const pageTitle = isConferenceView
     ? conferenceTitle
     : isHsStateView
-      ? hsStateTitle
-      : isHsStateList
+      ? hsAreaTitle
+      : isHsUsStateList || isHsProvinceList
         ? hsRegionTitle
         : displayMeta.display;
 
   const pageSubtitle = isConferenceView
     ? `${displayMeta.display} · ${conferenceTitle}`
-    : isHsStateView
-      ? `${displayMeta.display} · USA · ${hsStateTitle}`
-      : isHsStateList
-        ? `${displayMeta.display} · USA`
-        : displayMeta.description;
+    : isHsProvinceView
+      ? `${displayMeta.display} · Canada · ${hsAreaTitle}`
+      : isHsStateView
+        ? `${displayMeta.display} · United States · ${hsAreaTitle}`
+        : isHsProvinceList
+          ? `${displayMeta.display} · Canada`
+          : isHsUsStateList
+            ? `${displayMeta.display} · United States`
+            : displayMeta.description;
 
   const sectionTitle = isConferenceList
     ? "Conferences"
@@ -220,19 +256,23 @@ export function LeagueDetail() {
       ? conferenceTitle
       : isHsRegionList
         ? "Regions"
-        : isHsStateList
-          ? "States"
-          : isHsStateView
-            ? hsStateTitle
-            : "Teams";
+        : isHsProvinceList
+          ? "Provinces"
+          : isHsUsStateList
+            ? "States"
+            : isHsStateView
+              ? hsAreaTitle
+              : "Teams";
 
   const sectionCount = isConferenceList
     ? visibleConferences.reduce((sum, group) => sum + group.teams.length, 0)
     : isHsRegionList
       ? visibleHsRegions.reduce((sum, group) => sum + group.teamCount, 0)
-      : isHsStateList
-        ? visibleHsStates.reduce((sum, group) => sum + group.teams.length, 0)
-        : teams.length;
+      : isHsProvinceList
+        ? visibleHsProvinces.reduce((sum, group) => sum + group.teams.length, 0)
+        : isHsUsStateList
+          ? visibleHsStates.reduce((sum, group) => sum + group.teams.length, 0)
+          : teams.length;
 
   const sectionTotal = isConferenceList
     ? totalTeams
@@ -240,33 +280,41 @@ export function LeagueDetail() {
       ? (activeConferenceGroup?.teams.length ?? 0)
       : isHsRegionList
         ? totalTeams
-        : isHsStateList
+        : isHsProvinceList || isHsUsStateList
           ? totalTeams
-          : isHsStateView
-            ? (activeHsStateGroup?.teams.length ?? 0)
-            : totalTeams;
+          : isHsProvinceView
+            ? (activeHsProvinceGroup?.teams.length ?? 0)
+            : isHsStateView
+              ? (activeHsStateGroup?.teams.length ?? 0)
+              : totalTeams;
 
   const searchPlaceholder = isConferenceList
     ? "Search conferences..."
     : isHsRegionList
       ? "Search regions..."
-      : isHsStateList
-        ? "Search states..."
-        : "Search teams...";
+      : isHsProvinceList
+        ? "Search provinces..."
+        : isHsUsStateList
+          ? "Search states..."
+          : "Search teams...";
+
+  const hsAreaBackRegion = isHsProvinceView ? HS_CANADA_REGION_SLUG : HS_USA_REGION_SLUG;
 
   const backFallback = isConferenceView
     ? `/leagues/${apiSlug}`
     : isHsStateView
-      ? `/leagues/${apiSlug}/region/${HS_USA_REGION_SLUG}`
-      : isHsStateList
+      ? `/leagues/${apiSlug}/region/${hsAreaBackRegion}`
+      : isHsUsStateList || isHsProvinceList
         ? `/leagues/${apiSlug}`
         : "/leagues";
 
   const backLabel = isConferenceView
     ? "Back to Conferences"
     : isHsStateView
-      ? "Back to States"
-      : isHsStateList
+      ? isHsProvinceView
+        ? "Back to Provinces"
+        : "Back to States"
+      : isHsUsStateList || isHsProvinceList
         ? "Back to Regions"
         : "Back";
 
@@ -371,13 +419,13 @@ export function LeagueDetail() {
           ) : (
             <EmptyState message="No regions found" />
           )
-        ) : isHsStateList ? (
+        ) : isHsUsStateList ? (
           visibleHsStates.length > 0 ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {visibleHsStates.map((group) => (
                 <DrillDownCard
                   key={group.state.slug}
-                  label="USA"
+                  label="United States"
                   title={group.state.name}
                   count={group.teams.length}
                   countLabel="team"
@@ -387,6 +435,23 @@ export function LeagueDetail() {
             </div>
           ) : (
             <EmptyState message="No states found" />
+          )
+        ) : isHsProvinceList ? (
+          visibleHsProvinces.length > 0 ? (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {visibleHsProvinces.map((group) => (
+                <DrillDownCard
+                  key={group.province.slug}
+                  label="Canada"
+                  title={group.province.name}
+                  count={group.teams.length}
+                  countLabel="team"
+                  to={`/leagues/${apiSlug}/state/${group.province.slug}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="No provinces with teams yet" />
           )
         ) : teams.length > 0 ? (
           <TeamGrid
