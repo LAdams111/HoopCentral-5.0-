@@ -241,32 +241,6 @@ export function Login() {
             >
               {isSignup ? `Create ${activeLabel} account` : `Log in as ${activeLabel}`}
             </button>
-
-            <p className="pt-1 text-center text-sm text-muted-foreground">
-              {isSignup ? (
-                <>
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => updateParams({ mode: "login" })}
-                    className="font-semibold text-primary underline underline-offset-4 hover:text-primary/80"
-                  >
-                    Log in
-                  </button>
-                </>
-              ) : (
-                <>
-                  New here?{" "}
-                  <button
-                    type="button"
-                    onClick={() => updateParams({ mode: "signup" })}
-                    className="font-semibold text-primary underline underline-offset-4 hover:text-primary/80"
-                  >
-                    Create account
-                  </button>
-                </>
-              )}
-            </p>
           </form>
         </div>
       </div>
