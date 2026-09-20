@@ -19,12 +19,13 @@ const ROLES: { id: LoginRole; label: string; description: string }[] = [
   {
     id: "coach",
     label: "Coach",
-    description: "Claim your team, manage roster, schedule, and stats.",
+    description: "Claim or add your team, manage roster, and stats.",
   },
   {
     id: "scout",
     label: "Scout",
-    description: "Save lists, notes, and follow prospects across leagues.",
+    description:
+      "Exclusive access to save lists, notes, and follow prospects across leagues.",
   },
 ];
 
