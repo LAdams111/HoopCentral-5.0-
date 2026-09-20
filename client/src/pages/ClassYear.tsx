@@ -21,7 +21,6 @@ export function ClassYear() {
   });
 
   const players = data?.players ?? [];
-  const totalCount = data?.totalCount ?? 0;
 
   if (!isValidYear) {
     return (
@@ -42,14 +41,11 @@ export function ClassYear() {
             <GraduationCap className="h-7 w-7" />
           </div>
           <div>
-            <div className="mb-1 font-mono text-xs uppercase tracking-widest text-primary">
-              High school class
-            </div>
             <h1 className="font-display text-4xl uppercase tracking-tighter text-foreground md:text-6xl">
               Class of {classYear}
             </h1>
-            <p className="font-mono text-sm text-muted-foreground">
-              Top 50 most viewed players in the Class of {classYear}
+            <p className="mt-2 font-mono text-sm text-muted-foreground">
+              Top 50 most viewed players
             </p>
           </div>
         </div>
@@ -67,23 +63,16 @@ export function ClassYear() {
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
             Unable to load players for this class.
           </div>
-        ) : totalCount === 0 ? (
+        ) : players.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-border bg-muted/50 py-24 text-center text-muted-foreground">
-            No players found for Class of {classYear}.
+            No players to show for {classYear} yet.
           </div>
         ) : (
-          <>
-            <p className="mb-6 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              {totalCount > players.length
-                ? `Showing top ${players.length} of ${totalCount} players`
-                : `${totalCount} player${totalCount !== 1 ? "s" : ""}`}
-            </p>
-            <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">
-              {players.map((player) => (
-                <PlayerCard key={player.id} player={player} />
-              ))}
-            </div>
-          </>
+          <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">
+            {players.map((player) => (
+              <PlayerCard key={player.id} player={player} />
+            ))}
+          </div>
         )}
       </div>
     </div>

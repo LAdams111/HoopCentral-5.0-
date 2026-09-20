@@ -18,10 +18,10 @@ export function Classes() {
           </div>
           <div>
             <h1 className="font-display text-4xl uppercase tracking-tighter text-foreground md:text-6xl">
-              <span className="text-primary">Classes</span>
+              Class of
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              High school graduation class (Class of 20XX)
+              High school graduation years
             </p>
           </div>
         </div>
@@ -45,18 +45,13 @@ export function Classes() {
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {yearCounts.map(({ year, count }) => (
+            {yearCounts.map(({ year }) => (
               <Link
                 key={year}
                 to={`/classes/${year}`}
-                className="flex items-center justify-between rounded-xl border border-border bg-card/50 px-5 py-4 transition-all hover:border-primary/50 hover:bg-card"
+                className="flex items-center justify-center rounded-xl border border-border bg-card/50 px-5 py-4 transition-all hover:border-primary/50 hover:bg-card"
               >
-                <span className="font-display text-2xl text-foreground md:text-3xl">
-                  Class of {year}
-                </span>
-                <span className="font-mono text-sm text-muted-foreground">
-                  {count} player{count !== 1 ? "s" : ""}
-                </span>
+                <span className="font-display text-3xl text-foreground md:text-4xl">{year}</span>
               </Link>
             ))}
           </div>
