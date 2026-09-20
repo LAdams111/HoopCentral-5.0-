@@ -141,6 +141,13 @@
       "when": 1751299200000,
       "tag": "0023_add_hs_class_of",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1751385600000,
+      "tag": "0024_player_game_logs",
+      "breakpoints": true
     }
   ]
 }

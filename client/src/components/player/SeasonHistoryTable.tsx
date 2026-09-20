@@ -1,8 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { ScanSearch } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { PlayerStat } from "@/lib/api";
-import { formatGamesPlayed } from "@/lib/api";
+import { formatGamesPlayed, getPlayerGameLogs } from "@/lib/api";
 import { rosterPath, displayTeamName } from "@/lib/constants";
 import {
   getDemoGameLogForSeason,
@@ -13,7 +14,12 @@ import { SeasonGameLogModal } from "./SeasonGameLogModal";
 
 type SeasonHistoryTableProps = {
   stats: PlayerStat[];
-  player?: { name: string; slug?: string | null };
+  player?: {
+    id?: number;
+    name: string;
+    slug?: string | null;
+    gameLogSeasons?: string[];
+  };
 };
 
 const thCell =
@@ -55,10 +61,18 @@ function TeamNameCell({ label, to }: { label: string; to: string }) {
 
 export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
   const demoEnabled = player ? isLebronGameLogDemoPlayer(player) : false;
+  const liveSeasons = new Set(player?.gameLogSeasons ?? []);
+  const inspectEnabled = demoEnabled || liveSeasons.size > 0;
   const [gameLogSeason, setGameLogSeason] = useState<{
     season: string;
     team: string;
   } | null>(null);
+
+  const liveQuery = useQuery({
+    queryKey: ["player-game-logs", player?.id, gameLogSeason?.season],
+    queryFn: () => getPlayerGameLogs(player!.id!, gameLogSeason!.season),
+    enabled: Boolean(player?.id && gameLogSeason && liveSeasons.has(gameLogSeason.season)),
+  });
 
   if (stats.length === 0) {
     return (
@@ -73,8 +87,11 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
     );
   }
 
-  const modalGames =
-    gameLogSeason && demoEnabled ? getDemoGameLogForSeason(gameLogSeason.season) : [];
+  const usingDemo =
+    Boolean(gameLogSeason && demoEnabled && !liveSeasons.has(gameLogSeason.season));
+  const modalGames = usingDemo
+    ? getDemoGameLogForSeason(gameLogSeason!.season)
+    : (liveQuery.data?.games ?? []);
 
   return (
     <>
@@ -95,7 +112,7 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
               <col style={{ width: "1.65rem" }} />
               <col style={{ width: "1.65rem" }} />
               <col style={{ width: "1.9rem" }} />
-              {demoEnabled ? <col style={{ width: "1.9rem" }} /> : null}
+              {inspectEnabled ? <col style={{ width: "1.9rem" }} /> : null}
             </colgroup>
             <thead className="bg-muted font-mono uppercase text-muted-foreground">
               <tr>
@@ -136,7 +153,7 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                   <span className="md:hidden">FG</span>
                   <span className="hidden md:inline">FG%</span>
                 </th>
-                {demoEnabled ? (
+                {inspectEnabled ? (
                   <th className={`${thCell} text-right md:px-4`}>Log</th>
                 ) : null}
               </tr>
@@ -144,7 +161,8 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
             <tbody className="divide-y divide-border">
               {stats.map((stat) => {
                 const showGameLog =
-                  demoEnabled && hasDemoGameLogForSeason(stat.season);
+                  liveSeasons.has(stat.season) ||
+                  (demoEnabled && hasDemoGameLogForSeason(stat.season));
                 const teamLabel = displayTeamName(stat.team, {
                   leagueSlug: stat.leagueSlug,
                   slug: stat.teamSlug,
@@ -188,12 +206,12 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                       {stat.stl_per_g}
                     </td>
                     <td className={`${statCell} tabular-nums text-accent`}>{stat.fg_pct}</td>
-                    {demoEnabled ? (
+                    {inspectEnabled ? (
                       <td className="max-md:px-0.5 max-md:py-1 md:px-4 md:py-4 text-right">
                         {showGameLog ? (
                           <button
                             type="button"
-                            title="Inspect game log (demo)"
+                            title="Inspect game log"
                             aria-label={`Inspect game log for ${stat.season}`}
                             onClick={() =>
                               setGameLogSeason({
@@ -221,11 +239,13 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
 
       {gameLogSeason ? (
         <SeasonGameLogModal
-          open={modalGames.length > 0}
+          open
           onClose={() => setGameLogSeason(null)}
           seasonLabel={gameLogSeason.season}
           teamName={gameLogSeason.team}
           games={modalGames}
+          demo={usingDemo}
+          loading={!usingDemo && liveQuery.isLoading}
         />
       ) : null}
     </>

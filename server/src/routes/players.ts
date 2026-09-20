@@ -11,6 +11,7 @@ import {
   incrementProfileViews,
   searchPlayers,
 } from "../services/player.service.js";
+import { getPlayerGameLogs } from "../services/player-game-log.service.js";
 
 export const playersRouter = Router();
 
@@ -91,6 +92,26 @@ playersRouter.get("/birth-year/:year", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Failed to get players by birth year" } });
+  }
+});
+
+playersRouter.get("/:id/game-logs", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const season = typeof req.query.season === "string" ? req.query.season.trim() : "";
+    if (Number.isNaN(id) || !season) {
+      res.status(400).json({
+        error: { code: "INVALID_REQUEST", message: "Player id and season are required" },
+      });
+      return;
+    }
+    const games = await getPlayerGameLogs(id, season);
+    res.json({ playerId: id, season, games });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Failed to get game logs" },
+    });
   }
 });
 

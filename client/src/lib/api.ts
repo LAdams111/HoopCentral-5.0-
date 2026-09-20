@@ -75,6 +75,28 @@ export interface PlayerProfile extends PlayerCard {
   career: CareerEntry[];
   leaguesPlayed: string[];
   draft?: PlayerDraftInfo | null;
+  gameLogSeasons?: string[];
+}
+
+export interface PlayerGameLogEntry {
+  date: string | null;
+  homeAway: string;
+  opponent: string;
+  result: string | null;
+  gs: boolean | null;
+  mp: string | null;
+  pts: number | null;
+  reb: number | null;
+  ast: number | null;
+  stl: number | null;
+  blk: number | null;
+  tov: number | null;
+  pf: number | null;
+  fg: string | null;
+  fg3: string | null;
+  ft: string | null;
+  plusMinus: string | null;
+  playoffs?: boolean;
 }
 
 export interface LeagueSummary {
@@ -188,6 +210,15 @@ export function getPlayersByClassOf(year: number): Promise<ClassOfPlayersRespons
 export function getPlayer(id: number, league?: string): Promise<PlayerProfile> {
   const qs = league ? `?league=${encodeURIComponent(league)}` : "";
   return fetchJson(`/api/players/${id}${qs}`);
+}
+
+export function getPlayerGameLogs(
+  id: number,
+  season: string,
+): Promise<{ playerId: number; season: string; games: PlayerGameLogEntry[] }> {
+  return fetchJson(
+    `/api/players/${id}/game-logs?season=${encodeURIComponent(season)}`,
+  );
 }
 
 export function getFeaturedPlayers(): Promise<PlayerCard[]> {

@@ -308,7 +308,14 @@ export function PlayerProfile() {
 
           <RecentSeasonPanel stats={sortedStats} />
 
-          <SeasonHistoryTable stats={sortedStats} player={{ name: player.name }} />
+          <SeasonHistoryTable
+            stats={sortedStats}
+            player={{
+              id: player.id,
+              name: player.name,
+              gameLogSeasons: player.gameLogSeasons,
+            }}
+          />
 
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
             <div className="border-b border-border p-6">

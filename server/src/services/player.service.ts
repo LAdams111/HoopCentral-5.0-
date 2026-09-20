@@ -25,6 +25,7 @@ import {
 } from "../utils/birth-date.js";
 import { isPlausibleHsClassOf } from "../utils/hs-class-of.js";
 import { filterPublicPlayerSeasonStats } from "../utils/public-season-stats.js";
+import { getGameLogSeasonsForPlayer } from "./player-game-log.service.js";
 
 export interface PlayerCard {
   id: number;
@@ -97,6 +98,7 @@ export interface PlayerProfile extends PlayerCard {
   career: CareerEntry[];
   leaguesPlayed: string[];
   draft: PlayerDraftInfo | null;
+  gameLogSeasons: string[];
 }
 
 export function toPlayerCard(
@@ -600,6 +602,7 @@ export async function getPlayerById(
   );
   const publicStats = filterPublicPlayerSeasonStats(statList);
   const leaguesPlayed = [...new Set(publicStats.map((s) => s.league))];
+  const gameLogSeasons = await getGameLogSeasonsForPlayer(id);
 
   return {
     ...toPlayerCard(row.player, row.teamName, row.teamSlug),
@@ -610,6 +613,7 @@ export async function getPlayerById(
     career,
     leaguesPlayed,
     draft: null,
+    gameLogSeasons,
   };
 }
 
