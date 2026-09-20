@@ -8,10 +8,21 @@ import {
 } from "lucide-react";
 import { ncaaTeamLogoUrl, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
 import { isNcaaLeagueSlug } from "./ncaa-league-groups";
+import { leagueLogoUrl } from "./leagues";
+import {
+  USPORTS_LEAGUE_LOGO,
+  usportsTeamLogoUrl,
+} from "./usports-team-logos";
 import {
   isUsportsLeagueSlug,
   resolveUsportsTeamDisplayName,
 } from "./usports-team-display";
+
+const NCAA_LOGO_LEAGUES = new Set(["ncaa", "ncaa-m", "ncaa-w", "ncaa-d2", "ncaa-d3"]);
+
+function isNcaaLogoLeague(leagueSlug?: string): boolean {
+  return Boolean(leagueSlug && NCAA_LOGO_LEAGUES.has(leagueSlug));
+}
 
 export const DEFAULT_HEADSHOT =
   "https://cdn.nba.com/headshots/nba/latest/1040x760/1040x760/fallback.png";
@@ -211,11 +222,25 @@ export function teamLogoUrl(
     slug: options?.slug,
   };
 
-  if (isNcaaLeagueSlug(leagueSlug)) {
+  if (isUsportsLeagueSlug(leagueSlug)) {
+    return (
+      usportsTeamLogoUrl({ slug: options?.slug, teamName }) ?? USPORTS_LEAGUE_LOGO
+    );
+  }
+  if (isNcaaLogoLeague(leagueSlug)) {
     return ncaaTeamLogoUrl(teamName, {
       ...ncaaOptions,
       allowAbbreviationMatch: true,
     });
+  }
+  if (leagueSlug === "naia" || leagueSlug === "juco" || leagueSlug === "ccaa") {
+    const espnLogo = ncaaTeamLogoUrl(teamName, {
+      ...ncaaOptions,
+      allowAbbreviationMatch: true,
+    });
+    const ncaaFallback = "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg";
+    if (espnLogo && espnLogo !== ncaaFallback) return espnLogo;
+    return leagueLogoUrl(leagueSlug) ?? espnLogo;
   }
   if (leagueSlug === "g-league" || G_LEAGUE_TEAM_IDS[teamName]) {
     return gleagueTeamLogoUrl(
@@ -230,7 +255,7 @@ export function teamLogoUrl(
   if (leagueSlug === "nba" || NBA_TEAM_IDS[teamName]) {
     return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
   }
-  return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
+  return leagueLogoUrl(leagueSlug) ?? nbaTeamLogoUrl(teamName, options?.variant ?? "global");
 }
 
 export function seasonLabelToUrlYear(seasonLabel: string): string {

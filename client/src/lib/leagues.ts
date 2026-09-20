@@ -264,6 +264,11 @@ export function getLeagueDisplay(slug: string, name: string) {
   };
 }
 
+export function leagueLogoUrl(slug?: string): string | undefined {
+  if (!slug) return undefined;
+  return LEAGUE_DISPLAY[slug.trim().toLowerCase()]?.logoUrl;
+}
+
 export function groupLeaguesForDisplay(leagues: LeagueSummary[]): {
   domestic: LeagueCardData[];
   international: LeagueCardData[];

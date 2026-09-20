@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowRight, Search } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
-import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, teamLogoUrl, displayTeamName } from "@/lib/constants";
+import { TeamLogo } from "@/components/ui/TeamLogo";
+import { rosterPath, seasonYearToLabel, getCurrentSeasonYear, displayTeamName } from "@/lib/constants";
 import { getLeague, type LeagueTeam } from "@/lib/api";
 import { getLeagueDisplay } from "@/lib/leagues";
 import {
@@ -551,13 +552,11 @@ function TeamGrid({
                   <ArrowRight className="h-3 w-3 text-muted-foreground" />
                 </div>
               </div>
-              <img
-                src={teamLogoUrl(team.name, {
-                  leagueSlug,
-                  abbreviation: team.abbreviation,
-                  slug: team.slug,
-                  variant: "primary",
-                })}
+              <TeamLogo
+                teamName={team.name}
+                leagueSlug={leagueSlug}
+                abbreviation={team.abbreviation}
+                slug={team.slug}
                 alt={label}
                 className="h-8 w-8 flex-shrink-0 object-contain"
               />

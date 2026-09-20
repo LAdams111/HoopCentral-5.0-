@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { TeamSummary } from "@/lib/api";
-import { teamLogoUrl, displayTeamName } from "@/lib/constants";
+import { TeamLogo } from "@/components/ui/TeamLogo";
+import { displayTeamName } from "@/lib/constants";
 import { getLeagueDisplay } from "@/lib/leagues";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
 
@@ -36,13 +37,11 @@ export function TeamSearchResults({
               className="hover-elevate flex items-center gap-3 rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
             >
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
-                <img
-                  src={teamLogoUrl(team.name, {
-                    leagueSlug,
-                    abbreviation: team.abbreviation,
-                    slug: team.slug,
-                    variant: "primary",
-                  })}
+                <TeamLogo
+                  teamName={team.name}
+                  leagueSlug={leagueSlug}
+                  abbreviation={team.abbreviation}
+                  slug={team.slug}
                   alt={label}
                   className="max-h-full max-w-full object-contain"
                 />

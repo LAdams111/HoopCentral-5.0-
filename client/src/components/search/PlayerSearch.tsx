@@ -12,8 +12,9 @@ import {
 } from "@/lib/api";
 import { countryFlagUrl } from "@/lib/country-flag";
 import { resolvePlayerHeadshot, onHeadshotError } from "@/lib/headshot";
+import { TeamLogo } from "@/components/ui/TeamLogo";
 import { getLeagueDisplay } from "@/lib/leagues";
-import { teamLogoUrl, displayTeamName } from "@/lib/constants";
+import { displayTeamName } from "@/lib/constants";
 import { publicLeagueSlugForRoster, teamRosterPath } from "@/lib/team-search";
 
 export function PlayerSearch() {
@@ -276,13 +277,11 @@ function TeamSearchRow({
       className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover-elevate"
     >
       <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
-        <img
-          src={teamLogoUrl(team.name, {
-            leagueSlug,
-            abbreviation: team.abbreviation,
-            slug: team.slug,
-            variant: "primary",
-          })}
+        <TeamLogo
+          teamName={team.name}
+          leagueSlug={leagueSlug}
+          abbreviation={team.abbreviation}
+          slug={team.slug}
           alt={label}
           className="max-h-full max-w-full object-contain"
         />

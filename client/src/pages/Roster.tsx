@@ -4,11 +4,11 @@ import { useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { TeamLogo } from "@/components/ui/TeamLogo";
 import {
   formatSeasonHeading,
   generateSeasonLabels,
   normalizeSeasonKey,
-  teamLogoUrl,
   displayTeamName,
 } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
@@ -227,16 +227,13 @@ export function Roster() {
           <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div className="flex items-center gap-6">
               <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center">
-                <img
-                  src={teamLogoUrl(teamName, {
-                    leagueSlug: leagueSlug ?? undefined,
-                    abbreviation: roster?.team.abbreviation,
-                    slug: roster?.team.slug,
-                    variant: "primary",
-                  })}
+                <TeamLogo
+                  teamName={teamName}
+                  leagueSlug={leagueSlug ?? undefined}
+                  abbreviation={roster?.team.abbreviation}
+                  slug={roster?.team.slug}
                   alt={`${teamDisplayName} logo`}
                   className="max-h-full max-w-full object-contain"
-                  data-testid="img-team-logo"
                 />
               </div>
               <div>
