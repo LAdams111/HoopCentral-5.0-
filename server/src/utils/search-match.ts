@@ -1,6 +1,6 @@
 import { sql, type SQL } from "drizzle-orm";
 import type { AnyColumn } from "drizzle-orm/column";
-import { teamSearchRegionPriority } from "./league-regions.js";
+import { teamSearchCollegePriority, teamSearchRegionPriority } from "./league-regions.js";
 
 export function splitSearchWords(value: string): string[] {
   return value
@@ -91,6 +91,10 @@ export function compareTeamSearchResults(
 ): number {
   const scoreDiff = scoreTeamSearchMatch(b, query) - scoreTeamSearchMatch(a, query);
   if (scoreDiff !== 0) return scoreDiff;
+
+  const collegeDiff =
+    teamSearchCollegePriority(a.league.slug) - teamSearchCollegePriority(b.league.slug);
+  if (collegeDiff !== 0) return collegeDiff;
 
   const regionDiff =
     teamSearchRegionPriority(a.league.slug) - teamSearchRegionPriority(b.league.slug);

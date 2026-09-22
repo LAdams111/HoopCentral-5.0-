@@ -24,7 +24,10 @@ import {
   isOsbaTrilliumCanonicalSlug,
   resolveOsbaTrilliumSlugVariants,
 } from "../utils/osba-trillium-team-aliases.js";
-import { NORTH_AMERICAN_LEAGUE_SLUGS } from "../utils/league-regions.js";
+import {
+  NORTH_AMERICAN_LEAGUE_SLUGS,
+  TEAM_SEARCH_COLLEGE_LEAGUE_SLUGS,
+} from "../utils/league-regions.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -361,6 +364,10 @@ export async function searchTeams(params: {
   if (!trimmed) return [];
 
   const limit = Math.min(25, Math.max(1, params.limit ?? 10));
+  const collegeOrder = sql`CASE WHEN ${leagues.slug} IN (${sql.join(
+    TEAM_SEARCH_COLLEGE_LEAGUE_SLUGS.map((slug) => sql`${slug}`),
+    sql`, `,
+  )}) THEN 0 ELSE 1 END`;
   const regionOrder =
     NORTH_AMERICAN_LEAGUE_SLUGS.length > 0
       ? sql`CASE WHEN ${leagues.slug} IN (${sql.join(
@@ -383,7 +390,7 @@ export async function searchTeams(params: {
         wordPrefixMatch(teams.slug, trimmed),
       ),
     )
-    .orderBy(regionOrder, teams.name)
+    .orderBy(collegeOrder, regionOrder, teams.name)
     .limit(limit * 25);
 
   const candidates: TeamSummary[] = [];
