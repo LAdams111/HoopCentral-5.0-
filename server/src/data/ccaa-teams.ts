@@ -349,14 +349,6 @@ for (const team of CCAA_TEAMS) {
   }
 }
 
-export function resolveCcaaOfficialSlug(slug?: string | null): string | null {
-  if (!slug) return null;
-  const key = slug.trim().toLowerCase();
-  if (CCAA_TEAM_BY_SLUG.has(key)) return key;
-  const aliased = CCAA_SLUG_ALIASES[key];
-  return aliased && CCAA_TEAM_BY_SLUG.has(aliased) ? aliased : null;
-}
-
 /** Extra DB slugs that should resolve to an official CCAA school (display only). */
 const CCAA_DISPLAY_ALIASES: Record<string, string> = {
   "ambrose-university": "ambrose",
@@ -402,6 +394,30 @@ const CCAA_DISPLAY_ALIASES: Record<string, string> = {
   "st-boniface": "saint-boniface",
   stboniface: "saint-boniface",
 };
+
+export function resolveCcaaOfficialSlug(slug?: string | null): string | null {
+  if (!slug) return null;
+  const key = slug.trim().toLowerCase();
+  if (CCAA_TEAM_BY_SLUG.has(key)) return key;
+  const aliased = CCAA_SLUG_ALIASES[key] ?? CCAA_DISPLAY_ALIASES[key];
+  return aliased && CCAA_TEAM_BY_SLUG.has(aliased) ? aliased : null;
+}
+
+export function ccaaOfficialSlugVariants(slug: string): string[] {
+  const key = slug.trim().toLowerCase();
+  const official = resolveCcaaOfficialSlug(key);
+  const variants = new Set<string>([key]);
+  if (!official) return [...variants];
+
+  variants.add(official);
+  const team = CCAA_TEAM_BY_SLUG.get(official);
+  if (team?.conferenceCode) variants.add(team.conferenceCode.toLowerCase());
+  for (const alias of team?.aliases ?? []) variants.add(alias.trim().toLowerCase());
+  for (const [alias, canonical] of Object.entries(CCAA_DISPLAY_ALIASES)) {
+    if (canonical === official) variants.add(alias);
+  }
+  return [...variants];
+}
 
 export function buildCcaaCanonicalTeamConfig(): {
   slugAliases: Record<string, string>;

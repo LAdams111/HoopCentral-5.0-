@@ -28,6 +28,11 @@ import {
   NORTH_AMERICAN_LEAGUE_SLUGS,
   TEAM_SEARCH_COLLEGE_LEAGUE_SLUGS,
 } from "../utils/league-regions.js";
+import { ccaaOfficialSlugVariants } from "../data/ccaa-teams.js";
+import {
+  getCcaaOfficialRosterNames,
+  pickCcaaOfficialRosterEntries,
+} from "../data/ccaa-official-rosters.js";
 import { type PlayerCard, toPlayerCard } from "./player.service.js";
 
 export interface TeamInfo {
@@ -102,7 +107,12 @@ function resolveTeamSlugVariants(slugCandidate: string, leagueSlug: string | und
   const isNcaaMen =
     leagueSlug === LEGACY_NCAA_MENS_SLUG || leagueSlug === "ncaa-m";
   if (isNcaaMen) return resolveNcaaTeamSlugVariants(slugCandidate);
-  if (leagueSlug === "ccaa") return resolveCcaaTeamSlugVariants(slugCandidate);
+  if (leagueSlug === "ccaa") {
+    return [...new Set([
+      ...resolveCcaaTeamSlugVariants(slugCandidate),
+      ...ccaaOfficialSlugVariants(slugCandidate),
+    ])];
+  }
   if (leagueSlug === "high-school") return resolveOsbaTrilliumSlugVariants(slugCandidate);
   return [slugCandidate];
 }
@@ -120,7 +130,12 @@ async function relatedTeamIds(
         db,
         resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
       )
-    : null;
+    : await db
+        .select()
+        .from(leagues)
+        .where(eq(leagues.id, team.leagueId))
+        .limit(1)
+        .then((r) => r[0] ?? null);
 
   const slugVariants = resolveTeamSlugVariants(team.slug, leagueRow?.slug);
 
@@ -149,10 +164,54 @@ function officialIdentityExists() {
           or(
             eq(playerIdentities.source, "daltigers_mbkb"),
             eq(playerIdentities.source, "usports-official"),
+            eq(playerIdentities.source, "ccaa-official"),
           ),
         ),
       ),
   );
+}
+
+function shouldUseOfficialIdentityRoster(
+  leagueSlug: string | undefined,
+  teamSlug: string,
+  seasonLabel: string,
+): boolean {
+  return leagueSlug === "ccaa"
+    ? getCcaaOfficialRosterNames(teamSlug, seasonLabel) == null
+    : true;
+}
+
+function ccaaOfficialIdentityExists() {
+  return exists(
+    db
+      .select({ one: sql`1` })
+      .from(playerIdentities)
+      .where(
+        and(
+          eq(playerIdentities.playerId, players.id),
+          eq(playerIdentities.source, "ccaa-official"),
+        ),
+      ),
+  );
+}
+
+function toFilteredRosterCards(
+  rows: Array<{ player: typeof players.$inferSelect; teamName: string; officialCcaa?: unknown }>,
+  leagueSlug: string | undefined,
+  teamSlug: string,
+  seasonLabel: string,
+): PlayerCard[] {
+  const picked =
+    leagueSlug === "ccaa"
+      ? pickCcaaOfficialRosterEntries(
+          rows,
+          teamSlug,
+          seasonLabel,
+          (row) => row.player.displayName,
+          (row) => Boolean(row.officialCcaa),
+        )
+      : rows;
+  return picked.map((row) => toPlayerCard(row.player, row.teamName));
 }
 
 async function officialRosterCount(teamIds: number[], seasonId: number): Promise<number> {
@@ -168,6 +227,7 @@ async function officialRosterCount(teamIds: number[], seasonId: number): Promise
         or(
           eq(playerIdentities.source, "daltigers_mbkb"),
           eq(playerIdentities.source, "usports-official"),
+          eq(playerIdentities.source, "ccaa-official"),
         ),
       ),
     )
@@ -436,11 +496,14 @@ export async function getTeamBySlug(
   let roster: PlayerCard[] = [];
 
   if (latestSeason) {
-    const useOfficialRoster = (await officialRosterCount(teamIds, latestSeason.id)) >= 10;
+    const useOfficialRoster =
+      shouldUseOfficialIdentityRoster(row.league.slug, row.team.slug, latestSeason.seasonLabel) &&
+      (await officialRosterCount(teamIds, latestSeason.id)) >= 10;
     const statRows = await db
       .select({
         player: players,
         teamName: teams.name,
+        officialCcaa: ccaaOfficialIdentityExists(),
       })
       .from(playerSeasonStats)
       .innerJoin(players, eq(playerSeasonStats.playerId, players.id))
@@ -454,8 +517,11 @@ export async function getTeamBySlug(
       )
       .orderBy(players.displayName);
 
-    roster = statRows.map((statRow) =>
-      toPlayerCard(statRow.player, statRow.teamName),
+    roster = toFilteredRosterCards(
+      statRows,
+      row.league.slug,
+      row.team.slug,
+      latestSeason.seasonLabel,
     );
   } else {
     const currentRows = await db
@@ -505,12 +571,27 @@ export async function getTeamRoster(
     };
   }
 
-  const useOfficialRoster = (await officialRosterCount(teamIds, season.id)) >= 10;
+  const leagueRow = leagueSlug
+    ? await findLeagueRowBySlug(
+        db,
+        resolvePublicLeagueSlug(normalizeSlugParam(leagueSlug)),
+      )
+    : await db
+        .select()
+        .from(leagues)
+        .where(eq(leagues.id, team.leagueId))
+        .limit(1)
+        .then((r) => r[0] ?? null);
+
+  const useOfficialRoster =
+    shouldUseOfficialIdentityRoster(leagueRow?.slug, team.slug, season.seasonLabel) &&
+    (await officialRosterCount(teamIds, season.id)) >= 10;
 
   const rows = await db
     .select({
       player: players,
       teamName: teams.name,
+      officialCcaa: ccaaOfficialIdentityExists(),
     })
     .from(playerSeasonStats)
     .innerJoin(players, eq(playerSeasonStats.playerId, players.id))
@@ -527,7 +608,12 @@ export async function getTeamRoster(
   return {
     team: toTeamInfo(team),
     seasonLabel: season.seasonLabel,
-    players: rows.map((row) => toPlayerCard(row.player, row.teamName)),
+    players: toFilteredRosterCards(
+      rows,
+      leagueRow?.slug,
+      team.slug,
+      season.seasonLabel,
+    ),
   };
 }
 
