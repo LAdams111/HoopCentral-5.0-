@@ -11,6 +11,7 @@ import {
 } from "../data/canonical-league-teams.js";
 import { THE_BASKETBALL_LEAGUE_TEAM_SLUGS } from "../data/the-basketball-league-teams.js";
 import { NBA_CURRENT_TEAM_SLUGS } from "../data/nba-teams.js";
+import { resolveCcaaTeamDisplayName } from "../data/ccaa-teams.js";
 import { resolveUsportsTeamDisplayName } from "../data/usports-teams.js";
 import { WNBA_CURRENT_TEAM_SLUGS } from "../data/wnba-teams.js";
 import { db } from "../db/index.js";
@@ -388,6 +389,10 @@ export async function getLeagueBySlug(slug: string): Promise<LeagueDetail | null
   const visibleTeams = filteredTeams.map((team) => {
     if (responseSlug === "u-sports") {
       const displayName = resolveUsportsTeamDisplayName(team.slug, team.name);
+      return displayName ? { ...team, name: displayName } : team;
+    }
+    if (responseSlug === "ccaa") {
+      const displayName = resolveCcaaTeamDisplayName(team.slug, team.name);
       return displayName ? { ...team, name: displayName } : team;
     }
     if (hasCanonicalTeamAllowlist(responseSlug)) {

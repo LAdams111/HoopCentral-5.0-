@@ -113,7 +113,7 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     display: "CCAA",
     tier: "Collegiate",
     description:
-      "The Canadian Collegiate Athletic Association — national governing body for college sport in Canada.",
+      "The Canadian Collegiate Athletic Association — PACWEST, ACAC, OCAA, RSEQ, ACAA, and MCAC.",
     logoUrl:
       "https://upload.wikimedia.org/wikipedia/commons/8/88/Canadian_collegiate_athl_logo.svg",
     regions: ["CA"],

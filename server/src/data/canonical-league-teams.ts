@@ -3,6 +3,7 @@ import {
   LNB_PRO_A_DISPLAY_NAMES,
   LNB_PRO_A_TEAM_SLUG_ALIASES,
 } from "./lnb-pro-a-teams.js";
+import { buildCcaaCanonicalTeamConfig } from "./ccaa-teams.js";
 import { buildUsportsCanonicalTeamConfig } from "./usports-teams.js";
 
 export interface CanonicalLeagueTeamConfig {
@@ -200,6 +201,7 @@ export const CANONICAL_LEAGUE_TEAM_CONFIG: Readonly<Record<string, CanonicalLeag
     displayNames: LNB_PRO_A_DISPLAY_NAMES,
   },
   "u-sports": buildUsportsCanonicalTeamConfig(),
+  ccaa: buildCcaaCanonicalTeamConfig(),
   acb: ACB_TEAM_CONFIG,
   nbl: NBL_TEAM_CONFIG,
   cba: CBA_TEAM_CONFIG,
@@ -247,6 +249,16 @@ export function dedupeCanonicalLeagueTeams<T extends { id: number; slug: string;
     const existing = byCanonical.get(canonical);
     if (!existing) {
       byCanonical.set(canonical, team);
+      continue;
+    }
+
+    const existingIsCanonical = existing.slug.toLowerCase() === canonical;
+    const teamIsCanonical = team.slug.toLowerCase() === canonical;
+    if (teamIsCanonical && !existingIsCanonical) {
+      byCanonical.set(canonical, team);
+      continue;
+    }
+    if (existingIsCanonical && !teamIsCanonical) {
       continue;
     }
 

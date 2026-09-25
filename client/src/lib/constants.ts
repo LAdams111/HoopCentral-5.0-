@@ -17,6 +17,7 @@ import {
   isUsportsLeagueSlug,
   resolveUsportsTeamDisplayName,
 } from "./usports-team-display";
+import { resolveCcaaTeamDisplayName } from "./ccaa-conferences";
 
 const NCAA_LOGO_LEAGUES = new Set(["ncaa", "ncaa-m", "ncaa-w", "ncaa-d2", "ncaa-d3"]);
 
@@ -192,6 +193,11 @@ export function displayTeamName(
       slug: options?.slug,
     });
     if (usportsName) return usportsName;
+  }
+
+  if (options?.leagueSlug?.toLowerCase() === "ccaa") {
+    const ccaaName = resolveCcaaTeamDisplayName(options?.slug, teamName);
+    if (ccaaName) return ccaaName;
   }
 
   if (isNcaaLeagueSlug(options?.leagueSlug)) {
