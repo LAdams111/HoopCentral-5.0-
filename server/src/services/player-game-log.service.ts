@@ -1,5 +1,6 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db, type DbClient } from "../db/index.js";
+import { formatGameLogMinutes } from "../utils/game-log-minutes.js";
 import {
   leagues,
   playerGameLogs,
@@ -107,7 +108,7 @@ export async function getPlayerGameLogs(
     opponent: log.opponent,
     result: log.result,
     gs: log.started,
-    mp: log.minutes,
+    mp: formatGameLogMinutes(log.minutes),
     pts: toNum(log.points),
     reb: toNum(log.rebounds),
     ast: toNum(log.assists),
@@ -158,7 +159,7 @@ export async function upsertPlayerGameLogs(
       homeAway: input.homeAway ?? null,
       result: input.result ?? null,
       started: input.started ?? null,
-      minutes: input.minutes ?? null,
+      minutes: formatGameLogMinutes(input.minutes),
       points: numOrNull(input.points),
       rebounds: numOrNull(input.rebounds),
       assists: numOrNull(input.assists),
