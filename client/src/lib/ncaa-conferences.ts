@@ -4691,7 +4691,6 @@ export const NCAA_M_CONFERENCES: readonly NcaaConferenceMeta[] = [
     "LIN",
     "LR",
     "MORE",
-    "SEMO",
     "SIUE",
     "TNST",
     "TNTC",
@@ -7004,10 +7003,15 @@ function teamMatchesConference(
   for (const conferenceName of conference.teamNames) {
     const normalizedConferenceName = normalizeName(conferenceName);
     if (normalizedConferenceName === normalizedTeamName) return true;
-    if (normalizedConferenceName.startsWith(`${normalizedTeamName} `)) return true;
+    if (
+      normalizedTeamName.length >= 4 &&
+      normalizedConferenceName.startsWith(`${normalizedTeamName} `)
+    ) {
+      return true;
+    }
   }
 
-  if (abbrev && conference.teamAbbrevs.includes(abbrev)) return true;
+  if (abbrev.length >= 3 && conference.teamAbbrevs.includes(abbrev)) return true;
 
   const espnId = resolveNcaaEspnId(team.name, {
     abbreviation: team.abbreviation,
