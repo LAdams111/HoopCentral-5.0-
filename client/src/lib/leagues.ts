@@ -219,8 +219,7 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     tier: "Professional",
     description:
       "France's top professional basketball league, including Jeep and Betclic sponsorship eras.",
-    logoUrl:
-      "https://upload.wikimedia.org/wikipedia/fr/3/34/Logo_Betclic_%C3%89lite_-_2025.svg",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/fr/f/fc/Logo_LNB_Pro_A_-_2017.svg",
     regions: ["FR"],
     category: "international",
   },

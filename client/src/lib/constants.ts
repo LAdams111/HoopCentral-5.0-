@@ -9,6 +9,7 @@ import {
 import { ncaaTeamLogoUrl, resolveNcaaTeamDisplayName } from "./ncaa-team-logos";
 import { isNcaaLeagueSlug } from "./ncaa-league-groups";
 import { leagueLogoUrl } from "./leagues";
+import { oteTeamLogoUrl } from "./ote-team-logos";
 import {
   USPORTS_LEAGUE_LOGO,
   usportsTeamLogoUrl,
@@ -260,6 +261,11 @@ export function teamLogoUrl(
   }
   if (leagueSlug === "nba" || NBA_TEAM_IDS[teamName]) {
     return nbaTeamLogoUrl(teamName, options?.variant ?? "global");
+  }
+  if (leagueSlug === "ote") {
+    return (
+      oteTeamLogoUrl({ slug: options?.slug, teamName }) ?? leagueLogoUrl("ote")
+    );
   }
   return leagueLogoUrl(leagueSlug) ?? nbaTeamLogoUrl(teamName, options?.variant ?? "global");
 }
