@@ -27,6 +27,7 @@ export const INGEST_LEAGUE_SLUG_ALIASES: Record<string, string> = {
   "liga-endesa": "acb",
   "liga-acb": "acb",
   "esp-1": "acb",
+  tbl: "the-basketball-league",
 };
 
 /** Slugs that must never be stored — always resolve to canonical first. */
@@ -42,6 +43,8 @@ export const CANONICAL_LEAGUE_NAMES: Record<string, string> = {
   acb: "Liga ACB",
   "lnb-pro-a": "LNB Pro A",
   "lnb-u21": "LNB Pro A U21",
+  "the-basketball-league": "The Basketball League (USA)",
+  "turkey-tbl": "Turkey TBL",
 };
 
 /** Hidden from public league listings; data shown under ncaa-m instead. */
@@ -83,12 +86,20 @@ export function resolvePublicLeagueSlug(slug: string): string {
   if (normalized === LEGACY_NCAA_MENS_SLUG || normalized === "ncaa-m") {
     return "ncaa-m";
   }
+  if (normalized === "tbl") {
+    return "the-basketball-league";
+  }
   return normalized;
 }
 
 export function leagueGenderForSlug(slug: string): LeagueGender | null {
   const normalized = normalizeSlugParam(slug);
-  if (normalized === "ncaa-m" || normalized === LEGACY_NCAA_MENS_SLUG) {
+  if (
+    normalized === "ncaa-m" ||
+    normalized === LEGACY_NCAA_MENS_SLUG ||
+    normalized === "ncaa-d2" ||
+    normalized === "ncaa-d3"
+  ) {
     return "male";
   }
   if (normalized === NCAA_WOMENS_SLUG) return "female";
@@ -102,6 +113,8 @@ export function canonicalLeagueName(slug: string, providedName: string): string 
   if (normalized === "ncaa-m" || normalized === LEGACY_NCAA_MENS_SLUG) {
     return "NCAA Division I (Men)";
   }
+  if (normalized === "ncaa-d2") return "NCAA Division II (Men)";
+  if (normalized === "ncaa-d3") return "NCAA Division III (Men)";
   if (normalized === NCAA_WOMENS_SLUG) return "NCAA Division I (Women)";
   return CANONICAL_LEAGUE_NAMES[normalized] ?? providedName;
 }

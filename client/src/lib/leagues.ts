@@ -65,19 +65,19 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     category: "domestic",
   },
   "ncaa-d2": {
-    display: "NCAA Division II",
+    display: "NCAA Division II (Men)",
     tier: "Collegiate",
     description:
-      "The second tier of intercollegiate athletics sanctioned by the NCAA, featuring competitive programs across the United States.",
+      "The second tier of men's intercollegiate basketball sanctioned by the NCAA.",
     logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg",
     regions: ["US"],
     category: "domestic",
   },
   "ncaa-d3": {
-    display: "NCAA Division III",
+    display: "NCAA Division III (Men)",
     tier: "Collegiate",
     description:
-      "The largest NCAA division, featuring non-scholarship collegiate basketball programs across the United States.",
+      "Men's non-scholarship collegiate basketball in the largest NCAA division.",
     logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dd/NCAA_logo.svg",
     regions: ["US"],
     category: "domestic",
