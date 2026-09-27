@@ -23,6 +23,16 @@ const HS_TEAM_ALIASES: Record<string, MaxprepsTeamIdentity> = {
     name: "Montverde Academy Eagles Varsity Boys Basketball",
     abbreviation: "MAEVBB",
   },
+  "chino-hills-high-school": {
+    slug: "chino-hills-huskies-ca",
+    name: "Chino Hills Huskies Varsity Boys Basketball",
+    abbreviation: "CHHVBB",
+  },
+  "chino-hills-hs": {
+    slug: "chino-hills-huskies-ca",
+    name: "Chino Hills Huskies Varsity Boys Basketball",
+    abbreviation: "CHHVBB",
+  },
 };
 
 export const MONTEVERDE_HS_CANONICAL_SLUG = "montverde-academy-eagles-fl";
