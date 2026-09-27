@@ -85,8 +85,8 @@ export function PlayerSearch() {
     e.preventDefault();
     const trimmed = query.trim();
     if (trimmed.length < 2) return;
-    setDebounced(trimmed);
-    setOpen(true);
+    setOpen(false);
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
   };
 
   const showDropdown = open && enabled;
@@ -107,6 +107,14 @@ export function PlayerSearch() {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") return;
+            e.preventDefault();
+            const trimmed = query.trim();
+            if (trimmed.length < 2) return;
+            setOpen(false);
+            navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+          }}
           placeholder="Search players, teams, or leagues..."
           className="flex h-9 w-full rounded-full border-2 border-black bg-white/5 px-3 py-7 pl-12 pr-12 text-base ring-offset-background transition-all placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 md:text-sm"
         />

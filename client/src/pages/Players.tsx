@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, Search, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { PlayerCard } from "@/components/player/PlayerCard";
 import { TeamSearchResults } from "@/components/search/TeamSearchResults";
 import {
@@ -207,14 +207,16 @@ function DraftClassView() {
   );
 }
 
-function DirectorySearchView({ initialQ }: { initialQ: string }) {
-  const [query, setQuery] = useState(initialQ);
-  const [debouncedQuery, setDebouncedQuery] = useState(initialQ);
+function DirectorySearchView() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(urlQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(urlQuery);
 
   useEffect(() => {
-    setQuery(initialQ);
-    setDebouncedQuery(initialQ);
-  }, [initialQ]);
+    setQuery(urlQuery);
+    setDebouncedQuery(urlQuery);
+  }, [urlQuery]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(query), 300);
@@ -224,19 +226,28 @@ function DirectorySearchView({ initialQ }: { initialQ: string }) {
   const hasQuery = debouncedQuery.trim().length >= 2;
 
   const { data: teams = [], isLoading: teamsLoading } = useQuery({
-    queryKey: ["search-teams", debouncedQuery],
-    queryFn: () => searchTeams(debouncedQuery, 12),
+    queryKey: ["search-teams-page", debouncedQuery],
+    queryFn: () => searchTeams(debouncedQuery, 25),
     enabled: hasQuery,
   });
 
   const { data: players = [], isLoading: playersLoading } = useQuery({
-    queryKey: ["players", debouncedQuery],
-    queryFn: () => getPlayers(debouncedQuery || undefined),
+    queryKey: ["search-players-page", debouncedQuery],
+    queryFn: () => getPlayers(debouncedQuery, undefined, 100),
+    enabled: hasQuery,
   });
 
-  const isLoading = hasQuery ? teamsLoading || playersLoading : playersLoading;
+  const isLoading = hasQuery && (teamsLoading || playersLoading);
   const noResults = hasQuery && !isLoading && teams.length === 0 && players.length === 0;
   const showPlayers = players.length > 0;
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = query.trim();
+    if (trimmed.length < 2) return;
+    setDebouncedQuery(trimmed);
+    setSearchParams({ q: trimmed });
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-12">
@@ -249,16 +260,10 @@ function DirectorySearchView({ initialQ }: { initialQ: string }) {
             <p className="font-mono text-sm text-muted-foreground">
               Search players and teams across Hoop Central
             </p>
-            <Link
-              to="/players"
-              className="mt-3 inline-block font-mono text-xs uppercase tracking-wider text-primary hover:underline"
-            >
-              ← Back to Draft Class
-            </Link>
           </div>
         </div>
 
-        <div className="relative mb-8 max-w-xl">
+        <form onSubmit={onSubmit} className="relative mb-8 max-w-xl">
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
@@ -267,7 +272,7 @@ function DirectorySearchView({ initialQ }: { initialQ: string }) {
             onChange={(e) => setQuery(e.target.value)}
             className="w-full rounded-full border border-border bg-white py-3 pl-12 pr-4 text-foreground shadow-sm placeholder:text-muted-foreground/50 transition-colors focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
-        </div>
+        </form>
 
         {isLoading ? (
           <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">
@@ -306,12 +311,16 @@ function DirectorySearchView({ initialQ }: { initialQ: string }) {
   );
 }
 
+export function SearchResults() {
+  return <DirectorySearchView />;
+}
+
 export function Players() {
   const [searchParams] = useSearchParams();
   const q = searchParams.get("q") ?? "";
 
   if (q.trim().length > 0) {
-    return <DirectorySearchView initialQ={q} />;
+    return <Navigate to={`/search?q=${encodeURIComponent(q.trim())}`} replace />;
   }
 
   return <DraftClassView />;
