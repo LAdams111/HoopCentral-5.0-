@@ -87,7 +87,8 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     tier: "Collegiate",
     description:
       "The National Association of Intercollegiate Athletics — small-college basketball across the United States.",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/en/8/8e/NAIA_logo.svg",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/c/c0/National_Association_of_Intercollegiate_Athletics_logo.svg",
     regions: ["US"],
     category: "domestic",
   },
@@ -160,8 +161,7 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     tier: "Professional",
     description:
       "The top-tier European professional basketball club competition, featuring the best teams from across the continent.",
-    logoUrl:
-      "https://upload.wikimedia.org/wikipedia/en/f/fb/Euroleague_Basketball_logo.svg",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/9/90/EuroLeague_logo.svg",
     regions: ["EU"],
     category: "international",
   },
@@ -219,6 +219,8 @@ export const LEAGUE_DISPLAY: Record<string, LeagueDisplayMeta> = {
     tier: "Professional",
     description:
       "France's top professional basketball league, including Jeep and Betclic sponsorship eras.",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/fr/3/34/Logo_Betclic_%C3%89lite_-_2025.svg",
     regions: ["FR"],
     category: "international",
   },
