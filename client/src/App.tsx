@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
 import { Classes } from "./pages/Classes";
 import { ClassYear } from "./pages/ClassYear";
@@ -12,9 +13,29 @@ import { Roster } from "./pages/Roster";
 import { Login } from "./pages/Login";
 import { Team } from "./pages/Team";
 
+function TrackPageViews() {
+  const location = useLocation();
+  const isFirst = useRef(true);
+
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
+    const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+    gtag?.("event", "page_view", {
+      page_path: location.pathname + location.search,
+      page_location: window.location.href,
+    });
+  }, [location.pathname, location.search]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <Layout>
+      <TrackPageViews />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
