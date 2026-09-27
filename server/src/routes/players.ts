@@ -99,13 +99,14 @@ playersRouter.get("/:id/game-logs", async (req, res) => {
   try {
     const id = Number(req.params.id);
     const season = typeof req.query.season === "string" ? req.query.season.trim() : "";
+    const league = typeof req.query.league === "string" ? req.query.league.trim() : "";
     if (Number.isNaN(id) || !season) {
       res.status(400).json({
         error: { code: "INVALID_REQUEST", message: "Player id and season are required" },
       });
       return;
     }
-    const games = await getPlayerGameLogs(id, season);
+    const games = await getPlayerGameLogs(id, season, league || undefined);
     res.json({ playerId: id, season, games });
   } catch (err) {
     console.error(err);

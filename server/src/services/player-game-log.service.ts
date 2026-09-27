@@ -76,19 +76,31 @@ function numOrNull(value: number | null | undefined): string | null {
   return String(value);
 }
 
-export async function getGameLogSeasonsForPlayer(playerId: number): Promise<string[]> {
+export async function getGameLogSeasonLeaguesForPlayer(
+  playerId: number,
+): Promise<{ season: string; leagueSlug: string }[]> {
   const rows = await db
-    .selectDistinct({ label: seasons.seasonLabel })
+    .selectDistinct({
+      season: seasons.seasonLabel,
+      leagueSlug: leagues.slug,
+    })
     .from(playerGameLogs)
     .innerJoin(seasons, eq(playerGameLogs.seasonId, seasons.id))
+    .innerJoin(leagues, eq(playerGameLogs.leagueId, leagues.id))
     .where(eq(playerGameLogs.playerId, playerId))
-    .orderBy(asc(seasons.seasonLabel));
-  return rows.map((row) => row.label);
+    .orderBy(asc(seasons.seasonLabel), asc(leagues.slug));
+  return rows;
+}
+
+export async function getGameLogSeasonsForPlayer(playerId: number): Promise<string[]> {
+  const rows = await getGameLogSeasonLeaguesForPlayer(playerId);
+  return [...new Set(rows.map((row) => row.season))];
 }
 
 export async function getPlayerGameLogs(
   playerId: number,
   seasonLabel: string,
+  leagueSlug?: string,
 ): Promise<GameLogEntry[]> {
   const rows = await db
     .select({
@@ -97,8 +109,13 @@ export async function getPlayerGameLogs(
     })
     .from(playerGameLogs)
     .innerJoin(seasons, eq(playerGameLogs.seasonId, seasons.id))
+    .innerJoin(leagues, eq(playerGameLogs.leagueId, leagues.id))
     .where(
-      and(eq(playerGameLogs.playerId, playerId), eq(seasons.seasonLabel, seasonLabel)),
+      and(
+        eq(playerGameLogs.playerId, playerId),
+        eq(seasons.seasonLabel, seasonLabel),
+        leagueSlug ? eq(leagues.slug, leagueSlug) : undefined,
+      ),
     )
     .orderBy(asc(playerGameLogs.gameDate), asc(playerGameLogs.id));
 

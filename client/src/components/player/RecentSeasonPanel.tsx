@@ -12,18 +12,27 @@ export function RecentSeasonPanel({
   stats,
   playerId,
   gameLogSeasons,
+  gameLogSeasonLeagues,
 }: {
   stats: PlayerStat[];
   playerId?: number;
   gameLogSeasons?: string[];
+  gameLogSeasonLeagues?: { season: string; leagueSlug: string }[];
 }) {
   const recent = stats[0];
   const logSeasons = new Set(gameLogSeasons ?? []);
-  const chartSeason = stats.find((stat) => logSeasons.has(stat.season))?.season ?? null;
+  const logKeys = new Set(
+    (gameLogSeasonLeagues ?? []).map((row) => `${row.season}|${row.leagueSlug}`),
+  );
+  const chartStat =
+    stats.find((stat) => logKeys.has(`${stat.season}|${stat.leagueSlug}`)) ??
+    stats.find((stat) => logSeasons.has(stat.season)) ??
+    null;
+  const chartSeason = chartStat?.season ?? null;
 
   const logsQuery = useQuery({
-    queryKey: ["player-game-logs", playerId, chartSeason],
-    queryFn: () => getPlayerGameLogs(playerId!, chartSeason!),
+    queryKey: ["player-game-logs", playerId, chartSeason, chartStat?.leagueSlug],
+    queryFn: () => getPlayerGameLogs(playerId!, chartSeason!, chartStat?.leagueSlug),
     enabled: Boolean(playerId && chartSeason),
   });
 

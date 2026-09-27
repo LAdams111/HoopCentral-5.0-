@@ -76,6 +76,7 @@ export interface PlayerProfile extends PlayerCard {
   leaguesPlayed: string[];
   draft?: PlayerDraftInfo | null;
   gameLogSeasons?: string[];
+  gameLogSeasonLeagues?: { season: string; leagueSlug: string }[];
 }
 
 export interface PlayerGameLogEntry {
@@ -215,10 +216,11 @@ export function getPlayer(id: number, league?: string): Promise<PlayerProfile> {
 export function getPlayerGameLogs(
   id: number,
   season: string,
+  leagueSlug?: string,
 ): Promise<{ playerId: number; season: string; games: PlayerGameLogEntry[] }> {
-  return fetchJson(
-    `/api/players/${id}/game-logs?season=${encodeURIComponent(season)}`,
-  );
+  const params = new URLSearchParams({ season });
+  if (leagueSlug) params.set("league", leagueSlug);
+  return fetchJson(`/api/players/${id}/game-logs?${params}`);
 }
 
 export function getFeaturedPlayers(): Promise<PlayerCard[]> {

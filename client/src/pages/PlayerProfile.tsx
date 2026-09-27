@@ -310,6 +310,7 @@ export function PlayerProfile() {
             stats={sortedStats}
             playerId={player.id}
             gameLogSeasons={player.gameLogSeasons}
+            gameLogSeasonLeagues={player.gameLogSeasonLeagues}
           />
 
           <SeasonHistoryTable
@@ -318,6 +319,7 @@ export function PlayerProfile() {
               id: player.id,
               name: player.name,
               gameLogSeasons: player.gameLogSeasons,
+              gameLogSeasonLeagues: player.gameLogSeasonLeagues,
             }}
           />
 

@@ -19,6 +19,7 @@ type SeasonHistoryTableProps = {
     name: string;
     slug?: string | null;
     gameLogSeasons?: string[];
+    gameLogSeasonLeagues?: { season: string; leagueSlug: string }[];
   };
 };
 
@@ -62,16 +63,26 @@ function TeamNameCell({ label, to }: { label: string; to: string }) {
 export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
   const demoEnabled = player ? isLebronGameLogDemoPlayer(player) : false;
   const liveSeasons = new Set(player?.gameLogSeasons ?? []);
-  const inspectEnabled = demoEnabled || liveSeasons.size > 0;
+  const logKeys = new Set(
+    (player?.gameLogSeasonLeagues ?? []).map((row) => `${row.season}|${row.leagueSlug}`),
+  );
+  const inspectEnabled = demoEnabled || liveSeasons.size > 0 || logKeys.size > 0;
   const [gameLogSeason, setGameLogSeason] = useState<{
     season: string;
     team: string;
+    leagueSlug?: string;
   } | null>(null);
 
   const liveQuery = useQuery({
-    queryKey: ["player-game-logs", player?.id, gameLogSeason?.season],
-    queryFn: () => getPlayerGameLogs(player!.id!, gameLogSeason!.season),
-    enabled: Boolean(player?.id && gameLogSeason && liveSeasons.has(gameLogSeason.season)),
+    queryKey: ["player-game-logs", player?.id, gameLogSeason?.season, gameLogSeason?.leagueSlug],
+    queryFn: () =>
+      getPlayerGameLogs(player!.id!, gameLogSeason!.season, gameLogSeason!.leagueSlug),
+    enabled: Boolean(
+      player?.id &&
+        gameLogSeason &&
+        (logKeys.has(`${gameLogSeason.season}|${gameLogSeason.leagueSlug}`) ||
+          liveSeasons.has(gameLogSeason.season)),
+    ),
   });
 
   if (stats.length === 0) {
@@ -160,9 +171,13 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
             </thead>
             <tbody className="divide-y divide-border">
               {stats.map((stat) => {
-                const showGameLog =
-                  liveSeasons.has(stat.season) ||
-                  (demoEnabled && hasDemoGameLogForSeason(stat.season));
+                const showGameLog = logKeys.size
+                  ? logKeys.has(`${stat.season}|${stat.leagueSlug}`) ||
+                    (demoEnabled &&
+                      hasDemoGameLogForSeason(stat.season) &&
+                      !liveSeasons.has(stat.season))
+                  : liveSeasons.has(stat.season) ||
+                    (demoEnabled && hasDemoGameLogForSeason(stat.season));
                 const teamLabel = displayTeamName(stat.team, {
                   leagueSlug: stat.leagueSlug,
                   slug: stat.teamSlug,
@@ -217,6 +232,7 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                               setGameLogSeason({
                                 season: stat.season,
                                 team: teamLabel,
+                                leagueSlug: stat.leagueSlug,
                               })
                             }
                             className="hover-elevate inline-flex items-center justify-center rounded-md border border-border bg-muted/50 p-1 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary md:gap-1 md:rounded-lg md:px-2.5 md:py-1.5 md:text-xs md:font-medium"
