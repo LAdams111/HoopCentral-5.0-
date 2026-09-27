@@ -132,9 +132,9 @@ playersRouter.get("/:id", async (req, res) => {
 
     res.json({
       ...player,
-      draft: findDraftPickForPlayer({
+      draft: await findDraftPickForPlayer({
+        id,
         name: player.name,
-        birthDate: player.birthDate,
       }),
     });
   } catch (err) {

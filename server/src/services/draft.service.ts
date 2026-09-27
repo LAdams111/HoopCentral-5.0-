@@ -83,7 +83,10 @@ type MatchedPlayer = typeof players.$inferSelect & {
 };
 
 const draftClassCache = new Map<number, { expires: number; value: DraftClassResult }>();
+const draftOwnerCache = new Map<string, { expires: number; playerId: number | null }>();
 const DRAFT_CACHE_TTL_MS = 5 * 60 * 1000;
+/** Below this, a same-name profile is not treated as the draftee. */
+const MIN_DRAFT_PROFILE_SCORE = 120;
 
 export function getDraftYears(): number[] {
   return Object.keys(draftHistory.years)
@@ -209,11 +212,11 @@ function scoreMatch(
   return score;
 }
 
-async function resolvePlayersByNames(
+async function resolveDraftChoices(
   draftYear: number,
   picks: { playerName: string; affiliation: string }[],
-): Promise<Map<string, MatchedPlayer>> {
-  const result = new Map<string, MatchedPlayer>();
+): Promise<Map<string, { player: MatchedPlayer; score: number }>> {
+  const result = new Map<string, { player: MatchedPlayer; score: number }>();
   if (picks.length === 0) return result;
 
   const slugSet = new Set<string>();
@@ -312,32 +315,53 @@ async function resolvePlayersByNames(
   }));
 
   for (const pick of picks) {
-    const overrideKey = `${draftYear}:${normalizePersonKey(pick.playerName)}`;
-    const overrideId = DRAFT_PLAYER_ID_OVERRIDES[overrideKey];
-    if (overrideId != null) {
-      const forced = candidates.find((c) => c.id === overrideId);
-      if (forced) {
-        result.set(pick.playerName, forced);
-        continue;
-      }
-    }
-
-    const nameSlugs = new Set(playerNameCandidates(pick.playerName));
-    const keys = new Set(displayNameVariants(pick.playerName).map(normalizePersonKey));
-    const matches = candidates.filter((c) => {
-      if (nameSlugs.has(c.slug)) return true;
-      return keys.has(normalizePersonKey(c.displayName));
-    });
-    if (matches.length === 0) continue;
-    matches.sort(
-      (a, b) =>
-        scoreMatch(pick.playerName, pick.affiliation, draftYear, b) -
-        scoreMatch(pick.playerName, pick.affiliation, draftYear, a),
-    );
-    result.set(pick.playerName, matches[0]!);
+    const best = selectBestDraftCandidate(draftYear, pick, candidates);
+    if (best) result.set(pick.playerName, best);
   }
 
   return result;
+}
+
+async function resolvePlayersByNames(
+  draftYear: number,
+  picks: { playerName: string; affiliation: string }[],
+): Promise<Map<string, MatchedPlayer>> {
+  const choices = await resolveDraftChoices(draftYear, picks);
+  const result = new Map<string, MatchedPlayer>();
+  for (const [name, choice] of choices) result.set(name, choice.player);
+  return result;
+}
+
+function selectBestDraftCandidate(
+  draftYear: number,
+  pick: { playerName: string; affiliation: string },
+  candidates: MatchedPlayer[],
+): { player: MatchedPlayer; score: number } | null {
+  const overrideKey = `${draftYear}:${normalizePersonKey(pick.playerName)}`;
+  const overrideId = DRAFT_PLAYER_ID_OVERRIDES[overrideKey];
+  if (overrideId != null) {
+    const forced = candidates.find((c) => c.id === overrideId);
+    if (forced) return { player: forced, score: 10_000 };
+  }
+
+  const nameSlugs = new Set(playerNameCandidates(pick.playerName));
+  const keys = new Set(displayNameVariants(pick.playerName).map(normalizePersonKey));
+  const matches = candidates.filter((c) => {
+    if (nameSlugs.has(c.slug)) return true;
+    return keys.has(normalizePersonKey(c.displayName));
+  });
+  if (matches.length === 0) return null;
+
+  let best = matches[0]!;
+  let bestScore = scoreMatch(pick.playerName, pick.affiliation, draftYear, best);
+  for (const candidate of matches.slice(1)) {
+    const score = scoreMatch(pick.playerName, pick.affiliation, draftYear, candidate);
+    if (score > bestScore) {
+      best = candidate;
+      bestScore = score;
+    }
+  }
+  return { player: best, score: bestScore };
 }
 
 export async function getDraftClass(year: number): Promise<DraftClassResult | null> {
@@ -405,10 +429,12 @@ export async function getDraftClass(year: number): Promise<DraftClassResult | nu
 /** Test helper / maintenance */
 export function clearDraftClassCache(): void {
   draftClassCache.clear();
+  draftOwnerCache.clear();
 }
 
 interface IndexedDraftPick extends PlayerDraftInfo {
   playerName: string;
+  affiliation: string;
   nameKeys: Set<string>;
   hasJr: boolean;
   hasSr: boolean;
@@ -441,6 +467,7 @@ function buildDraftPickIndex(): IndexedDraftPick[] {
         draftTeam,
         draftTeamLogoName: draftTeamLogoFranchise(draftTeam),
         playerName: seed.playerName,
+        affiliation: seed.affiliation,
         nameKeys,
         hasJr: nameHasSuffix(seed.playerName, "jr"),
         hasSr: nameHasSuffix(seed.playerName, "sr"),
@@ -464,12 +491,31 @@ function toPlayerDraftInfo(pick: IndexedDraftPick): PlayerDraftInfo {
   };
 }
 
-/** Look up a player's NBA draft slot from the same history used on the Draft page. */
-export function findDraftPickForPlayer(input: {
+async function draftPickOwnerId(pick: IndexedDraftPick): Promise<number | null> {
+  const cacheKey = `${pick.year}:${pick.overallPick}`;
+  const cached = draftOwnerCache.get(cacheKey);
+  if (cached && cached.expires > Date.now()) return cached.playerId;
+
+  const choices = await resolveDraftChoices(pick.year, [
+    { playerName: pick.playerName, affiliation: pick.affiliation },
+  ]);
+  const winner = choices.get(pick.playerName);
+  const playerId =
+    winner && winner.score >= MIN_DRAFT_PROFILE_SCORE ? winner.player.id : null;
+
+  draftOwnerCache.set(cacheKey, {
+    expires: Date.now() + DRAFT_CACHE_TTL_MS,
+    playerId,
+  });
+  return playerId;
+}
+
+/** Look up a player's NBA draft slot. Only the resolved draftee profile gets it. */
+export async function findDraftPickForPlayer(input: {
+  id: number;
   name: string;
   slug?: string | null;
-  birthDate?: string | null;
-}): PlayerDraftInfo | null {
+}): Promise<PlayerDraftInfo | null> {
   const keys = new Set<string>();
   for (const variant of displayNameVariants(input.name)) {
     keys.add(normalizePersonKey(variant));
@@ -481,36 +527,10 @@ export function findDraftPickForPlayer(input: {
     [...pick.nameKeys].some((key) => keys.has(key)),
   );
   if (matches.length === 0) return null;
-  if (matches.length === 1) return toPlayerDraftInfo(matches[0]!);
 
-  const playerHasJr = nameHasSuffix(input.name, "jr") || Boolean(input.slug?.endsWith("-jr"));
-  const playerHasSr = nameHasSuffix(input.name, "sr") || Boolean(input.slug?.endsWith("-sr"));
-  const suffixMatches = matches.filter((pick) => {
-    if (playerHasJr) return pick.hasJr;
-    if (playerHasSr) return pick.hasSr;
-    return !pick.hasJr && !pick.hasSr;
-  });
-  const narrowed = suffixMatches.length > 0 ? suffixMatches : matches;
-  if (narrowed.length === 1) return toPlayerDraftInfo(narrowed[0]!);
-
-  const birthYear = input.birthDate
-    ? Number.parseInt(input.birthDate.slice(0, 4), 10)
-    : Number.NaN;
-  if (Number.isFinite(birthYear)) {
-    const aged = narrowed.filter((pick) => {
-      const age = pick.year - birthYear;
-      return age >= 17 && age <= 25;
-    });
-    if (aged.length === 1) return toPlayerDraftInfo(aged[0]!);
-    if (aged.length > 1) {
-      aged.sort(
-        (a, b) =>
-          Math.abs(a.year - birthYear - 19) - Math.abs(b.year - birthYear - 19),
-      );
-      return toPlayerDraftInfo(aged[0]!);
-    }
+  for (const pick of matches) {
+    const ownerId = await draftPickOwnerId(pick);
+    if (ownerId === input.id) return toPlayerDraftInfo(pick);
   }
-
-  narrowed.sort((a, b) => b.year - a.year);
-  return toPlayerDraftInfo(narrowed[0]!);
+  return null;
 }
