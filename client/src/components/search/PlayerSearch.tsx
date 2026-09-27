@@ -83,19 +83,10 @@ export function PlayerSearch() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (playerResults[0]) {
-      goToPlayer(playerResults[0]);
-      return;
-    }
-    if (teamResults[0]) {
-      goToTeam(teamResults[0]);
-      return;
-    }
-    if (leagueResults[0]) {
-      goToLeague(leagueResults[0]);
-      return;
-    }
-    if (query.trim()) navigate(`/players?q=${encodeURIComponent(query.trim())}`);
+    const trimmed = query.trim();
+    if (trimmed.length < 2) return;
+    setDebounced(trimmed);
+    setOpen(true);
   };
 
   const showDropdown = open && enabled;
