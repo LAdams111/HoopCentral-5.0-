@@ -5,6 +5,9 @@ import { getFeaturedLeagues, searchLeagues } from "@/lib/api";
 import { enrichLeague } from "@/lib/leagues";
 import { LeagueCard } from "@/components/leagues/LeagueCard";
 
+/** Still reachable at /leagues/juco and on player pages. Hidden from this browse list. */
+const HIDDEN_FROM_LEAGUES_PAGE = new Set(["juco"]);
+
 export function Leagues() {
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -30,7 +33,9 @@ export function Leagues() {
 
   const isLoading = searching ? searchLoading : featuredLoading;
   const error = searching ? searchError : featuredError;
-  const leagues = searching ? searchResults : featured;
+  const leagues = (searching ? searchResults : featured).filter(
+    (league) => !HIDDEN_FROM_LEAGUES_PAGE.has(league.slug),
+  );
   const displayLeagues = leagues.map(enrichLeague);
 
   if (isLoading && displayLeagues.length === 0) {

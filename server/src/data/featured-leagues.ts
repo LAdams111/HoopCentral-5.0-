@@ -7,7 +7,6 @@ export const FEATURED_LEAGUE_SLUGS = [
   "ncaa-d2",
   "ncaa-d3",
   "naia",
-  "juco",
   "u-sports",
   "ccaa",
   "ncaa-w",
