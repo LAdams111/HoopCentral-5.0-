@@ -8,9 +8,10 @@ import {
   YAxis,
 } from "recharts";
 
-type ChartPoint = {
+export type ChartPoint = {
   label: string;
   value: number;
+  detail?: string;
 };
 
 export function StatTrendChart({
@@ -18,11 +19,13 @@ export function StatTrendChart({
   season,
   color,
   data,
+  loading = false,
 }: {
   title: string;
   season: string;
   color: string;
   data: ChartPoint[];
+  loading?: boolean;
 }) {
   const gradientId = `gradient-${title.replace(/\s/g, "-").toLowerCase()}`;
 
@@ -38,14 +41,14 @@ export function StatTrendChart({
             style={{ backgroundColor: color }}
           />
           <span className="font-mono text-[9px] text-muted-foreground md:text-xs">
-            {season} · Per Game
+            {season} · Each game
           </span>
         </div>
       </div>
 
       {data.length === 0 ? (
         <div className="flex h-[85%] items-center justify-center text-xs text-muted-foreground">
-          No chart data
+          {loading ? "Loading games…" : "No game log for this season"}
         </div>
       ) : (
         <div className="h-[85%] w-full">
@@ -67,7 +70,7 @@ export function StatTrendChart({
                 tick={{ fontSize: 9, fill: "rgba(255,255,255,0.3)", fontFamily: "var(--font-mono)" }}
                 axisLine={false}
                 tickLine={false}
-                interval="preserveStartEnd"
+                interval={data.length > 16 ? Math.ceil(data.length / 8) - 1 : 0}
               />
               <YAxis
                 tick={{ fontSize: 9, fill: "rgba(255,255,255,0.3)", fontFamily: "var(--font-mono)" }}
@@ -76,22 +79,39 @@ export function StatTrendChart({
                 width={30}
               />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "11px",
-                  color: "hsl(var(--foreground))",
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const point = payload[0]?.payload as ChartPoint | undefined;
+                  if (!point) return null;
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        color: "hsl(var(--foreground))",
+                        padding: "8px 10px",
+                      }}
+                    >
+                      <div>Game {point.label}</div>
+                      {point.detail ? <div>{point.detail}</div> : null}
+                      <div>
+                        {point.value} {title.toLowerCase()}
+                      </div>
+                    </div>
+                  );
                 }}
               />
               <Area
                 type="monotone"
                 dataKey="value"
+                name={title}
                 stroke={color}
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
-                dot={false}
+                dot={{ r: 2, fill: color, strokeWidth: 0 }}
                 activeDot={{ r: 4, fill: color }}
               />
             </AreaChart>
@@ -102,16 +122,40 @@ export function StatTrendChart({
   );
 }
 
-/** Build a decorative per-game trend from a season average when game logs are unavailable. */
-export function buildPerGameTrend(avg: number, games = 74): ChartPoint[] {
-  if (!avg || Number.isNaN(avg)) return [];
+const GAME_MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
-  const points: ChartPoint[] = [];
-  for (let i = 1; i <= games; i += 2) {
-    const wave = Math.sin(i * 0.85) * avg * 0.22;
-    const drift = (i - games / 2) * 0.03;
-    const value = Math.max(0, Number((avg + wave + drift).toFixed(1)));
-    points.push({ label: String(i), value });
-  }
-  return points;
+function formatGameDate(iso: string | null): string {
+  if (!iso) return "";
+  const [, month, day] = iso.split("-");
+  const monthLabel = GAME_MONTHS[Number(month) - 1];
+  if (!monthLabel || !day) return iso;
+  return `${monthLabel} ${Number(day)}`;
+}
+
+/** One point per game, in the order the logs were played. */
+export function gameLogStatSeries(
+  games: Array<{ date: string | null; opponent: string; pts: number | null; ast: number | null }>,
+  stat: "pts" | "ast",
+): ChartPoint[] {
+  return games.map((game, index) => {
+    const detail = [formatGameDate(game.date), game.opponent].filter(Boolean).join(" · ");
+    return {
+      label: String(index + 1),
+      value: game[stat] ?? 0,
+      ...(detail ? { detail } : {}),
+    };
+  });
 }

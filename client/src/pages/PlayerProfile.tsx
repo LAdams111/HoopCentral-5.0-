@@ -306,7 +306,11 @@ export function PlayerProfile() {
             </div>
           </div>
 
-          <RecentSeasonPanel stats={sortedStats} />
+          <RecentSeasonPanel
+            stats={sortedStats}
+            playerId={player.id}
+            gameLogSeasons={player.gameLogSeasons}
+          />
 
           <SeasonHistoryTable
             stats={sortedStats}

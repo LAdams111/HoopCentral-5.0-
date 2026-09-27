@@ -1,9 +1,36 @@
+import { useQuery } from "@tanstack/react-query";
 import { Activity, Target, Trophy } from "lucide-react";
-import type { PlayerStat } from "@/lib/api";
-import { StatTrendChart, buildPerGameTrend } from "./StatTrendChart";
+import { getPlayerGameLogs, type PlayerGameLogEntry, type PlayerStat } from "@/lib/api";
+import { StatTrendChart, gameLogStatSeries } from "./StatTrendChart";
 
-export function RecentSeasonPanel({ stats }: { stats: PlayerStat[] }) {
+function seasonGames(games: PlayerGameLogEntry[]): PlayerGameLogEntry[] {
+  const regular = games.filter((game) => !game.playoffs);
+  return regular.length > 0 ? regular : games;
+}
+
+export function RecentSeasonPanel({
+  stats,
+  playerId,
+  gameLogSeasons,
+}: {
+  stats: PlayerStat[];
+  playerId?: number;
+  gameLogSeasons?: string[];
+}) {
   const recent = stats[0];
+  const logSeasons = new Set(gameLogSeasons ?? []);
+  const chartSeason = stats.find((stat) => logSeasons.has(stat.season))?.season ?? null;
+
+  const logsQuery = useQuery({
+    queryKey: ["player-game-logs", playerId, chartSeason],
+    queryFn: () => getPlayerGameLogs(playerId!, chartSeason!),
+    enabled: Boolean(playerId && chartSeason),
+  });
+
+  const games = seasonGames(logsQuery.data?.games ?? []);
+  const points = gameLogStatSeries(games, "pts");
+  const assists = gameLogStatSeries(games, "ast");
+  const chartLabel = chartSeason ?? "—";
 
   if (!recent) {
     return (
@@ -27,9 +54,6 @@ export function RecentSeasonPanel({ stats }: { stats: PlayerStat[] }) {
       </div>
     );
   }
-
-  const ppg = parseFloat(recent.pts_per_g) || 0;
-  const apg = parseFloat(recent.ast_per_g) || 0;
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -68,15 +92,17 @@ export function RecentSeasonPanel({ stats }: { stats: PlayerStat[] }) {
         <div className="grid grid-cols-2 gap-2 md:gap-6">
           <StatTrendChart
             title="Points"
-            season={recent.season}
+            season={chartLabel}
             color="hsl(var(--primary))"
-            data={buildPerGameTrend(ppg)}
+            data={points}
+            loading={logsQuery.isLoading}
           />
           <StatTrendChart
             title="Assists"
-            season={recent.season}
+            season={chartLabel}
             color="hsl(var(--accent))"
-            data={buildPerGameTrend(apg)}
+            data={assists}
+            loading={logsQuery.isLoading}
           />
         </div>
       </div>
