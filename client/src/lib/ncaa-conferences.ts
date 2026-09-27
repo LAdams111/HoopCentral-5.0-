@@ -7048,10 +7048,25 @@ export interface NcaaConferenceGroup<T> {
   teams: T[];
 }
 
+/** Name or slug match beats a shared abbreviation like SC → South Carolina. */
+function matchesSchoolWithoutAbbreviation(
+  team: { name: string; abbreviation: string; slug: string },
+  espnId: string,
+): boolean {
+  return resolveNcaaEspnId(team.name, { slug: team.slug }) === espnId;
+}
+
 function pickPreferredDuplicateTeam<T extends { name: string; abbreviation: string; slug: string }>(
   current: T,
   candidate: T,
+  espnId: string,
 ): T {
+  const currentDirect = matchesSchoolWithoutAbbreviation(current, espnId);
+  const candidateDirect = matchesSchoolWithoutAbbreviation(candidate, espnId);
+  if (candidateDirect !== currentDirect) {
+    return candidateDirect ? candidate : current;
+  }
+
   const currentSlug = current.slug.trim().toLowerCase();
   const candidateSlug = candidate.slug.trim().toLowerCase();
 
@@ -7084,7 +7099,7 @@ function dedupeTeamsByEspnId<T extends { name: string; abbreviation: string; slu
     const existing = byEspnId.get(espnId);
     byEspnId.set(
       espnId,
-      existing ? pickPreferredDuplicateTeam(existing, team) : team,
+      existing ? pickPreferredDuplicateTeam(existing, team, espnId) : team,
     );
   }
 
