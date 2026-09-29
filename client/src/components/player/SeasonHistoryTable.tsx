@@ -226,8 +226,8 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                         {showGameLog ? (
                           <button
                             type="button"
-                            title="Inspect game log"
-                            aria-label={`Inspect game log for ${stat.season}`}
+                            title="Game Logs"
+                            aria-label={`Game Logs for ${stat.season}`}
                             onClick={() =>
                               setGameLogSeason({
                                 season: stat.season,
@@ -238,7 +238,7 @@ export function SeasonHistoryTable({ stats, player }: SeasonHistoryTableProps) {
                             className="hover-elevate inline-flex items-center justify-center rounded-md border border-border bg-muted/50 p-1 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary md:gap-1 md:rounded-lg md:px-2.5 md:py-1.5 md:text-xs md:font-medium"
                           >
                             <ScanSearch className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                            <span className="hidden sm:inline">Inspect</span>
+                            <span className="hidden sm:inline">Game Logs</span>
                           </button>
                         ) : (
                           <span className="text-[10px] text-muted-foreground/40 md:text-xs">—</span>
