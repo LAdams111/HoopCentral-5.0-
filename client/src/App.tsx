@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
-import { SiteLock } from "./components/SiteLock";
 import { Classes } from "./pages/Classes";
 import { ClassYear } from "./pages/ClassYear";
 import { Home } from "./pages/Home";
@@ -35,8 +34,7 @@ function TrackPageViews() {
 
 export default function App() {
   return (
-    <SiteLock>
-      <Layout>
+    <Layout>
       <TrackPageViews />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -56,7 +54,6 @@ export default function App() {
         <Route path="/classes" element={<Classes />} />
         <Route path="/classes/:year" element={<ClassYear />} />
       </Routes>
-      </Layout>
-    </SiteLock>
+    </Layout>
   );
 }
