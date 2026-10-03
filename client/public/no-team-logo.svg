@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 78" fill="none">
+  <defs>
+    <clipPath id="ball">
+      <circle cx="32" cy="30" r="21"/>
+    </clipPath>
+  </defs>
+  <circle cx="32" cy="30" r="22" stroke="#6b7280" stroke-width="2"/>
+  <g clip-path="url(#ball)" stroke="#6b7280" stroke-width="1.6" stroke-linecap="round">
+    <path d="M32 8v44"/>
+    <path d="M8 30h48"/>
+    <path d="M15 12c8 8 8 28 0 36"/>
+    <path d="M49 12c-8 8-8 28 0 36"/>
+  </g>
+  <text
+    x="32"
+    y="70"
+    text-anchor="middle"
+    fill="#6b7280"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="11"
+    font-weight="600"
+  >no logo</text>
+</svg>

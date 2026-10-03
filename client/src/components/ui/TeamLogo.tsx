@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { teamLogoUrl } from "@/lib/constants";
+import { MISSING_TEAM_LOGO, teamLogoUrl } from "@/lib/constants";
 import { leagueLogoUrl } from "@/lib/leagues";
 
 type TeamLogoProps = {
@@ -22,30 +22,30 @@ export function TeamLogo({
   className = "max-h-full max-w-full object-contain",
 }: TeamLogoProps) {
   const primary = teamLogoUrl(teamName, { leagueSlug, abbreviation, slug, variant });
-  const fallback = leagueLogoUrl(leagueSlug);
+  const leagueFallback = leagueLogoUrl(leagueSlug);
   const [src, setSrc] = useState(primary);
-  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     setSrc(primary);
-    setFailed(false);
   }, [primary]);
-
-  if (failed && !fallback) return null;
 
   return (
     <img
-      src={failed ? fallback : src}
+      src={src || MISSING_TEAM_LOGO}
       alt={alt}
       className={className}
       data-testid="img-team-logo"
       onError={() => {
-        if (!failed && fallback && fallback !== src) {
-          setFailed(true);
-          setSrc(fallback);
-          return;
-        }
-        setFailed(true);
+        setSrc((current) => {
+          if (
+            leagueFallback &&
+            current !== leagueFallback &&
+            leagueFallback !== MISSING_TEAM_LOGO
+          ) {
+            return leagueFallback;
+          }
+          return MISSING_TEAM_LOGO;
+        });
       }}
     />
   );

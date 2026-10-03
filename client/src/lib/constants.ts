@@ -29,6 +29,8 @@ function isNcaaLogoLeague(leagueSlug?: string): boolean {
 export const DEFAULT_HEADSHOT =
   "https://cdn.nba.com/headshots/nba/latest/1040x760/1040x760/fallback.png";
 
+export const MISSING_TEAM_LOGO = "/no-team-logo.svg";
+
 export const NBA_TEAM_IDS: Record<string, string> = {
   "Atlanta Hawks": "1610612737",
   "Boston Celtics": "1610612738",
@@ -155,13 +157,15 @@ export const WNBA_TEAM_ABBREVS: Record<string, string> = {
 };
 
 export function nbaTeamLogoUrl(teamName: string, variant: "global" | "primary" = "global") {
-  const id = NBA_TEAM_IDS[teamName] ?? "1610612737";
+  const id = NBA_TEAM_IDS[teamName];
+  if (!id) return MISSING_TEAM_LOGO;
   const path = variant === "primary" ? "primary" : "global";
   return `https://cdn.nba.com/logos/nba/${id}/${path}/L/logo.svg`;
 }
 
 export function wnbaTeamLogoUrl(teamName: string, abbreviation?: string) {
-  const abbr = (abbreviation ?? WNBA_TEAM_ABBREVS[teamName] ?? "ATL").toUpperCase();
+  const abbr = (abbreviation ?? WNBA_TEAM_ABBREVS[teamName])?.toUpperCase();
+  if (!abbr) return MISSING_TEAM_LOGO;
   return `https://stats.wnba.com/media/img/teams/logos/${abbr}.svg`;
 }
 
