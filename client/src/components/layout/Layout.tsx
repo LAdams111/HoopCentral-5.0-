@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LogIn, Search, Trophy } from "lucide-react";
+import { Instagram, LogIn, Search, Trophy } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -52,6 +52,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2">
+            <a
+              href="https://www.instagram.com/hoopcentral.db/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary"
+              aria-label="Hoop Central on Instagram"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
             <Link to="/players">
               <button
                 type="button"
