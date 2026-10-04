@@ -13,19 +13,36 @@ export function splitSearchWords(value: string): string[] {
 /**
  * True when every query token prefix-matches some word in the column value.
  * e.g. "Leo R" matches "Leo Rautins" (leo→leo, r→rautins), not only whole-string prefixes.
+ *
+ * Tokens of 3+ characters are also constrained with LIKE so Postgres can use the
+ * pg_trgm index on lower(column). The word check still decides the match.
  */
 export function wordPrefixMatch(column: AnyColumn, query: string): SQL {
-  const trimmed = query.trim().toLowerCase();
-  return sql`NOT EXISTS (
+  const tokens = splitSearchWords(query);
+  if (tokens.length === 0) return sql`FALSE`;
+
+  const tokenList = sql.join(
+    tokens.map((token) => sql`${token}`),
+    sql`, `,
+  );
+
+  const wordBoundary = sql`NOT EXISTS (
     SELECT 1
-    FROM unnest(regexp_split_to_array(${trimmed}, '[^a-z0-9]+')) AS t(token)
-    WHERE t.token <> ''
-      AND NOT EXISTS (
-        SELECT 1
-        FROM unnest(regexp_split_to_array(lower(${column}), '[^a-z0-9]+')) AS w(word)
-        WHERE w.word <> '' AND w.word LIKE t.token || '%'
-      )
+    FROM unnest(ARRAY[${tokenList}]::text[]) AS t(token)
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM unnest(regexp_split_to_array(lower(${column}), '[^a-z0-9]+')) AS w(word)
+      WHERE w.word <> '' AND w.word LIKE t.token || '%'
+    )
   )`;
+
+  const trigramFilters = tokens
+    .filter((token) => token.length >= 3)
+    .map((token) => sql`lower(${column}) LIKE ${`%${token}%`}`);
+
+  if (trigramFilters.length === 0) return wordBoundary;
+
+  return sql`${sql.join(trigramFilters, sql` AND `)} AND ${wordBoundary}`;
 }
 
 /** True when the full column value starts with `query`. */

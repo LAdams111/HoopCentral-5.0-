@@ -102,8 +102,24 @@ export interface PlayerProfile extends PlayerCard {
   gameLogSeasonLeagues: { season: string; leagueSlug: string }[];
 }
 
+type PlayerCardSource = Pick<
+  typeof players.$inferSelect,
+  | "id"
+  | "displayName"
+  | "position"
+  | "heightCm"
+  | "weightKg"
+  | "jerseyNumber"
+  | "country"
+  | "headshotUrl"
+  | "profileViews"
+  | "hometown"
+  | "birthDate"
+  | "hsClassOf"
+>;
+
 export function toPlayerCard(
-  player: typeof players.$inferSelect,
+  player: PlayerCardSource,
   teamName: string | null,
   teamSlug: string | null = null,
 ): PlayerCard {
@@ -140,7 +156,7 @@ export async function getLatestTeamsForPlayers(
   if (playerIds.length === 0) return new Map();
 
   const rows = await db
-    .select({
+    .selectDistinctOn([playerSeasonStats.playerId], {
       playerId: playerSeasonStats.playerId,
       teamName: teams.name,
       teamSlug: teams.slug,
@@ -149,17 +165,15 @@ export async function getLatestTeamsForPlayers(
     .from(playerSeasonStats)
     .innerJoin(seasons, eq(playerSeasonStats.seasonId, seasons.id))
     .innerJoin(teams, eq(playerSeasonStats.teamId, teams.id))
-    .where(inArray(playerSeasonStats.playerId, playerIds));
+    .where(inArray(playerSeasonStats.playerId, playerIds))
+    .orderBy(playerSeasonStats.playerId, desc(seasons.seasonLabel));
 
   for (const row of rows) {
-    const existing = latestByPlayer.get(row.playerId);
-    if (!existing || row.seasonLabel.localeCompare(existing.seasonLabel) > 0) {
-      latestByPlayer.set(row.playerId, {
-        teamName: row.teamName,
-        teamSlug: row.teamSlug,
-        seasonLabel: row.seasonLabel,
-      });
-    }
+    latestByPlayer.set(row.playerId, {
+      teamName: row.teamName,
+      teamSlug: row.teamSlug,
+      seasonLabel: row.seasonLabel,
+    });
   }
 
   return new Map(
@@ -243,7 +257,18 @@ export async function searchPlayers(params: {
 
   const rows = await db
     .select({
-      player: players,
+      id: players.id,
+      displayName: players.displayName,
+      position: players.position,
+      heightCm: players.heightCm,
+      weightKg: players.weightKg,
+      jerseyNumber: players.jerseyNumber,
+      country: players.country,
+      headshotUrl: players.headshotUrl,
+      profileViews: players.profileViews,
+      hometown: players.hometown,
+      birthDate: players.birthDate,
+      hsClassOf: players.hsClassOf,
       teamName: teams.name,
       teamSlug: teams.slug,
     })
@@ -259,13 +284,15 @@ export async function searchPlayers(params: {
     .limit(limit)
     .offset(offset);
 
-  const latestTeams = await getLatestTeamsForPlayers(rows.map((r) => r.player.id));
+  const latestTeams = await getLatestTeamsForPlayers(
+    rows.filter((row) => !row.teamName).map((row) => row.id),
+  );
 
-  return rows.map((r) => {
-    const latestTeam = latestTeams.get(r.player.id);
-    const teamName = r.teamName ?? latestTeam?.teamName ?? "";
-    const teamSlug = r.teamSlug ?? latestTeam?.teamSlug ?? null;
-    return toPlayerCard(r.player, teamName, teamSlug);
+  return rows.map((row) => {
+    const latestTeam = latestTeams.get(row.id);
+    const teamName = row.teamName ?? latestTeam?.teamName ?? "";
+    const teamSlug = row.teamSlug ?? latestTeam?.teamSlug ?? null;
+    return toPlayerCard(row, teamName, teamSlug);
   });
 }
 

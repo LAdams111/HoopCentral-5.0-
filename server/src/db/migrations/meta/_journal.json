@@ -148,6 +148,13 @@
       "when": 1751385600000,
       "tag": "0024_player_game_logs",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1751472000000,
+      "tag": "0025_player_search_trgm",
+      "breakpoints": true
     }
   ]
 }
