@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { profileViewLimiter } from "../middleware/public-rate-limit.js";
 import { findDraftPickForPlayer } from "../services/draft.service.js";
 import {
   getBirthYearCounts,
@@ -12,6 +13,7 @@ import {
   searchPlayers,
 } from "../services/player.service.js";
 import { getPlayerGameLogs } from "../services/player-game-log.service.js";
+import { publicPlayerListParams } from "../utils/public-player-list.js";
 
 export const playersRouter = Router();
 
@@ -27,10 +29,7 @@ playersRouter.get("/count", async (_req, res) => {
 
 playersRouter.get("/", async (req, res) => {
   try {
-    const q = typeof req.query.q === "string" ? req.query.q : undefined;
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const limit = req.query.limit ? Number(req.query.limit) : 50;
-    const league = typeof req.query.league === "string" ? req.query.league : undefined;
+    const { q, page, limit, league } = publicPlayerListParams(req.query);
     const players = await searchPlayers({ q, page, limit, league });
     res.json(players);
   } catch (err) {
@@ -67,9 +66,8 @@ playersRouter.get("/class-of/:year", async (req, res) => {
       return;
     }
 
-    const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.limit) : undefined;
-    const result = await getPlayersByClassOf(year, { page, limit });
+    const result = await getPlayersByClassOf(year, { page: 1, limit });
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -85,9 +83,8 @@ playersRouter.get("/birth-year/:year", async (req, res) => {
       return;
     }
 
-    const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.limit) : undefined;
-    const result = await getPlayersByBirthYear(year, { page, limit });
+    const result = await getPlayersByBirthYear(year, { page: 1, limit });
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -144,7 +141,7 @@ playersRouter.get("/:id", async (req, res) => {
   }
 });
 
-playersRouter.post("/:id/view", async (req, res) => {
+playersRouter.post("/:id/view", profileViewLimiter, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {

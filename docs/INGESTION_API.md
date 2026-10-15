@@ -14,13 +14,13 @@ Backend-only. Not exposed in the frontend.
 
 ### Authentication
 
-If `INGEST_API_KEY` is set in the environment, every request must include:
+Production requires `INGEST_API_KEY`. Every ingest request must include:
 
 ```
 x-ingest-api-key: <INGEST_API_KEY>
 ```
 
-If `INGEST_API_KEY` is not set, the endpoint is open (intended for local development only).
+If the key is missing in production, ingest returns `503`. Local development stays open when the variable is unset.
 
 ## Request body
 

@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
-import cors from "cors";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { checkDatabaseConnection } from "./db/index.js";
+import { publicBrowseLimiter, publicCatalogLimiter } from "./middleware/public-rate-limit.js";
+import { securityHeaders, siteCors } from "./middleware/security.js";
 import { draftRouter } from "./routes/draft.js";
 import { leaguesRouter } from "./routes/leagues.js";
 import { devRouter } from "./routes/dev.js";
@@ -23,18 +24,25 @@ const isProd =
 
 const app = express();
 
-app.use(cors());
+// One Railway proxy hop. Trusting every hop would let clients spoof their IP.
+app.set("trust proxy", 1);
+
+app.use(securityHeaders);
+app.use(siteCors);
 app.use(express.json());
+app.use("/api", publicBrowseLimiter);
+app.use("/api", publicCatalogLimiter);
 
 app.get("/api/health", async (_req, res) => {
   const dbCheck = await checkDatabaseConnection();
 
+  if (!dbCheck.connected) {
+    console.error("Database health check failed:", dbCheck.error);
+  }
+
   res.json({
     status: dbCheck.connected ? "ok" : "degraded",
     database: dbCheck.connected ? "connected" : "disconnected",
-    latencyMs: dbCheck.latencyMs,
-    error: dbCheck.error,
-    timestamp: new Date().toISOString(),
   });
 });
 
