@@ -10,6 +10,7 @@ import { PlayerProfile } from "./pages/PlayerProfile";
 import { Players, SearchResults } from "./pages/Players";
 import { Prospects } from "./pages/Prospects";
 import { Roster } from "./pages/Roster";
+import { Account } from "./pages/Account";
 import { Login } from "./pages/Login";
 import { Team } from "./pages/Team";
 
@@ -39,6 +40,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Account />} />
         <Route path="/signup" element={<Navigate to="/login?mode=signup" replace />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/players" element={<Players />} />

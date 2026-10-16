@@ -15,6 +15,7 @@ type AuthContextValue = {
   configError: string | null;
   session: Session | null;
   email: string | null;
+  role: LoginRole;
   signUp: (input: { email: string; password: string; role: LoginRole }) => Promise<AuthResult>;
   signIn: (input: { email: string; password: string }) => Promise<AuthResult>;
   signOut: () => Promise<void>;
@@ -25,6 +26,20 @@ export type AuthResult =
   | { ok: false; message: string };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+function accountRole(session: Session | null): LoginRole {
+  const requested = session?.user.user_metadata?.role;
+  if (
+    requested === "player" ||
+    requested === "parent" ||
+    requested === "coach" ||
+    requested === "scout" ||
+    requested === "fan"
+  ) {
+    return requested;
+  }
+  return "fan";
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<SupabaseClient | null>(null);
@@ -100,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       configError,
       session,
       email: session?.user.email ?? null,
+      role: accountRole(session),
       async signUp({ email, password, role }) {
         if (!client) return { ok: false, message: "Sign-in is not available right now." };
         const { data, error } = await client.auth.signUp({

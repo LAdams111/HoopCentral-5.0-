@@ -1,6 +1,6 @@
 import { LogIn, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 import { useAuth, type LoginRole } from "@/lib/auth";
 
@@ -43,7 +43,7 @@ function roleLabel(role: LoginRole): string {
 export function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { ready, configError, email: signedInEmail, signIn, signUp, signOut } = useAuth();
+  const { ready, configError, email: signedInEmail, signIn, signUp } = useAuth();
   const role = useMemo(() => parseRole(searchParams.get("role")), [searchParams]);
   const mode = useMemo(() => parseMode(searchParams.get("mode")), [searchParams]);
   const [email, setEmail] = useState("");
@@ -101,8 +101,12 @@ export function Login() {
       );
       return;
     }
-    navigate("/");
+    navigate("/", { replace: true });
   };
+
+  if (ready && signedInEmail) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background pb-24">
@@ -253,15 +257,6 @@ export function Login() {
             {configError ? (
               <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {configError}
-              </p>
-            ) : null}
-
-            {signedInEmail ? (
-              <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-muted-foreground">
-                Signed in as {signedInEmail}.{" "}
-                <button type="button" className="text-primary underline" onClick={() => void signOut()}>
-                  Log out
-                </button>
               </p>
             ) : null}
 
