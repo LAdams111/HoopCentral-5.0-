@@ -29,6 +29,7 @@ export const securityHeaders: RequestHandler = helmet({
         "https://*.analytics.google.com",
         "https://www.googletagmanager.com",
         "https://stats.g.doubleclick.net",
+        "https://*.supabase.co",
       ],
     },
   },

@@ -1,9 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { Instagram, LogIn, Search, Trophy } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
+import { useAuth } from "@/lib/auth";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const { email, signOut } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
@@ -70,19 +72,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Search className="h-5 w-5" />
               </button>
             </Link>
-            <Link
-              to="/login"
-              className="hidden rounded-full border border-border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary sm:inline-flex"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/login"
-              className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary sm:hidden"
-              aria-label="Log in"
-            >
-              <LogIn className="h-5 w-5" />
-            </Link>
+            {email ? (
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="rounded-full border border-border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                Log out
+              </button>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="hidden rounded-full border border-border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary sm:inline-flex"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/login"
+                  className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary sm:hidden"
+                  aria-label="Log in"
+                >
+                  <LogIn className="h-5 w-5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>

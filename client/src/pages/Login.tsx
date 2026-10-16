@@ -1,9 +1,8 @@
 import { LogIn, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
-
-export type LoginRole = "player" | "parent" | "coach" | "scout" | "fan";
+import { useAuth, type LoginRole } from "@/lib/auth";
 
 type AuthMode = "login" | "signup";
 
@@ -43,13 +42,16 @@ function roleLabel(role: LoginRole): string {
 
 export function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { ready, configError, email: signedInEmail, signIn, signUp, signOut } = useAuth();
   const role = useMemo(() => parseRole(searchParams.get("role")), [searchParams]);
   const mode = useMemo(() => parseMode(searchParams.get("mode")), [searchParams]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const isSignup = mode === "signup";
   const activeLabel = roleLabel(role);
@@ -59,20 +61,47 @@ export function Login() {
     if (next.role !== undefined) params.set("role", next.role);
     if (next.mode !== undefined) params.set("mode", next.mode);
     setSearchParams(params, { replace: true });
-    setSubmitted(false);
+    setNotice(null);
     setValidationError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
+    setNotice(null);
 
+    if (!email.trim()) {
+      setValidationError("Enter your email.");
+      return;
+    }
+    if (password.length < 8) {
+      setValidationError("Use at least 8 characters for the password.");
+      return;
+    }
     if (isSignup && password !== confirmPassword) {
       setValidationError("Passwords do not match.");
       return;
     }
 
-    setSubmitted(true);
+    setSubmitting(true);
+    const result = isSignup
+      ? await signUp({ email, password, role })
+      : await signIn({ email, password });
+    setSubmitting(false);
+
+    if (!result.ok) {
+      setValidationError(result.message);
+      return;
+    }
+    if (result.needsEmailConfirmation) {
+      setNotice(
+        role === "coach"
+          ? "Check your email to confirm the account. Coach sign-in will work after that. Entering players and stats stays off until you are approved."
+          : "Check your email and confirm the account before logging in.",
+      );
+      return;
+    }
+    navigate("/");
   };
 
   return (
@@ -221,25 +250,43 @@ export function Login() {
               </div>
             ) : null}
 
+            {configError ? (
+              <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {configError}
+              </p>
+            ) : null}
+
+            {signedInEmail ? (
+              <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-muted-foreground">
+                Signed in as {signedInEmail}.{" "}
+                <button type="button" className="text-primary underline" onClick={() => void signOut()}>
+                  Log out
+                </button>
+              </p>
+            ) : null}
+
             {validationError ? (
               <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {validationError}
               </p>
             ) : null}
 
-            {submitted ? (
+            {notice ? (
               <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-muted-foreground">
-                {isSignup ? "Account creation" : "Sign-in"} for{" "}
-                {role === "fan" ? "general" : activeLabel.toLowerCase()} accounts is coming soon.
-                Nothing was saved and your credentials were not sent anywhere.
+                {notice}
               </p>
             ) : null}
 
             <button
               type="submit"
-              className="hover-elevate w-full rounded-xl bg-primary py-3 font-display text-sm font-bold uppercase tracking-wide text-primary-foreground"
+              disabled={!ready || submitting}
+              className="hover-elevate w-full rounded-xl bg-primary py-3 font-display text-sm font-bold uppercase tracking-wide text-primary-foreground disabled:opacity-60"
             >
-              {isSignup ? `Create ${activeLabel} account` : `Log in as ${activeLabel}`}
+              {submitting
+                ? "Please wait"
+                : isSignup
+                  ? `Create ${activeLabel} account`
+                  : `Log in as ${activeLabel}`}
             </button>
           </form>
         </div>
