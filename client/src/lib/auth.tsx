@@ -203,12 +203,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await client.auth.signOut();
       },
       async refreshAccessToken() {
-        if (!client) return session?.access_token ?? null;
-        const current = await client.auth.getSession();
-        const existing = current.data.session?.access_token;
-        if (existing) return existing;
+        if (!client) return null;
         const refreshed = await client.auth.refreshSession();
-        return refreshed.data.session?.access_token ?? null;
+        if (refreshed.data.session?.access_token) return refreshed.data.session.access_token;
+        const current = await client.auth.getSession();
+        return current.data.session?.access_token ?? null;
       },
     }),
     [adminChecked, client, configError, isAdmin, ready, session],

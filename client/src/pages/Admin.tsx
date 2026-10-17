@@ -80,7 +80,7 @@ export function Admin() {
       let response = await load(token);
       if (response.status === 401) {
         const next = await refreshAccessToken();
-        if (next) response = await load(next);
+        if (next && next !== token) response = await load(next);
       }
       if (!response.ok) throw new Error("Could not load requests");
       const body = (await response.json()) as { requests?: ClaimRequest[] };
@@ -89,6 +89,7 @@ export function Admin() {
   });
   const [photoUsed, setPhotoUsed] = useState<number[]>([]);
   const [view, setView] = useState<"pending" | "approved" | "denied">("pending");
+  const showLoadError = isError && requests.length === 0;
   const pending = requests.filter((request) => request.status === "pending");
   const approved = requests.filter((request) => request.status === "approved");
   const denied = requests.filter((request) => request.status === "denied");
@@ -165,7 +166,7 @@ export function Admin() {
               className={`rounded-2xl border bg-card p-5 text-left shadow-sm ${view === "pending" ? "border-primary" : "border-border"}`}
             >
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Pending</p>
-              <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : pending.length}</p>
+              <p className="mt-2 font-display text-4xl font-bold">{isLoading || showLoadError ? "—" : pending.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">Claim requests</p>
             </button>
             <button
@@ -174,7 +175,7 @@ export function Admin() {
               className={`rounded-2xl border bg-card p-5 text-left shadow-sm ${view === "approved" ? "border-primary" : "border-border"}`}
             >
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Approved</p>
-              <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : approved.length}</p>
+              <p className="mt-2 font-display text-4xl font-bold">{isLoading || showLoadError ? "—" : approved.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">Marked checked</p>
             </button>
             <button
@@ -183,7 +184,7 @@ export function Admin() {
               className={`rounded-2xl border bg-card p-5 text-left shadow-sm ${view === "denied" ? "border-primary" : "border-border"}`}
             >
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Denied</p>
-              <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : denied.length}</p>
+              <p className="mt-2 font-display text-4xl font-bold">{isLoading || showLoadError ? "—" : denied.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">Turned down</p>
             </button>
           </div>
@@ -199,7 +200,7 @@ export function Admin() {
               <span className="rounded-full border border-border px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
                 {isLoading
                   ? "Checking"
-                  : isError
+                  : showLoadError
                     ? "Could not load"
                     : view === "approved"
                       ? approved.length === 0
@@ -216,11 +217,11 @@ export function Admin() {
             </div>
             {isLoading ? (
               <div className="px-6 py-16 text-center text-sm text-muted-foreground">Loading requests…</div>
-            ) : isError ? (
+            ) : showLoadError ? (
               <div className="px-6 py-16 text-center">
                 <p className="font-display text-2xl font-bold">Could not load requests</p>
                 <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                  Refresh this page. A failed load no longer looks like an empty list.
+                  Log out and sign back in if this stays here.
                 </p>
               </div>
             ) : visible.length === 0 ? (
