@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { getPlayer } from "@/lib/api";
@@ -27,6 +28,46 @@ const EMPTY_FORM: PlayerForm = {
   bio: "",
   proof: "",
 };
+
+function PhotoPicker({
+  label,
+  hint,
+  fileName,
+  onFile,
+}: {
+  label: string;
+  hint?: string;
+  fileName: string;
+  onFile: (file: File | null) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div>
+      <p className="text-sm">{label}</p>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="mt-2 flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-primary/50 bg-primary/5 px-4 py-5 text-left text-primary"
+      >
+        <Camera className="h-7 w-7 shrink-0" />
+        <span>
+          <span className="block font-display text-sm font-bold uppercase tracking-tight">
+            {fileName || "Upload or take a photo"}
+          </span>
+          <span className="mt-0.5 block text-xs text-muted-foreground">Tap to choose a picture or use the camera</span>
+        </span>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={(event) => onFile(event.target.files?.[0] ?? null)}
+      />
+      {hint ? <span className="mt-2 block text-xs text-muted-foreground">{hint}</span> : null}
+    </div>
+  );
+}
 
 function shown(value: string | null | undefined): string {
   const text = (value ?? "").trim();
@@ -357,6 +398,14 @@ export function ClaimPlayer() {
     }
   };
 
+  const choosePhoto = (file: File | null) => {
+    setPhotoFile(file);
+    setPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return file ? URL.createObjectURL(file) : "";
+    });
+  };
+
   const player = playerQuery.data;
 
   return (
@@ -368,7 +417,7 @@ export function ClaimPlayer() {
         Back to profile
       </Link>
       <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-tight">
-        {playerRequest === "claim" ? "Claim this player" : "Request a change"}
+        {playerRequest === "claim" ? "Claim this player" : "Request an edit"}
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
         {player?.name ? `${player.name}. ` : ""}
@@ -397,26 +446,12 @@ export function ClaimPlayer() {
           }}
         >
           {playerRequest === "claim" ? (
-            <label className="block text-sm">
-              Government-issued ID
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                required
-                className="mt-1 block w-full text-sm"
-                onChange={(event) => {
-                  const file = event.target.files?.[0] ?? null;
-                  setPhotoFile(file);
-                  setPhotoPreview((current) => {
-                    if (current) URL.revokeObjectURL(current);
-                    return file ? URL.createObjectURL(file) : "";
-                  });
-                }}
-              />
-              <span className="mt-1 block text-xs text-muted-foreground">
-                Photo of a passport, driver’s license, or other government ID. It is only shown on the admin review page.
-              </span>
-            </label>
+            <PhotoPicker
+              label="Government-issued ID"
+              fileName={photoFile?.name ?? ""}
+              hint="Photo of a passport, driver’s license, or other government ID. It is only shown on the admin review page."
+              onFile={choosePhoto}
+            />
           ) : (
             <>
               <div className="grid gap-4 sm:grid-cols-3">
@@ -455,22 +490,7 @@ export function ClaimPlayer() {
                   onChange={(event) => set("bio", event.target.value)}
                 />
               </label>
-              <label className="block text-sm">
-                Photo
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="mt-1 block w-full text-sm"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    setPhotoFile(file);
-                    setPhotoPreview((current) => {
-                      if (current) URL.revokeObjectURL(current);
-                      return file ? URL.createObjectURL(file) : "";
-                    });
-                  }}
-                />
-              </label>
+              <PhotoPicker label="Photo" fileName={photoFile?.name ?? ""} onFile={choosePhoto} />
             </>
           )}
           {photoPreview ? (

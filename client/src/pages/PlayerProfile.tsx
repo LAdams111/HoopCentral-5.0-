@@ -390,9 +390,9 @@ export function PlayerProfile() {
         </div>
       </div>
 
-      <section className="container mx-auto px-4 pb-8">
+      <section className="container mx-auto mt-12 px-4 pb-8">
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Request a change</h2>
+          <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Request an edit</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Submit height, weight, position, birth date, or bio for approval. An account is required to send it. Stats stay off the form.
           </p>
@@ -400,7 +400,7 @@ export function PlayerProfile() {
             to={`/players/${player.id}/claim?edit=player`}
             className="mt-4 inline-flex h-12 items-center justify-center rounded-xl border-2 border-primary bg-primary px-4 font-display text-sm font-bold uppercase tracking-tight text-primary-foreground"
           >
-            Submit a change
+            Request an edit
           </Link>
         </div>
       </section>
