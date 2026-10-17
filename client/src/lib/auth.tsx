@@ -16,6 +16,8 @@ type AuthContextValue = {
   session: Session | null;
   email: string | null;
   role: LoginRole;
+  isAdmin: boolean;
+  adminChecked: boolean;
   signUp: (input: { email: string; password: string; role: LoginRole }) => Promise<AuthResult>;
   signIn: (input: { email: string; password: string }) => Promise<AuthResult>;
   signOut: () => Promise<void>;
@@ -46,6 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,6 +113,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    const token = session?.access_token;
+    if (!token) {
+      setIsAdmin(false);
+      setAdminChecked(true);
+      return;
+    }
+    let cancelled = false;
+    setAdminChecked(false);
+    void fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then(async (response) => {
+        if (!response.ok) return false;
+        const body = (await response.json()) as { isAdmin?: boolean };
+        return body.isAdmin === true;
+      })
+      .then((admin) => {
+        if (!cancelled) setIsAdmin(admin);
+      })
+      .catch(() => {
+        if (!cancelled) setIsAdmin(false);
+      })
+      .finally(() => {
+        if (!cancelled) setAdminChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.access_token]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       ready,
@@ -116,6 +149,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       email: session?.user.email ?? null,
       role: accountRole(session),
+      isAdmin,
+      adminChecked,
       async signUp({ email, password, role }) {
         if (!client) return { ok: false, message: "Sign-in is not available right now." };
         const { data, error } = await client.auth.signUp({
@@ -143,7 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await client.auth.signOut();
       },
     }),
-    [client, configError, ready, session],
+    [adminChecked, client, configError, isAdmin, ready, session],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

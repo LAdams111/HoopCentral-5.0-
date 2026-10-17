@@ -54,6 +54,8 @@ authRouter.get("/me", async (req, res) => {
 
   const requested = data.user.user_metadata?.role;
   const role = typeof requested === "string" && ACCOUNT_ROLES.has(requested) ? requested : "fan";
+  // app_metadata is server-only. A signup choice cannot grant this.
+  const isAdmin = data.user.app_metadata?.is_admin === true;
 
   res.json({
     id: data.user.id,
@@ -61,5 +63,6 @@ authRouter.get("/me", async (req, res) => {
     role,
     // Choosing Coach at signup does not grant stat entry.
     coachAccess: false,
+    isAdmin,
   });
 });
