@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { getPlayer } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -34,26 +34,137 @@ function shown(value: string | null | undefined): string {
   return text;
 }
 
-const POSITIONS = ["PG", "SG", "G", "SF", "PF", "F", "C", "G/F", "F/C"];
+type WheelOption = { value: string; label: string };
+
+const BLANK: WheelOption = { value: "", label: "—" };
+
+const POSITION_OPTIONS: WheelOption[] = [
+  BLANK,
+  ...["PG", "SG", "G", "SF", "PF", "F", "C", "G/F", "F/C"].map((value) => ({ value, label: value })),
+];
+
+const HEIGHT_OPTIONS: WheelOption[] = [
+  BLANK,
+  ...Array.from({ length: 39 }, (_, index) => {
+    const total = 58 + index;
+    const label = `${Math.floor(total / 12)}'${total % 12}"`;
+    return { value: label, label };
+  }),
+];
+
+const WEIGHT_OPTIONS: WheelOption[] = [
+  BLANK,
+  ...Array.from({ length: 301 }, (_, index) => {
+    const label = `${100 + index} lbs`;
+    return { value: label, label };
+  }),
+];
+
+const MONTH_OPTIONS: WheelOption[] = [
+  BLANK,
+  ...["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(
+    (label, index) => ({ value: String(index + 1).padStart(2, "0"), label }),
+  ),
+];
+
+const DAY_OPTIONS: WheelOption[] = [
+  BLANK,
+  ...Array.from({ length: 31 }, (_, index) => {
+    const value = String(index + 1).padStart(2, "0");
+    return { value, label: value };
+  }),
+];
+
+const YEAR_OPTIONS: WheelOption[] = [
+  BLANK,
+  ...Array.from({ length: 2018 - 1950 + 1 }, (_, index) => {
+    const value = String(2018 - index);
+    return { value, label: value };
+  }),
+];
 
 function fieldClassName() {
   return "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
 }
 
-function heightInches(value: string): number {
-  const match = value.match(/(\d+)\s*'\s*(\d{1,2})/);
-  if (!match) return 78;
-  return Math.min(96, Math.max(58, Number(match[1]) * 12 + Number(match[2])));
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
 }
 
-function formatInches(total: number): string {
-  return `${Math.floor(total / 12)}'${total % 12}"`;
+function splitDate(value: string): { year: string; month: string; day: string } {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return { year: "", month: "", day: "" };
+  return { year: match[1], month: match[2], day: match[3] };
 }
 
-function weightPounds(value: string): number {
-  const match = value.match(/(\d{2,3})/);
-  if (!match) return 180;
-  return Math.min(400, Math.max(100, Number(match[1])));
+function joinDate(year: string, month: string, day: string): string {
+  if (!year || !month || !day) return "";
+  const max = daysInMonth(Number(year), Number(month));
+  const safeDay = String(Math.min(Number(day), max)).padStart(2, "0");
+  return `${year}-${month}-${safeDay}`;
+}
+
+function ScrollWheel({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: WheelOption[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const chosen = useRef(value);
+
+  useEffect(() => {
+    chosen.current = value;
+    const el = scroller.current;
+    if (!el) return;
+    const index = Math.max(0, options.findIndex((option) => option.value === value));
+    const top = index * 36;
+    if (Math.abs(el.scrollTop - top) > 1) el.scrollTop = top;
+  }, [options, value]);
+
+  const chooseFromScroll = () => {
+    const el = scroller.current;
+    if (!el) return;
+    const index = Math.round(el.scrollTop / 36);
+    const next = options[Math.min(options.length - 1, Math.max(0, index))];
+    if (!next || next.value === chosen.current) return;
+    chosen.current = next.value;
+    onChange(next.value);
+  };
+
+  return (
+    <div className="min-w-0 text-sm">
+      <span>{label}</span>
+      <div className="relative mt-1 h-[108px] overflow-hidden rounded-xl border border-border bg-background">
+        <div className="pointer-events-none absolute inset-x-1 top-9 z-10 h-9 rounded-lg border border-primary/30 bg-primary/10" />
+        <div
+          ref={scroller}
+          onScroll={chooseFromScroll}
+          className="h-full snap-y snap-mandatory overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          <div className="h-9" />
+          {options.map((option) => (
+            <button
+              key={`${label}-${option.value || "blank"}`}
+              type="button"
+              onClick={() => onChange(option.value)}
+              className={`flex h-9 w-full snap-center items-center justify-center px-2 text-sm ${
+                option.value === value ? "font-semibold text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+          <div className="h-9" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 async function preparePhoto(file: File): Promise<Blob> {
@@ -87,6 +198,7 @@ export function ClaimPlayer() {
     queryFn: () => getPlayer(playerId),
   });
   const [form, setForm] = useState<PlayerForm>(EMPTY_FORM);
+  const [birth, setBirth] = useState({ year: "", month: "", day: "" });
   const [filled, setFilled] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState("");
@@ -107,6 +219,7 @@ export function ClaimPlayer() {
       bio: player.bio ?? "",
       proof: "",
     });
+    setBirth(splitDate(player.birthDate?.slice(0, 10) ?? ""));
     setFilled(true);
   }, [playerQuery.data, filled]);
 
@@ -128,6 +241,17 @@ export function ClaimPlayer() {
 
   const set = (key: keyof PlayerForm, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const setBirthPart = (part: "year" | "month" | "day", value: string) => {
+    setBirth((current) => {
+      const next = { ...current, [part]: value };
+      if (next.year && next.month && next.day) {
+        const max = daysInMonth(Number(next.year), Number(next.month));
+        if (Number(next.day) > max) next.day = String(max).padStart(2, "0");
+      }
+      return next;
+    });
   };
 
   const submit = async () => {
@@ -152,7 +276,7 @@ export function ClaimPlayer() {
             weight: form.weight,
             hometown: form.hometown,
             country: form.country,
-            birthDate: form.birthDate,
+            birthDate: joinDate(birth.year, birth.month, birth.day),
             jerseyNumber: form.jerseyNumber,
             bio: form.bio,
           },
@@ -219,43 +343,10 @@ export function ClaimPlayer() {
             void submit();
           }}
         >
-          <label className="block text-sm">
-            Position
-            <span className="mt-1 block font-mono text-xs text-muted-foreground">{form.position || "Not set"}</span>
-            <input
-              type="range"
-              min={0}
-              max={POSITIONS.length - 1}
-              value={Math.max(0, POSITIONS.indexOf(form.position))}
-              onChange={(event) => set("position", POSITIONS[Number(event.target.value)] ?? "")}
-              className="mt-2 w-full accent-primary"
-            />
-          </label>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm">
-              Height
-              <span className="mt-1 block font-mono text-xs text-muted-foreground">{form.height || "Not set"}</span>
-              <input
-                type="range"
-                min={58}
-                max={96}
-                value={heightInches(form.height)}
-                onChange={(event) => set("height", formatInches(Number(event.target.value)))}
-                className="mt-2 w-full accent-primary"
-              />
-            </label>
-            <label className="block text-sm">
-              Weight
-              <span className="mt-1 block font-mono text-xs text-muted-foreground">{form.weight || "Not set"}</span>
-              <input
-                type="range"
-                min={100}
-                max={400}
-                value={weightPounds(form.weight)}
-                onChange={(event) => set("weight", `${event.target.value} lbs`)}
-                className="mt-2 w-full accent-primary"
-              />
-            </label>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <ScrollWheel label="Position" options={POSITION_OPTIONS} value={form.position} onChange={(value) => set("position", value)} />
+            <ScrollWheel label="Height" options={HEIGHT_OPTIONS} value={form.height} onChange={(value) => set("height", value)} />
+            <ScrollWheel label="Weight" options={WEIGHT_OPTIONS} value={form.weight} onChange={(value) => set("weight", value)} />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
@@ -267,16 +358,33 @@ export function ClaimPlayer() {
               <input className={fieldClassName()} value={form.country} onChange={(event) => set("country", event.target.value)} />
             </label>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm">
-              Birth date
-              <input type="date" className={fieldClassName()} value={form.birthDate} onChange={(event) => set("birthDate", event.target.value)} />
-            </label>
-            <label className="block text-sm">
-              Jersey
-              <input className={fieldClassName()} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} />
-            </label>
+          <div>
+            <p className="text-sm">Birth date</p>
+            <div className="mt-1 grid grid-cols-3 gap-3">
+              <ScrollWheel
+                label="Month"
+                options={MONTH_OPTIONS}
+                value={birth.month}
+                onChange={(month) => setBirthPart("month", month)}
+              />
+              <ScrollWheel
+                label="Day"
+                options={DAY_OPTIONS}
+                value={birth.day}
+                onChange={(day) => setBirthPart("day", day)}
+              />
+              <ScrollWheel
+                label="Year"
+                options={YEAR_OPTIONS}
+                value={birth.year}
+                onChange={(year) => setBirthPart("year", year)}
+              />
+            </div>
           </div>
+          <label className="block text-sm">
+            Jersey
+            <input className={fieldClassName()} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} />
+          </label>
           <label className="block text-sm">
             Bio
             <textarea
