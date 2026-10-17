@@ -63,7 +63,7 @@ function ClaimPhoto({ id, token }: { id: number; token: string }) {
 }
 
 export function Admin() {
-  const { ready, email, isAdmin, adminChecked, session, signOut } = useAuth();
+  const { ready, email, isAdmin, adminChecked, session, signOut, refreshAccessToken } = useAuth();
   const queryClient = useQueryClient();
   const { data: requests = [], isError, isLoading } = useQuery({
     queryKey: ["admin-claims", session?.access_token],
@@ -71,13 +71,20 @@ export function Admin() {
     refetchOnMount: "always",
     refetchInterval: 5000,
     queryFn: async () => {
-      const response = await fetch("/api/claims", {
-        headers: { Authorization: `Bearer ${session?.access_token ?? ""}` },
-        cache: "no-store",
-      });
+      const load = (token: string) =>
+        fetch("/api/claims", {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        });
+      let token = session?.access_token ?? "";
+      let response = await load(token);
+      if (response.status === 401) {
+        const next = await refreshAccessToken();
+        if (next) response = await load(next);
+      }
       if (!response.ok) throw new Error("Could not load requests");
       const body = (await response.json()) as { requests?: ClaimRequest[] };
-      return body.requests ?? [];
+      return Array.isArray(body.requests) ? body.requests : [];
     },
   });
   const [photoUsed, setPhotoUsed] = useState<number[]>([]);
@@ -151,7 +158,7 @@ export function Admin() {
           <div className="grid gap-4 sm:grid-cols-3">
             <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Pending</p>
-              <p className="mt-2 font-display text-4xl font-bold">{pending.length}</p>
+              <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : pending.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">Claim requests</p>
             </section>
             <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -176,7 +183,7 @@ export function Admin() {
                 <h2 className="font-display text-2xl font-bold uppercase tracking-wide">Claim requests</h2>
               </div>
               <span className="rounded-full border border-border px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                {pending.length === 0 ? "None waiting" : `${pending.length} waiting`}
+                {isLoading ? "Checking" : isError ? "Could not load" : pending.length === 0 ? "None waiting" : `${pending.length} waiting`}
               </span>
             </div>
             {isLoading ? (

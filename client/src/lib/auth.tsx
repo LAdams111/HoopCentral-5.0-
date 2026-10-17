@@ -21,6 +21,7 @@ type AuthContextValue = {
   signUp: (input: { email: string; password: string; role: LoginRole }) => Promise<AuthResult>;
   signIn: (input: { email: string; password: string }) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  refreshAccessToken: () => Promise<string | null>;
 };
 
 export type AuthResult =
@@ -200,6 +201,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async signOut() {
         if (!client) return;
         await client.auth.signOut();
+      },
+      async refreshAccessToken() {
+        if (!client) return session?.access_token ?? null;
+        const current = await client.auth.getSession();
+        const existing = current.data.session?.access_token;
+        if (existing) return existing;
+        const refreshed = await client.auth.refreshSession();
+        return refreshed.data.session?.access_token ?? null;
       },
     }),
     [adminChecked, client, configError, isAdmin, ready, session],
