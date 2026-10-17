@@ -16,6 +16,7 @@ import { Admin } from "./pages/Admin";
 import { AdminEditPlayer, AdminEditTeam } from "./pages/AdminEdit";
 import { Login } from "./pages/Login";
 import { Team } from "./pages/Team";
+import { CoachTeam } from "./pages/CoachTeam";
 
 function TrackPageViews() {
   const location = useLocation();
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Account />} />
+        <Route path="/coach/team/:slug" element={<CoachTeam />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/edit/player/:id" element={<AdminEditPlayer />} />
         <Route path="/admin/edit/team/:id" element={<AdminEditTeam />} />

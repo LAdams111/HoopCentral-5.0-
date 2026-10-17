@@ -1,4 +1,4 @@
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link, Navigate } from "react-router-dom";
 import { getPlayer } from "@/lib/api";
 import { Admin } from "@/pages/Admin";
@@ -15,7 +15,19 @@ const ROLE_LABELS: Record<LoginRole, string> = {
 };
 
 export function Account() {
-  const { ready, email, role, isAdmin, adminChecked, signOut } = useAuth();
+  const { ready, email, role, session, isAdmin, adminChecked, signOut } = useAuth();
+  const claimedTeams = useQuery({
+    queryKey: ["coach-teams", session?.user.id],
+    enabled: role === "coach" && Boolean(session?.access_token),
+    queryFn: async () => {
+      const response = await fetch("/api/coach/teams", {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ""}` },
+        cache: "no-store",
+      });
+      if (!response.ok) return { teams: [] as { slug: string; name: string; leagueSlug: string; leagueName: string }[] };
+      return (await response.json()) as { teams: { slug: string; name: string; leagueSlug: string; leagueName: string }[] };
+    },
+  });
   const { players: favoritePlayers, teams: favoriteTeams, isLoading: storedFavoritesLoading } = useFavorites();
 
   const playerQueries = useQueries({
@@ -76,7 +88,7 @@ export function Account() {
           </dl>
           {role === "coach" ? (
             <p className="mt-4 text-sm text-muted-foreground">
-              Coach accounts can sign in. Entering players and stats stays off until you are approved.
+              Approved teams show up under Claim a team. Open one to edit that roster.
             </p>
           ) : null}
           <button
@@ -107,7 +119,25 @@ export function Account() {
             <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim a team</h2>
             <p className="mb-4 text-sm text-muted-foreground">
               Search for the team page and claim it as yours. A photo of a government-issued ID is required.
+              Approved teams stay on this profile.
             </p>
+            {claimedTeams.data?.teams.length ? (
+              <div className="mb-4 space-y-2">
+                {claimedTeams.data.teams.map((team) => (
+                  <Link
+                    key={`${team.leagueSlug}:${team.slug}`}
+                    to={`/coach/team/${encodeURIComponent(team.slug)}?league=${encodeURIComponent(team.leagueSlug)}`}
+                    className="flex items-center justify-between rounded-xl border border-border px-4 py-3 transition-colors hover:border-primary/40"
+                  >
+                    <span>
+                      <span className="block font-display text-lg font-bold uppercase tracking-tight">{team.name}</span>
+                      <span className="text-xs text-muted-foreground">{team.leagueName}</span>
+                    </span>
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-primary">Open</span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
             <Link
               to="/search?claim=team"
               className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
