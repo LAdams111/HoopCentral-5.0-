@@ -351,6 +351,40 @@ coachRouter.post("/teams/:slug/players", async (req, res) => {
     return;
   }
 
+  const existingId = Number(req.body?.playerId);
+  if (Number.isInteger(existingId) && existingId > 0) {
+    const found = await db.execute(sql`SELECT id FROM players WHERE id = ${existingId} LIMIT 1`);
+    if (!found.rows[0]) {
+      res.status(404).json({ error: { code: "NOT_FOUND", message: "Player not found" } });
+      return;
+    }
+    const already = await db.execute(sql`
+      SELECT 1 FROM player_season_stats
+      WHERE player_id = ${existingId} AND team_id = ${team.id} AND season_id = ${seasonId}
+      LIMIT 1
+    `);
+    if (already.rows[0]) {
+      res.status(400).json({ error: { code: "INVALID", message: "That player is already on this roster" } });
+      return;
+    }
+    await db.execute(sql`
+      INSERT INTO player_season_stats (player_id, team_id, league_id, season_id)
+      VALUES (${existingId}, ${team.id}, ${team.league_id}, ${seasonId})
+    `);
+    await db.execute(sql`
+      INSERT INTO player_stints (player_id, team_id, league_id, season_id)
+      VALUES (${existingId}, ${team.id}, ${team.league_id}, ${seasonId})
+      ON CONFLICT (player_id, team_id, league_id, season_id) DO NOTHING
+    `);
+    res.json({ ok: true, id: existingId });
+    return;
+  }
+
+  if (!fields.name) {
+    res.status(400).json({ error: { code: "INVALID", message: "Player name is required" } });
+    return;
+  }
+
   const playerSlug = `${nameToSlug(fields.name) || "player"}-${team.id}-${Date.now().toString(36)}`.slice(0, 120);
   const created = await db.execute(sql`
     INSERT INTO players (

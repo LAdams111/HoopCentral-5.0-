@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { getPlayers, type PlayerCard } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 type CoachPlayer = {
@@ -178,6 +179,8 @@ function Dashboard({
         </Link>
       </div>
 
+      <BoxScore players={data.players} team={data.team} season={data.season} token={token} onChange={onChange} />
+
       <section className="mt-8">
         <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Roster</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -194,7 +197,6 @@ function Dashboard({
           ) : null}
         </div>
         <AddPlayer team={data.team} season={data.season} token={token} onChange={onChange} />
-        <BoxScore players={data.players} team={data.team} season={data.season} token={token} onChange={onChange} />
       </section>
 
       <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
@@ -363,11 +365,58 @@ function AddPlayer({
 }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", position: "", jerseyNumber: "", height: "", weight: "", hometown: "", country: "", birthDate: "" });
+  const [matches, setMatches] = useState<PlayerCard[] | null>(null);
+  const [creating, setCreating] = useState(false);
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const set = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
 
-  const add = async () => {
+  const search = async () => {
+    const name = form.name.trim();
+    if (name.length < 2) {
+      setMessage("Enter at least two letters of the name.");
+      return;
+    }
+    setSaving(true);
+    setMessage("");
+    setCreating(false);
+    try {
+      const found = await getPlayers(name, undefined, 8);
+      setMatches(found);
+      if (found.length === 0) setCreating(true);
+    } catch {
+      setMessage("Could not search players.");
+      setMatches([]);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addExisting = async (player: PlayerCard) => {
+    setSaving(true);
+    setMessage("");
+    try {
+      await coachFetch(token, `/api/coach/teams/${encodeURIComponent(team.slug)}/players`, {
+        method: "POST",
+        body: JSON.stringify({
+          playerId: player.id,
+          name: player.name,
+          leagueSlug: team.leagueSlug,
+          season,
+        }),
+      });
+      setMatches(null);
+      setForm({ name: "", position: "", jerseyNumber: "", height: "", weight: "", hometown: "", country: "", birthDate: "" });
+      setMessage(`${player.name} was added to this roster. Other teams on his profile stay the same.`);
+      onChange();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not add this player.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const createNew = async () => {
     setSaving(true);
     setMessage("");
     try {
@@ -376,7 +425,9 @@ function AddPlayer({
         body: JSON.stringify({ ...form, leagueSlug: team.leagueSlug, season }),
       });
       setForm({ name: "", position: "", jerseyNumber: "", height: "", weight: "", hometown: "", country: "", birthDate: "" });
-      setMessage("Player added to the roster.");
+      setMatches(null);
+      setCreating(false);
+      setMessage("New player added to the roster.");
       onChange();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not add this player.");
@@ -396,19 +447,64 @@ function AddPlayer({
         <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{open ? "Close" : "Open"}</span>
       </button>
       {open ? (
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <label className="block text-sm sm:col-span-2">Name<input className={`${inputClass} mt-1`} value={form.name} onChange={(event) => set("name", event.target.value)} /></label>
-          <label className="block text-sm">Position<input className={`${inputClass} mt-1`} placeholder="PG" value={form.position} onChange={(event) => set("position", event.target.value)} /></label>
-          <label className="block text-sm">Jersey<input className={`${inputClass} mt-1`} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} /></label>
-          <label className="block text-sm">Height<input className={`${inputClass} mt-1`} placeholder={`6'7"`} value={form.height} onChange={(event) => set("height", event.target.value)} /></label>
-          <label className="block text-sm">Weight<input className={`${inputClass} mt-1`} placeholder="210 lbs" value={form.weight} onChange={(event) => set("weight", event.target.value)} /></label>
-          <label className="block text-sm">Hometown<input className={`${inputClass} mt-1`} value={form.hometown} onChange={(event) => set("hometown", event.target.value)} /></label>
-          <label className="block text-sm">Country<input className={`${inputClass} mt-1`} value={form.country} onChange={(event) => set("country", event.target.value)} /></label>
-          <label className="block text-sm">Birth date<input className={`${inputClass} mt-1`} placeholder="2004-06-14" value={form.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></label>
-          <button type="button" disabled={saving || !season} onClick={() => void add()} className="mt-4 h-10 rounded-xl bg-primary px-4 font-mono text-xs font-semibold uppercase tracking-wide text-primary-foreground disabled:opacity-60 sm:col-span-3 sm:w-fit">
-            {saving ? "Adding…" : "Add to roster"}
-          </button>
-          {message ? <p className="text-sm text-muted-foreground sm:col-span-3">{message}</p> : null}
+        <div className="mt-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="block min-w-56 flex-1 text-sm">
+              Name
+              <input
+                className={`${inputClass} mt-1`}
+                value={form.name}
+                onChange={(event) => {
+                  set("name", event.target.value);
+                  setMatches(null);
+                  setCreating(false);
+                }}
+              />
+            </label>
+            <button type="button" disabled={saving || !season} onClick={() => void search()} className="h-10 rounded-xl bg-primary px-4 font-mono text-xs font-semibold uppercase tracking-wide text-primary-foreground disabled:opacity-60">
+              {saving ? "Searching…" : "Search"}
+            </button>
+          </div>
+          {matches && matches.length > 0 ? (
+            <ul className="mt-4 divide-y divide-border rounded-xl border border-border">
+              {matches.map((player) => (
+                <li key={player.id} className="flex flex-wrap items-center justify-between gap-3 px-3 py-3">
+                  <span>
+                    <span className="block font-medium">{player.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {[player.team, player.position, player.hometown].filter(Boolean).join(" · ") || "No team listed"}
+                    </span>
+                  </span>
+                  <button type="button" disabled={saving} onClick={() => void addExisting(player)} className="rounded-xl border border-primary/40 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary disabled:opacity-60">
+                    Add this player
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {matches && matches.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">No players found with that name.</p>
+          ) : null}
+          {matches ? (
+            <button type="button" onClick={() => setCreating(true)} className="mt-4 font-mono text-xs uppercase tracking-wide text-primary">
+              {matches.length > 0 ? "None of these. Create a new player" : "Create a new player"}
+            </button>
+          ) : null}
+          {creating ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <label className="block text-sm">Position<input className={`${inputClass} mt-1`} placeholder="PG" value={form.position} onChange={(event) => set("position", event.target.value)} /></label>
+              <label className="block text-sm">Jersey<input className={`${inputClass} mt-1`} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} /></label>
+              <label className="block text-sm">Height<input className={`${inputClass} mt-1`} placeholder={`6'7"`} value={form.height} onChange={(event) => set("height", event.target.value)} /></label>
+              <label className="block text-sm">Weight<input className={`${inputClass} mt-1`} placeholder="210 lbs" value={form.weight} onChange={(event) => set("weight", event.target.value)} /></label>
+              <label className="block text-sm">Hometown<input className={`${inputClass} mt-1`} value={form.hometown} onChange={(event) => set("hometown", event.target.value)} /></label>
+              <label className="block text-sm">Country<input className={`${inputClass} mt-1`} value={form.country} onChange={(event) => set("country", event.target.value)} /></label>
+              <label className="block text-sm">Birth date<input className={`${inputClass} mt-1`} placeholder="2004-06-14" value={form.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></label>
+              <button type="button" disabled={saving || !season} onClick={() => void createNew()} className="h-10 self-end rounded-xl bg-primary px-4 font-mono text-xs font-semibold uppercase tracking-wide text-primary-foreground disabled:opacity-60 sm:col-span-3 sm:w-fit">
+                {saving ? "Adding…" : "Create and add"}
+              </button>
+            </div>
+          ) : null}
+          {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
         </div>
       ) : null}
     </section>
