@@ -114,7 +114,7 @@ export function Account() {
         <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim</h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            Search from here, open the profile, and hit Claim. The button only shows on that visit.
+            Search from here, open the profile, and hit Claim. That opens a bio form. Stats are not on it. The button only shows on that visit.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link

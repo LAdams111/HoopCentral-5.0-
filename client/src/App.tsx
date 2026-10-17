@@ -11,6 +11,7 @@ import { Players, SearchResults } from "./pages/Players";
 import { Prospects } from "./pages/Prospects";
 import { Roster } from "./pages/Roster";
 import { Account } from "./pages/Account";
+import { ClaimPlayer, ClaimTeam } from "./pages/ClaimProfile";
 import { Admin } from "./pages/Admin";
 import { Login } from "./pages/Login";
 import { Team } from "./pages/Team";
@@ -46,7 +47,9 @@ export default function App() {
         <Route path="/signup" element={<Navigate to="/login?mode=signup" replace />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/players" element={<Players />} />
+        <Route path="/players/:id/claim" element={<ClaimPlayer />} />
         <Route path="/players/:id" element={<PlayerProfile />} />
+        <Route path="/claim/team" element={<ClaimTeam />} />
         <Route path="/roster/:team/:season" element={<Roster />} />
         <Route path="/teams/:slug" element={<Team />} />
         <Route path="/leagues" element={<Leagues />} />

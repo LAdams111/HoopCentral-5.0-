@@ -287,12 +287,7 @@ export function Roster() {
                 {new URLSearchParams(location.search).get("claim") === "team" && roster?.team.slug ? (
                   <div className="mt-4 max-w-xs">
                     <ClaimButton
-                      payload={{
-                        kind: "team",
-                        teamSlug: roster.team.slug,
-                        teamName,
-                        leagueSlug,
-                      }}
+                      to={`/claim/team?claim=team&teamSlug=${encodeURIComponent(roster.team.slug)}&leagueSlug=${encodeURIComponent(leagueSlug ?? "")}&teamName=${encodeURIComponent(teamName)}`}
                     />
                   </div>
                 ) : null}

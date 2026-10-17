@@ -195,7 +195,7 @@ export function PlayerProfile() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  {showClaim ? <ClaimButton payload={{ kind: "player", playerId: player.id }} /> : null}
+                  {showClaim ? <ClaimButton to={`/players/${player.id}/claim?claim=player`} /> : null}
                   <button
                     type="button"
                     onClick={handleFavorite}
