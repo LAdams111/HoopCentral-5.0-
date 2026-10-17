@@ -48,7 +48,7 @@ function safeNextPath(value: string | null): string {
 export function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { ready, configError, email: signedInEmail, signIn, signUp } = useAuth();
+  const { ready, configError, email: signedInEmail, isAdmin, adminChecked, signIn, signUp } = useAuth();
   const role = useMemo(() => parseRole(searchParams.get("role")), [searchParams]);
   const mode = useMemo(() => parseMode(searchParams.get("mode")), [searchParams]);
   const [email, setEmail] = useState("");
@@ -107,11 +107,18 @@ export function Login() {
       );
       return;
     }
-    navigate(nextPath, { replace: true });
+    navigate(result.isAdmin ? "/admin" : nextPath, { replace: true });
   };
 
   if (ready && signedInEmail) {
-    return <Navigate to={nextPath} replace />;
+    if (!adminChecked) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      );
+    }
+    return <Navigate to={isAdmin ? "/admin" : nextPath} replace />;
   }
 
   return (

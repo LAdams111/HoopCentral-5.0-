@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Instagram, LogIn, Search, Shield, Trophy } from "lucide-react";
+import { Instagram, LogIn, Search, Trophy } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { useAuth } from "@/lib/auth";
 
@@ -27,7 +27,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="brand-trophy flex h-8 w-8 transform items-center justify-center rounded bg-primary">
               <Trophy className="h-4 w-4 text-white" />
             </div>
-            <span className="font-display text-lg font-bold tracking-wide sm:text-2xl sm:tracking-widest">
+            <span className="font-display text-2xl font-bold tracking-widest">
               <span className="brand-hoop text-foreground">HOOP</span>
               <span className="text-primary">CENTRAL</span>
             </span>
@@ -58,7 +58,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               href="https://www.instagram.com/hoopcentral.db/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary sm:inline-flex"
+              className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary"
               aria-label="Hoop Central on Instagram"
             >
               <Instagram className="h-5 w-5" />
@@ -73,30 +73,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </button>
             </Link>
             {email ? (
-              <>
-                {isAdmin ? (
-                  <Link
-                    to="/admin"
-                    className={`rounded-full border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide transition-colors ${
-                      location.pathname === "/admin"
-                        ? "border-primary/40 text-primary"
-                        : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
-                    }`}
-                  >
-                    Admin
-                  </Link>
-                ) : null}
-                <Link
-                  to="/profile"
-                  className={`rounded-full border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide transition-colors ${
-                    location.pathname === "/profile"
-                      ? "border-primary/40 text-primary"
-                      : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
-                  }`}
-                >
-                  Profile
-                </Link>
-              </>
+              <Link
+                to={isAdmin ? "/admin" : "/profile"}
+                className={`rounded-full border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide transition-colors ${
+                  location.pathname === (isAdmin ? "/admin" : "/profile")
+                    ? "border-primary/40 text-primary"
+                    : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
+                }`}
+              >
+                {isAdmin ? "Dashboard" : "Profile"}
+              </Link>
             ) : (
               <>
                 <Link
@@ -139,17 +125,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
-          {isAdmin ? (
-            <Link
-              to="/admin"
-              className={`flex h-full flex-1 flex-col items-center justify-center gap-0.5 transition-colors ${
-                location.pathname === "/admin" ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              <Shield className="h-5 w-5" />
-              <span className="text-[10px] font-medium tracking-wide">Admin</span>
-            </Link>
-          ) : null}
         </div>
       </nav>
     </div>

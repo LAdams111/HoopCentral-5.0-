@@ -24,7 +24,7 @@ type AuthContextValue = {
 };
 
 export type AuthResult =
-  | { ok: true; needsEmailConfirmation: boolean }
+  | { ok: true; needsEmailConfirmation: boolean; isAdmin?: boolean }
   | { ok: false; message: string };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -166,12 +166,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       async signIn({ email, password }) {
         if (!client) return { ok: false, message: "Sign-in is not available right now." };
-        const { error } = await client.auth.signInWithPassword({
+        const { data, error } = await client.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
         if (error) return { ok: false, message: error.message };
-        return { ok: true, needsEmailConfirmation: false };
+        const token = data.session?.access_token;
+        if (!token) return { ok: true, needsEmailConfirmation: false, isAdmin: false };
+        try {
+          const response = await fetch("/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!response.ok) return { ok: true, needsEmailConfirmation: false, isAdmin: false };
+          const body = (await response.json()) as { isAdmin?: boolean };
+          return { ok: true, needsEmailConfirmation: false, isAdmin: body.isAdmin === true };
+        } catch {
+          return { ok: true, needsEmailConfirmation: false, isAdmin: false };
+        }
       },
       async signOut() {
         if (!client) return;

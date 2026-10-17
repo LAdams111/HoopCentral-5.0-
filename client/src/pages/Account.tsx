@@ -21,7 +21,7 @@ const ROLE_LABELS: Record<LoginRole, string> = {
 };
 
 export function Account() {
-  const { ready, email, role, session, isAdmin, signOut } = useAuth();
+  const { ready, email, role, session, isAdmin, adminChecked, signOut } = useAuth();
   const userId = session?.user.id ?? null;
   const [favoritePlayers, setFavoritePlayers] = useState<FavoritePlayer[]>([]);
   const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
@@ -47,7 +47,7 @@ export function Account() {
     })),
   });
 
-  if (!ready) {
+  if (!ready || (email && !adminChecked)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -57,6 +57,10 @@ export function Account() {
 
   if (!email) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />;
   }
 
   const players = favoritePlayers.map((player, index) => {
@@ -85,14 +89,6 @@ export function Account() {
               <dd>{ROLE_LABELS[role]}</dd>
             </div>
           </dl>
-          {isAdmin ? (
-            <Link
-              to="/admin"
-              className="mt-6 inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
-            >
-              Open admin
-            </Link>
-          ) : null}
           {role === "coach" ? (
             <p className="mt-4 text-sm text-muted-foreground">
               Coach accounts can sign in. Entering players and stats stays off until you are approved.
