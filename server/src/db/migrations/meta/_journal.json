@@ -176,6 +176,13 @@
       "when": 1751731200000,
       "tag": "0028_claim_photo",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1751817600000,
+      "tag": "0029_claim_applied",
+      "breakpoints": true
     }
   ]
 }

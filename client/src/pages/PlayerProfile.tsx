@@ -261,6 +261,10 @@ export function PlayerProfile() {
                   )}
                 </div>
 
+                {player.bio ? (
+                  <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">{player.bio}</p>
+                ) : null}
+
                 {player.hometown && (
                   <div className="flex w-fit items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
                     <div className="flex flex-col">

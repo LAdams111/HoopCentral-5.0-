@@ -34,8 +34,26 @@ function shown(value: string | null | undefined): string {
   return text;
 }
 
+const POSITIONS = ["PG", "SG", "G", "SF", "PF", "F", "C", "G/F", "F/C"];
+
 function fieldClassName() {
   return "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
+}
+
+function heightInches(value: string): number {
+  const match = value.match(/(\d+)\s*'\s*(\d{1,2})/);
+  if (!match) return 78;
+  return Math.min(96, Math.max(58, Number(match[1]) * 12 + Number(match[2])));
+}
+
+function formatInches(total: number): string {
+  return `${Math.floor(total / 12)}'${total % 12}"`;
+}
+
+function weightPounds(value: string): number {
+  const match = value.match(/(\d{2,3})/);
+  if (!match) return 180;
+  return Math.min(400, Math.max(100, Number(match[1])));
 }
 
 async function preparePhoto(file: File): Promise<Blob> {
@@ -188,7 +206,7 @@ export function ClaimPlayer() {
         <section className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <p className="font-display text-2xl font-bold">Request sent</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            The bio changes and your proof are waiting for review. The public profile and stats stay the same until they are checked.
+            The bio changes are waiting for review. Approving them updates the profile. Stats stay unchanged.
           </p>
         </section>
       ) : playerQuery.isError ? (
@@ -203,16 +221,40 @@ export function ClaimPlayer() {
         >
           <label className="block text-sm">
             Position
-            <input className={fieldClassName()} value={form.position} onChange={(event) => set("position", event.target.value)} />
+            <span className="mt-1 block font-mono text-xs text-muted-foreground">{form.position || "Not set"}</span>
+            <input
+              type="range"
+              min={0}
+              max={POSITIONS.length - 1}
+              value={Math.max(0, POSITIONS.indexOf(form.position))}
+              onChange={(event) => set("position", POSITIONS[Number(event.target.value)] ?? "")}
+              className="mt-2 w-full accent-primary"
+            />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
               Height
-              <input className={fieldClassName()} value={form.height} onChange={(event) => set("height", event.target.value)} />
+              <span className="mt-1 block font-mono text-xs text-muted-foreground">{form.height || "Not set"}</span>
+              <input
+                type="range"
+                min={58}
+                max={96}
+                value={heightInches(form.height)}
+                onChange={(event) => set("height", formatInches(Number(event.target.value)))}
+                className="mt-2 w-full accent-primary"
+              />
             </label>
             <label className="block text-sm">
               Weight
-              <input className={fieldClassName()} value={form.weight} onChange={(event) => set("weight", event.target.value)} />
+              <span className="mt-1 block font-mono text-xs text-muted-foreground">{form.weight || "Not set"}</span>
+              <input
+                type="range"
+                min={100}
+                max={400}
+                value={weightPounds(form.weight)}
+                onChange={(event) => set("weight", `${event.target.value} lbs`)}
+                className="mt-2 w-full accent-primary"
+              />
             </label>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">

@@ -118,6 +118,12 @@ type PlayerCardSource = Pick<
   | "hsClassOf"
 >;
 
+function bioFromExtendedProfile(profile: unknown): string | null {
+  if (!profile || typeof profile !== "object" || Array.isArray(profile)) return null;
+  const bio = (profile as { bio?: unknown }).bio;
+  return typeof bio === "string" && bio.trim() ? bio.trim() : null;
+}
+
 export function toPlayerCard(
   player: PlayerCardSource,
   teamName: string | null,
@@ -635,6 +641,7 @@ export async function getPlayerById(
 
   return {
     ...toPlayerCard(row.player, row.teamName, row.teamSlug),
+    bio: bioFromExtendedProfile(row.player.extendedProfile),
     league: row.leagueName ?? null,
     leagueSlug: row.leagueSlug ?? null,
     stats: publicStats,

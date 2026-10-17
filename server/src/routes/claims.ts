@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import express, { Router } from "express";
 import { db, pool } from "../db/index.js";
+import { parseBirthDate, parseClaimPosition, parseHeightCm, parseWeightKg } from "../utils/claim-measurements.js";
 import { getAuthUser } from "./auth.js";
 
 export const claimsRouter = Router();
@@ -81,6 +82,67 @@ claimsRouter.get("/", async (req, res) => {
   res.json({ requests: result.rows as ClaimRow[] });
 });
 
+function proposedRecord(value: unknown): Record<string, string> {
+  try {
+    const source = typeof value === "string" ? JSON.parse(value) : value;
+    if (!source || typeof source !== "object" || Array.isArray(source)) return {};
+    const proposed: Record<string, string> = {};
+    for (const [key, item] of Object.entries(source as Record<string, unknown>)) {
+      if (typeof item === "string" && item.trim()) proposed[key] = item.trim();
+    }
+    return proposed;
+  } catch {
+    return {};
+  }
+}
+
+async function applyPlayerClaim(playerId: number, proposed: Record<string, string>): Promise<void> {
+  const position = proposed.position ? parseClaimPosition(proposed.position) : null;
+  const heightCm = proposed.height ? parseHeightCm(proposed.height) : null;
+  const weightKg = proposed.weight ? parseWeightKg(proposed.weight) : null;
+  const hometown = proposed.hometown?.slice(0, 120) || null;
+  const country = proposed.country?.slice(0, 80) || null;
+  const jersey = proposed.jerseyNumber?.slice(0, 8) || null;
+  const birthDate = proposed.birthDate ? parseBirthDate(proposed.birthDate) : null;
+  const bio = proposed.bio?.slice(0, 2000) || "";
+
+  await db.execute(sql`
+    UPDATE players
+    SET
+      position = COALESCE(${position}, position),
+      height_cm = COALESCE(${heightCm}, height_cm),
+      weight_kg = COALESCE(${weightKg}, weight_kg),
+      hometown = COALESCE(${hometown}, hometown),
+      country = COALESCE(${country}, country),
+      jersey_number = COALESCE(${jersey}, jersey_number),
+      birth_date = COALESCE(${birthDate}::date, birth_date),
+      extended_profile = CASE
+        WHEN ${bio} = '' THEN extended_profile
+        ELSE COALESCE(extended_profile, '{}'::jsonb) || jsonb_build_object('bio', ${bio})
+      END,
+      updated_at = now()
+    WHERE id = ${playerId}
+  `);
+}
+
+export async function applyStoredApprovals(): Promise<number> {
+  const waiting = await db.execute(sql`
+    SELECT id, player_id, proposed
+    FROM claim_requests
+    WHERE status = 'approved'
+      AND kind = 'player'
+      AND player_id > 0
+      AND applied_at IS NULL
+  `);
+  let applied = 0;
+  for (const row of waiting.rows as { id: number; player_id: number; proposed: unknown }[]) {
+    await applyPlayerClaim(row.player_id, proposedRecord(row.proposed));
+    await db.execute(sql`UPDATE claim_requests SET applied_at = now() WHERE id = ${row.id}`);
+    applied += 1;
+  }
+  return applied;
+}
+
 claimsRouter.patch("/:id", async (req, res) => {
   const user = await getAuthUser(bearerToken(req.header("authorization")));
   if (!user?.isAdmin) {
@@ -99,13 +161,25 @@ claimsRouter.patch("/:id", async (req, res) => {
     UPDATE claim_requests
     SET status = ${status}
     WHERE id = ${id}
-    RETURNING id, status
+    RETURNING id, status, kind, player_id, proposed
   `);
-  const saved = updated.rows[0] as { id: number; status: string } | undefined;
+  const saved = updated.rows[0] as {
+    id: number;
+    status: string;
+    kind: string;
+    player_id: number;
+    proposed: unknown;
+  } | undefined;
   if (!saved) {
     res.status(404).json({ error: { code: "NOT_FOUND", message: "Request not found" } });
     return;
   }
+
+  if (saved.status === "approved" && saved.kind === "player" && saved.player_id > 0) {
+    await applyPlayerClaim(saved.player_id, proposedRecord(saved.proposed));
+    await db.execute(sql`UPDATE claim_requests SET applied_at = now() WHERE id = ${saved.id}`);
+  }
+
   res.json({ ok: true, id: saved.id, status: saved.status });
 });
 

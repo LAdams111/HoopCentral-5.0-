@@ -6,7 +6,7 @@ import { checkDatabaseConnection } from "./db/index.js";
 import { publicBrowseLimiter, publicCatalogLimiter } from "./middleware/public-rate-limit.js";
 import { securityHeaders, siteCors } from "./middleware/security.js";
 import { authRouter } from "./routes/auth.js";
-import { claimsRouter } from "./routes/claims.js";
+import { applyStoredApprovals, claimsRouter } from "./routes/claims.js";
 import { draftRouter } from "./routes/draft.js";
 import { leaguesRouter } from "./routes/leagues.js";
 import { devRouter } from "./routes/dev.js";
@@ -109,5 +109,8 @@ app.listen(PORT, "0.0.0.0", () => {
 
     checkDailyProfileViews();
     setInterval(checkDailyProfileViews, 60 * 60 * 1000);
+    void applyStoredApprovals().catch((err) => {
+      console.error("Applying approved claim edits failed:", err);
+    });
   }
 });
