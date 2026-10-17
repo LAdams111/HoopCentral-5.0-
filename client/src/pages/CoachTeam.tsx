@@ -178,6 +178,24 @@ function Dashboard({
         </Link>
       </div>
 
+      <section className="mt-8">
+        <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Roster</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {data.players.length} player{data.players.length === 1 ? "" : "s"} in {data.season || "this season"}.
+        </p>
+        <div className="mt-4 space-y-3">
+          {data.players.map((player) => (
+            <PlayerCard key={player.id} player={player} team={data.team} season={data.season} token={token} onChange={onChange} />
+          ))}
+          {data.players.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-border px-4 py-8 text-sm text-muted-foreground">
+              No players on this roster yet.
+            </p>
+          ) : null}
+        </div>
+        <AddPlayer team={data.team} season={data.season} token={token} onChange={onChange} />
+      </section>
+
       <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <label className="block text-sm">
@@ -233,25 +251,6 @@ function Dashboard({
         </button>
         {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
       </section>
-
-      <section className="mt-8">
-        <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Roster</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {data.players.length} player{data.players.length === 1 ? "" : "s"} in {data.season || "this season"}.
-        </p>
-        <div className="mt-4 space-y-3">
-          {data.players.map((player) => (
-            <PlayerCard key={player.id} player={player} team={data.team} season={data.season} token={token} onChange={onChange} />
-          ))}
-          {data.players.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-border px-4 py-8 text-sm text-muted-foreground">
-              No players on this roster yet.
-            </p>
-          ) : null}
-        </div>
-      </section>
-
-      <AddPlayer team={data.team} season={data.season} token={token} onChange={onChange} />
     </>
   );
 }
@@ -361,6 +360,7 @@ function AddPlayer({
   token: string;
   onChange: () => void;
 }) {
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", position: "", jerseyNumber: "", height: "", weight: "", hometown: "", country: "", birthDate: "" });
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
@@ -385,22 +385,31 @@ function AddPlayer({
   };
 
   return (
-    <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Add a player</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <label className="block text-sm sm:col-span-2">Name<input className={`${inputClass} mt-1`} value={form.name} onChange={(event) => set("name", event.target.value)} /></label>
-        <label className="block text-sm">Position<input className={`${inputClass} mt-1`} placeholder="PG" value={form.position} onChange={(event) => set("position", event.target.value)} /></label>
-        <label className="block text-sm">Jersey<input className={`${inputClass} mt-1`} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} /></label>
-        <label className="block text-sm">Height<input className={`${inputClass} mt-1`} placeholder={`6'7"`} value={form.height} onChange={(event) => set("height", event.target.value)} /></label>
-        <label className="block text-sm">Weight<input className={`${inputClass} mt-1`} placeholder="210 lbs" value={form.weight} onChange={(event) => set("weight", event.target.value)} /></label>
-        <label className="block text-sm">Hometown<input className={`${inputClass} mt-1`} value={form.hometown} onChange={(event) => set("hometown", event.target.value)} /></label>
-        <label className="block text-sm">Country<input className={`${inputClass} mt-1`} value={form.country} onChange={(event) => set("country", event.target.value)} /></label>
-        <label className="block text-sm">Birth date<input className={`${inputClass} mt-1`} placeholder="2004-06-14" value={form.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></label>
-      </div>
-      <button type="button" disabled={saving || !season} onClick={() => void add()} className="mt-4 rounded-xl bg-primary px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary-foreground disabled:opacity-60">
-        {saving ? "Adding…" : "Add to roster"}
+    <section className={`mt-3 rounded-2xl border border-border bg-card shadow-sm ${open ? "p-6" : ""}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex w-full items-center justify-between text-left ${open ? "" : "px-4 py-3"}`}
+      >
+        <span className="font-display text-sm font-bold uppercase tracking-tight">Add a player</span>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{open ? "Close" : "Open"}</span>
       </button>
-      {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
+      {open ? (
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <label className="block text-sm sm:col-span-2">Name<input className={`${inputClass} mt-1`} value={form.name} onChange={(event) => set("name", event.target.value)} /></label>
+          <label className="block text-sm">Position<input className={`${inputClass} mt-1`} placeholder="PG" value={form.position} onChange={(event) => set("position", event.target.value)} /></label>
+          <label className="block text-sm">Jersey<input className={`${inputClass} mt-1`} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} /></label>
+          <label className="block text-sm">Height<input className={`${inputClass} mt-1`} placeholder={`6'7"`} value={form.height} onChange={(event) => set("height", event.target.value)} /></label>
+          <label className="block text-sm">Weight<input className={`${inputClass} mt-1`} placeholder="210 lbs" value={form.weight} onChange={(event) => set("weight", event.target.value)} /></label>
+          <label className="block text-sm">Hometown<input className={`${inputClass} mt-1`} value={form.hometown} onChange={(event) => set("hometown", event.target.value)} /></label>
+          <label className="block text-sm">Country<input className={`${inputClass} mt-1`} value={form.country} onChange={(event) => set("country", event.target.value)} /></label>
+          <label className="block text-sm">Birth date<input className={`${inputClass} mt-1`} placeholder="2004-06-14" value={form.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></label>
+          <button type="button" disabled={saving || !season} onClick={() => void add()} className="mt-4 h-10 rounded-xl bg-primary px-4 font-mono text-xs font-semibold uppercase tracking-wide text-primary-foreground disabled:opacity-60 sm:col-span-3 sm:w-fit">
+            {saving ? "Adding…" : "Add to roster"}
+          </button>
+          {message ? <p className="text-sm text-muted-foreground sm:col-span-3">{message}</p> : null}
+        </div>
+      ) : null}
     </section>
   );
 }
