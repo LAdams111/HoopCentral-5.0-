@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Calendar, ChevronDown } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { ArrowLeft, Calendar, ChevronDown, Flag } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +13,8 @@ import {
 } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { getTeamRecord, getTeamRoster, getTeamSeasons } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { isTeamFavorite, subscribeFavorites, toggleTeamFavorite } from "@/lib/favorites";
 
 function TeamRecordHeader({ record }: { record: { wins: number; losses: number } | null | undefined }) {
   if (record != null) {
@@ -77,6 +79,9 @@ export function Roster() {
   const { team = "", season = "" } = useParams<{ team: string; season: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { session } = useAuth();
+  const userId = session?.user.id ?? null;
+  const [teamFavorited, setTeamFavorited] = useState(false);
   const decodedTeam = decodeURIComponent(team);
   const decodedSeason = decodeURIComponent(season);
   const seasonLabel = normalizeSeasonKey(decodedSeason);
@@ -142,7 +147,35 @@ export function Roster() {
     );
   }, [roster?.team.slug, decodedTeam, seasonLabel, leagueSlug, navigate, location.state]);
 
+  const teamSlug = roster?.team.slug ?? decodedTeam;
   const teamName = roster?.team.name ?? decodedTeam;
+
+  useEffect(() => {
+    if (!userId || !teamSlug) {
+      setTeamFavorited(false);
+      return;
+    }
+    const team = { slug: teamSlug, leagueSlug };
+    const refresh = () => setTeamFavorited(isTeamFavorite(userId, team));
+    refresh();
+    return subscribeFavorites(refresh);
+  }, [userId, teamSlug, leagueSlug]);
+
+  const handleFavoriteTeam = () => {
+    if (!userId) {
+      const next = `${location.pathname}${location.search}`;
+      navigate(`/login?mode=signup&next=${encodeURIComponent(next)}`);
+      return;
+    }
+    setTeamFavorited(
+      toggleTeamFavorite(userId, {
+        slug: teamSlug,
+        name: teamName,
+        leagueSlug,
+        abbreviation: roster?.team.abbreviation,
+      }),
+    );
+  };
   const teamDisplayName = displayTeamName(teamName, {
     leagueSlug,
     abbreviation: roster?.team.abbreviation,
@@ -247,6 +280,18 @@ export function Roster() {
                   Team Roster
                 </p>
                 <TeamRecordHeader record={record} />
+                <button
+                  type="button"
+                  onClick={handleFavoriteTeam}
+                  className={`mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-medium transition-all ${
+                    teamFavorited
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-background text-foreground"
+                  }`}
+                >
+                  <Flag className={`h-4 w-4 ${teamFavorited ? "fill-current" : ""}`} />
+                  <span className="font-display font-bold uppercase tracking-tight">Favorite</span>
+                </button>
               </div>
             </div>
 

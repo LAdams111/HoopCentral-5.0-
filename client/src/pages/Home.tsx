@@ -61,7 +61,7 @@ export function Home() {
         loading={featuredLoading}
         variant="muted"
       />
-      <FavoritesStrip players={allPlayers} />
+      <FavoritesStrip />
     </div>
   );
 }

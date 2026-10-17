@@ -1,103 +1,48 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQueries } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Trophy, Users } from "lucide-react";
-import type { PlayerCard as PlayerCardType } from "@/lib/api";
-import { nbaTeamLogoUrl } from "@/lib/constants";
+import { TeamLogo } from "@/components/ui/TeamLogo";
+import { getPlayer } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import {
+  readPlayerFavorites,
+  readTeamFavorites,
+  subscribeFavorites,
+  type FavoritePlayer,
+  type FavoriteTeam,
+} from "@/lib/favorites";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 
-const FAVORITES_KEY = "hoopcentral-favorites";
-const PLAYER_FAVORITES_KEY = "player_favorites";
-const TEAM_FAVORITES_KEY = "team_favorites";
-
-interface StoredFavorite {
-  id: string;
-  name?: string;
-  headshotUrl?: string;
-}
-
-function getFavoriteIds(): number[] {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    return raw ? (JSON.parse(raw) as number[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function getStoredPlayerFavorites(): StoredFavorite[] {
-  try {
-    const raw = localStorage.getItem(PLAYER_FAVORITES_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as StoredFavorite[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function getTeamFavorites(): string[] {
-  try {
-    const raw = localStorage.getItem(TEAM_FAVORITES_KEY);
-    return raw ? (JSON.parse(raw) as string[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
-  const [storedFavorites, setStoredFavorites] = useState<StoredFavorite[]>([]);
-  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-  const [teamFavorites, setTeamFavorites] = useState<string[]>([]);
-
-  const refresh = useCallback(() => {
-    setStoredFavorites(getStoredPlayerFavorites());
-    setFavoriteIds(getFavoriteIds());
-    setTeamFavorites(getTeamFavorites());
-  }, []);
+export function FavoritesStrip() {
+  const { session } = useAuth();
+  const userId = session?.user.id ?? null;
+  const [players, setPlayers] = useState<FavoritePlayer[]>([]);
+  const [teams, setTeams] = useState<FavoriteTeam[]>([]);
 
   useEffect(() => {
+    if (!userId) {
+      setPlayers([]);
+      setTeams([]);
+      return;
+    }
+    const refresh = () => {
+      setPlayers(readPlayerFavorites(userId));
+      setTeams(readTeamFavorites(userId));
+    };
     refresh();
-    const onFocus = () => refresh();
-    const onStorage = (e: StorageEvent) => {
-      if (
-        e.key === FAVORITES_KEY ||
-        e.key === PLAYER_FAVORITES_KEY ||
-        e.key === TEAM_FAVORITES_KEY
-      ) {
-        refresh();
-      }
-    };
-    window.addEventListener("focus", onFocus);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("focus", onFocus);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, [refresh]);
+    return subscribeFavorites(refresh);
+  }, [userId]);
 
-  const resolvedFromIds = players.filter((p) => favoriteIds.includes(p.id));
-  const favoritePlayers =
-    storedFavorites.length > 0
-      ? storedFavorites.map((fav) => {
-          const match = players.find((p) => String(p.id) === String(fav.id));
-          return match ?? {
-            id: Number(fav.id),
-            name: fav.name ?? "Player",
-            headshotUrl: fav.headshotUrl ?? "",
-            team: "",
-            position: "",
-            height: "",
-            weight: "",
-            jerseyNumber: "",
-            bio: null,
-            profileViews: 0,
-            hometown: "",
-            birthDate: null,
-          };
-        })
-      : resolvedFromIds;
+  const playerQueries = useQueries({
+    queries: players.map((player) => ({
+      queryKey: ["player", player.id],
+      queryFn: () => getPlayer(player.id),
+    })),
+  });
 
-  const hasFavorites = favoritePlayers.length > 0 || teamFavorites.length > 0;
+  const favoritePlayers = players.map((player, index) => playerQueries[index]?.data ?? player);
+  const hasFavorites = favoritePlayers.length > 0 || teams.length > 0;
 
   return (
     <section className="overflow-hidden border-y border-border bg-background py-6">
@@ -111,20 +56,22 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
           </div>
 
           <div className="flex items-center gap-4">
-            {teamFavorites.map((team) => (
+            {teams.map((team) => (
               <Link
-                key={team}
-                to={`/players?q=${encodeURIComponent(team)}`}
+                key={`${team.leagueSlug ?? ""}:${team.slug}`}
+                to={`/teams/${encodeURIComponent(team.slug)}`}
                 className="group relative flex-shrink-0"
               >
                 <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-border bg-white p-1.5 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:border-primary">
-                  <img
-                    src={nbaTeamLogoUrl(team)}
-                    alt={team}
+                  <TeamLogo
+                    teamName={team.name}
+                    leagueSlug={team.leagueSlug}
+                    abbreviation={team.abbreviation}
+                    slug={team.slug}
+                    alt={team.name}
                     className="h-full w-full object-contain"
                   />
                 </div>
-                <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-primary opacity-0 transition-opacity group-hover:opacity-100" />
               </Link>
             ))}
 
@@ -143,7 +90,6 @@ export function FavoritesStrip({ players }: { players: PlayerCardType[] }) {
                       onError={onHeadshotError}
                     />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-primary opacity-0 transition-opacity group-hover:opacity-100" />
                 </Link>
               ))
             ) : (

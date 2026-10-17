@@ -40,6 +40,11 @@ function roleLabel(role: LoginRole): string {
   return SPECIALIZED_ROLES.find((r) => r.id === role)?.label ?? "Player";
 }
 
+function safeNextPath(value: string | null): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
+  return value;
+}
+
 export function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -55,6 +60,7 @@ export function Login() {
 
   const isSignup = mode === "signup";
   const activeLabel = roleLabel(role);
+  const nextPath = safeNextPath(searchParams.get("next"));
 
   const updateParams = (next: Partial<{ role: LoginRole; mode: AuthMode }>) => {
     const params = new URLSearchParams(searchParams);
@@ -101,11 +107,11 @@ export function Login() {
       );
       return;
     }
-    navigate("/", { replace: true });
+    navigate(nextPath, { replace: true });
   };
 
   if (ready && signedInEmail) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={nextPath} replace />;
   }
 
   return (

@@ -1,13 +1,16 @@
 import { useQueries } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { getPlayer } from "@/lib/api";
 import { useAuth, type LoginRole } from "@/lib/auth";
+import {
+  readPlayerFavorites,
+  readTeamFavorites,
+  subscribeFavorites,
+  type FavoritePlayer,
+  type FavoriteTeam,
+} from "@/lib/favorites";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
-
-const FAVORITES_KEY = "hoopcentral-favorites";
-const PLAYER_FAVORITES_KEY = "player_favorites";
-const TEAM_FAVORITES_KEY = "team_favorites";
 
 const ROLE_LABELS: Record<LoginRole, string> = {
   player: "Player",
@@ -17,56 +20,30 @@ const ROLE_LABELS: Record<LoginRole, string> = {
   fan: "General",
 };
 
-function readFavoritePlayerIds(): number[] {
-  const ids = new Set<number>();
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-    if (Array.isArray(parsed)) {
-      for (const id of parsed) {
-        const num = Number(id);
-        if (Number.isInteger(num)) ids.add(num);
-      }
-    }
-  } catch {
-    /* ignore broken local favorites */
-  }
-  try {
-    const raw = localStorage.getItem(PLAYER_FAVORITES_KEY);
-    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-    if (Array.isArray(parsed)) {
-      for (const item of parsed) {
-        if (item && typeof item === "object" && "id" in item) {
-          const num = Number((item as { id: unknown }).id);
-          if (Number.isInteger(num)) ids.add(num);
-        }
-      }
-    }
-  } catch {
-    /* ignore broken local favorites */
-  }
-  return [...ids];
-}
-
-function readFavoriteTeams(): string[] {
-  try {
-    const raw = localStorage.getItem(TEAM_FAVORITES_KEY);
-    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((team): team is string => typeof team === "string" && team.trim().length > 0);
-  } catch {
-    return [];
-  }
-}
-
 export function Account() {
-  const { ready, email, role, signOut } = useAuth();
-  const favoriteIds = useMemo(() => readFavoritePlayerIds(), []);
-  const favoriteTeams = useMemo(() => readFavoriteTeams(), []);
+  const { ready, email, role, session, signOut } = useAuth();
+  const userId = session?.user.id ?? null;
+  const [favoritePlayers, setFavoritePlayers] = useState<FavoritePlayer[]>([]);
+  const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
+
+  useEffect(() => {
+    if (!userId) {
+      setFavoritePlayers([]);
+      setFavoriteTeams([]);
+      return;
+    }
+    const refresh = () => {
+      setFavoritePlayers(readPlayerFavorites(userId));
+      setFavoriteTeams(readTeamFavorites(userId));
+    };
+    refresh();
+    return subscribeFavorites(refresh);
+  }, [userId]);
+
   const playerQueries = useQueries({
-    queries: favoriteIds.map((id) => ({
-      queryKey: ["player", id],
-      queryFn: () => getPlayer(id),
+    queries: favoritePlayers.map((player) => ({
+      queryKey: ["player", player.id],
+      queryFn: () => getPlayer(player.id),
     })),
   });
 
@@ -82,7 +59,10 @@ export function Account() {
     return <Navigate to="/login" replace />;
   }
 
-  const players = playerQueries.flatMap((query) => (query.data ? [query.data] : []));
+  const players = favoritePlayers.map((player, index) => {
+    const loaded = playerQueries[index]?.data;
+    return loaded ?? { ...player, team: "", position: "" };
+  });
   const favoritesLoading = playerQueries.some((query) => query.isLoading);
 
   return (
@@ -161,12 +141,12 @@ export function Account() {
           ) : (
             <ul className="flex flex-wrap gap-2">
               {favoriteTeams.map((team) => (
-                <li key={team}>
+                <li key={`${team.leagueSlug ?? ""}:${team.slug}`}>
                   <Link
-                    to={`/players?q=${encodeURIComponent(team)}`}
+                    to={`/teams/${encodeURIComponent(team.slug)}`}
                     className="inline-flex rounded-full border border-border px-3 py-1.5 text-sm transition-colors hover:border-primary/40 hover:text-primary"
                   >
-                    {team}
+                    {team.name}
                   </Link>
                 </li>
               ))}

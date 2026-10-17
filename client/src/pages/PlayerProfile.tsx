@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Flag, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
@@ -9,25 +9,8 @@ import { getPlayer, incrementProfileView } from "@/lib/api";
 import { rosterPath, displayTeamName, teamLogoUrl } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { formatPositionLong } from "@/lib/position";
-
-const FAVORITES_KEY = "hoopcentral-favorites";
-
-function getFavorites(): number[] {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    return raw ? (JSON.parse(raw) as number[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function toggleFavorite(id: number): boolean {
-  const favs = getFavorites();
-  const exists = favs.includes(id);
-  const next = exists ? favs.filter((f) => f !== id) : [...favs, id];
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
-  return !exists;
-}
+import { useAuth } from "@/lib/auth";
+import { isPlayerFavorite, subscribeFavorites, togglePlayerFavorite } from "@/lib/favorites";
 
 function calcAge(birthDate: string): number | null {
   const born = new Date(birthDate);
@@ -52,6 +35,10 @@ function formatBirthDate(birthDate: string): string {
 export function PlayerProfile() {
   const { id } = useParams<{ id: string }>();
   const playerId = Number(id);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { session } = useAuth();
+  const userId = session?.user.id ?? null;
   const queryClient = useQueryClient();
 
   const { data: player, isLoading, error } = useQuery({
@@ -78,16 +65,28 @@ export function PlayerProfile() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    if (player) {
-      setIsFavorite(getFavorites().includes(player.id));
+    if (!player || !userId) {
+      setIsFavorite(false);
+      return;
     }
-  }, [player]);
+    const refresh = () => setIsFavorite(isPlayerFavorite(userId, player.id));
+    refresh();
+    return subscribeFavorites(refresh);
+  }, [player, userId]);
 
   const handleFavorite = () => {
     if (!player) return;
-    const nowFav = toggleFavorite(player.id);
+    if (!userId) {
+      const next = `${location.pathname}${location.search}`;
+      navigate(`/login?mode=signup&next=${encodeURIComponent(next)}`);
+      return;
+    }
+    const nowFav = togglePlayerFavorite(userId, {
+      id: player.id,
+      name: player.name,
+      headshotUrl: player.headshotUrl,
+    });
     setIsFavorite(nowFav);
-    queryClient.invalidateQueries({ queryKey: ["all-players-home"] });
   };
 
   const sortedStats = useMemo(
