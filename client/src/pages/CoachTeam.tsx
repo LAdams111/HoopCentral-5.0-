@@ -194,6 +194,7 @@ function Dashboard({
           ) : null}
         </div>
         <AddPlayer team={data.team} season={data.season} token={token} onChange={onChange} />
+        <BoxScore players={data.players} team={data.team} season={data.season} token={token} onChange={onChange} />
       </section>
 
       <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
@@ -408,6 +409,193 @@ function AddPlayer({
             {saving ? "Adding…" : "Add to roster"}
           </button>
           {message ? <p className="text-sm text-muted-foreground sm:col-span-3">{message}</p> : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+const BOX_STATS = [
+  ["minutes", "MIN"],
+  ["points", "PTS"],
+  ["rebounds", "REB"],
+  ["assists", "AST"],
+  ["steals", "STL"],
+  ["blocks", "BLK"],
+  ["turnovers", "TOV"],
+  ["fouls", "PF"],
+  ["fgMade", "FGM"],
+  ["fgAtt", "FGA"],
+  ["fg3Made", "3PM"],
+  ["fg3Att", "3PA"],
+  ["ftMade", "FTM"],
+  ["ftAtt", "FTA"],
+] as const;
+
+type BoxStat = (typeof BOX_STATS)[number][0];
+type BoxLine = Record<BoxStat, string>;
+
+function emptyLine(): BoxLine {
+  return {
+    minutes: "",
+    points: "",
+    rebounds: "",
+    assists: "",
+    steals: "",
+    blocks: "",
+    turnovers: "",
+    fouls: "",
+    fgMade: "",
+    fgAtt: "",
+    fg3Made: "",
+    fg3Att: "",
+    ftMade: "",
+    ftAtt: "",
+  };
+}
+
+function BoxScore({
+  players,
+  team,
+  season,
+  token,
+  onChange,
+}: {
+  players: CoachPlayer[];
+  team: CoachDashboard["team"];
+  season: string;
+  token: string;
+  onChange: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [opponent, setOpponent] = useState("");
+  const [gameDate, setGameDate] = useState("");
+  const [homeAway, setHomeAway] = useState("home");
+  const [teamScore, setTeamScore] = useState("");
+  const [opponentScore, setOpponentScore] = useState("");
+  const [lines, setLines] = useState<Record<number, BoxLine>>({});
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const lineFor = (id: number) => lines[id] ?? emptyLine();
+  const setStat = (id: number, key: BoxStat, value: string) => {
+    setLines((current) => ({
+      ...current,
+      [id]: { ...emptyLine(), ...current[id], [key]: value },
+    }));
+  };
+
+  const submit = async () => {
+    setSaving(true);
+    setMessage("");
+    try {
+      await coachFetch(token, `/api/coach/teams/${encodeURIComponent(team.slug)}/box-scores`, {
+        method: "POST",
+        body: JSON.stringify({
+          leagueSlug: team.leagueSlug,
+          season,
+          opponent,
+          gameDate,
+          homeAway,
+          teamScore,
+          opponentScore,
+          players: players.map((player) => ({ playerId: player.id, ...lineFor(player.id) })),
+        }),
+      });
+      setLines({});
+      setOpponent("");
+      setTeamScore("");
+      setOpponentScore("");
+      setMessage("Box score added to this team's player profiles.");
+      onChange();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not save the box score.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className={`mt-3 rounded-2xl border border-border bg-card shadow-sm ${open ? "p-6" : ""}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex w-full items-center justify-between text-left ${open ? "" : "px-4 py-3"}`}
+      >
+        <span className="font-display text-sm font-bold uppercase tracking-tight">Enter box score</span>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{open ? "Close" : "Open"}</span>
+      </button>
+      {open ? (
+        <div className="mt-4">
+          <p className="text-sm text-muted-foreground">
+            Fill in the players who played. Blank rows are left out. This only updates {team.name} for {season || "this season"}.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+            <label className="block text-sm sm:col-span-2">
+              Opponent
+              <input className={`${inputClass} mt-1`} value={opponent} onChange={(event) => setOpponent(event.target.value)} />
+            </label>
+            <label className="block text-sm">
+              Date
+              <input type="date" className={`${inputClass} mt-1`} value={gameDate} onChange={(event) => setGameDate(event.target.value)} />
+            </label>
+            <label className="block text-sm">
+              Site
+              <select className={`${inputClass} mt-1`} value={homeAway} onChange={(event) => setHomeAway(event.target.value)}>
+                <option value="home">Home</option>
+                <option value="away">Away</option>
+              </select>
+            </label>
+            <label className="block text-sm">
+              Team score
+              <input className={`${inputClass} mt-1`} value={teamScore} onChange={(event) => setTeamScore(event.target.value)} />
+            </label>
+            <label className="block text-sm">
+              Opponent score
+              <input className={`${inputClass} mt-1`} value={opponentScore} onChange={(event) => setOpponentScore(event.target.value)} />
+            </label>
+          </div>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[920px] text-left text-sm">
+              <thead className="font-mono text-[10px] uppercase text-muted-foreground">
+                <tr>
+                  <th className="py-2 pr-3 font-medium">Player</th>
+                  {BOX_STATS.map(([, label]) => (
+                    <th key={label} className="px-1 py-2 text-center font-medium">{label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {players.map((player) => {
+                  const line = lineFor(player.id);
+                  return (
+                    <tr key={player.id} className="border-t border-border">
+                      <td className="whitespace-nowrap py-2 pr-3 font-medium">{player.name}</td>
+                      {BOX_STATS.map(([key]) => (
+                        <td key={key} className="px-1 py-2">
+                          <input
+                            value={line[key]}
+                            onChange={(event) => setStat(player.id, key, event.target.value)}
+                            className="w-12 rounded border border-border bg-background px-1 py-1 text-center font-mono text-xs"
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {players.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Add players to the roster before entering a game.</p> : null}
+          <button
+            type="button"
+            disabled={saving || !season}
+            onClick={() => void submit()}
+            className="mt-4 rounded-xl bg-primary px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary-foreground disabled:opacity-60"
+          >
+            {saving ? "Saving…" : "Enter box score"}
+          </button>
+          {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
         </div>
       ) : null}
     </section>

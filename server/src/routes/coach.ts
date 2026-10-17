@@ -4,6 +4,7 @@ import { db } from "../db/index.js";
 import { parseBirthDate, parseClaimPosition, parseHeightCm, parseWeightKg } from "../utils/claim-measurements.js";
 import { cmToFeetInches, kgToLbs } from "../utils/format.js";
 import { nameToSlug } from "../utils/slug.js";
+import { upsertPlayerGameLogs } from "../services/player-game-log.service.js";
 import { getAuthUser } from "./auth.js";
 
 export const coachRouter = Router();
@@ -482,4 +483,226 @@ coachRouter.delete("/teams/:slug/players/:playerId", async (req, res) => {
       AND season_id = (SELECT id FROM seasons WHERE league_id = ${team.league_id} AND season_label = ${season} LIMIT 1)
   `);
   res.json({ ok: true });
+});
+
+const BOX_SOURCE = "coach-box-score";
+
+function optionalCount(value: unknown, max: number): number | null | undefined {
+  if (value == null || value === "") return null;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 0 || n > max) return undefined;
+  return n;
+}
+
+function asNumber(value: unknown): number | null {
+  if (value == null || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function blendAverage(baseAvg: number | null, baseGames: number, values: Array<number | null>): number | null {
+  const used = values.filter((value): value is number => value != null);
+  const games = baseGames + used.length;
+  if (games <= 0) return null;
+  const total = (baseAvg ?? 0) * baseGames + used.reduce((sum, value) => sum + value, 0);
+  return Math.round((total / games) * 10) / 10;
+}
+
+async function applyCoachSeasonLine(playerId: number, teamId: number, seasonId: number): Promise<void> {
+  const current = await db.execute(sql`
+    SELECT games_played, points_per_game, rebounds_per_game, assists_per_game,
+           steals_per_game, blocks_per_game, fg_pct, extended_stats
+    FROM player_season_stats
+    WHERE player_id = ${playerId} AND team_id = ${teamId} AND season_id = ${seasonId}
+    LIMIT 1
+  `);
+  const row = current.rows[0] as {
+    games_played: number | null;
+    points_per_game: string | number | null;
+    rebounds_per_game: string | number | null;
+    assists_per_game: string | number | null;
+    steals_per_game: string | number | null;
+    blocks_per_game: string | number | null;
+    fg_pct: string | number | null;
+    extended_stats: { coachBase?: { games?: number; ppg?: number | null; rpg?: number | null; apg?: number | null; spg?: number | null; bpg?: number | null } } | null;
+  } | undefined;
+  if (!row) return;
+
+  const saved = row.extended_stats?.coachBase;
+  const base = saved && typeof saved.games === "number"
+    ? {
+        games: saved.games,
+        ppg: asNumber(saved.ppg),
+        rpg: asNumber(saved.rpg),
+        apg: asNumber(saved.apg),
+        spg: asNumber(saved.spg),
+        bpg: asNumber(saved.bpg),
+      }
+    : {
+        games: Number(row.games_played) || 0,
+        ppg: asNumber(row.points_per_game),
+        rpg: asNumber(row.rebounds_per_game),
+        apg: asNumber(row.assists_per_game),
+        spg: asNumber(row.steals_per_game),
+        bpg: asNumber(row.blocks_per_game),
+      };
+
+  const logs = await db.execute(sql`
+    SELECT points, rebounds, assists, steals, blocks, fg_made, fg_att
+    FROM player_game_logs
+    WHERE player_id = ${playerId}
+      AND team_id = ${teamId}
+      AND season_id = ${seasonId}
+      AND source = ${BOX_SOURCE}
+  `);
+  const games = logs.rows as {
+    points: string | number | null;
+    rebounds: string | number | null;
+    assists: string | number | null;
+    steals: string | number | null;
+    blocks: string | number | null;
+    fg_made: number | null;
+    fg_att: number | null;
+  }[];
+  const gp = base.games + games.length;
+  const ppg = blendAverage(base.ppg, base.games, games.map((game) => asNumber(game.points)));
+  const rpg = blendAverage(base.rpg, base.games, games.map((game) => asNumber(game.rebounds)));
+  const apg = blendAverage(base.apg, base.games, games.map((game) => asNumber(game.assists)));
+  const spg = blendAverage(base.spg, base.games, games.map((game) => asNumber(game.steals)));
+  const bpg = blendAverage(base.bpg, base.games, games.map((game) => asNumber(game.blocks)));
+  const made = games.reduce((sum, game) => sum + (game.fg_made ?? 0), 0);
+  const attempted = games.reduce((sum, game) => sum + (game.fg_att ?? 0), 0);
+  const existingFg = asNumber(row.fg_pct);
+  const fgScale = existingFg != null && existingFg <= 1.5 ? 1 : 100;
+  const fgPct = base.games === 0 && attempted > 0 ? Math.round((made / attempted) * fgScale * 10) / 10 : null;
+  const baseJson = JSON.stringify(base);
+
+  await db.execute(sql`
+    UPDATE player_season_stats
+    SET
+      games_played = ${gp}::int,
+      points_per_game = ${ppg}::numeric,
+      rebounds_per_game = ${rpg}::numeric,
+      assists_per_game = ${apg}::numeric,
+      steals_per_game = ${spg}::numeric,
+      blocks_per_game = ${bpg}::numeric,
+      fg_pct = CASE WHEN ${base.games} = 0 THEN ${fgPct}::numeric ELSE fg_pct END,
+      extended_stats = CASE
+        WHEN COALESCE(extended_stats, '{}'::jsonb) -> 'coachBase' IS NOT NULL THEN extended_stats
+        ELSE COALESCE(extended_stats, '{}'::jsonb) || jsonb_build_object('coachBase', ${baseJson}::jsonb)
+      END
+    WHERE player_id = ${playerId} AND team_id = ${teamId} AND season_id = ${seasonId}
+  `);
+}
+
+coachRouter.post("/teams/:slug/box-scores", async (req, res) => {
+  const user = await getAuthUser(bearerToken(req.header("authorization")));
+  if (!user) {
+    res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Sign in required" } });
+    return;
+  }
+  const slug = clean(req.params.slug, 160).toLowerCase();
+  const leagueSlug = clean(req.body?.leagueSlug, 160).toLowerCase();
+  const season = clean(req.body?.season, 20);
+  const opponent = clean(req.body?.opponent, 120);
+  const gameDate = clean(req.body?.gameDate, 10);
+  const teams = await ownedTeams(user.id, slug, leagueSlug);
+  const team = teams[0];
+  if (!team) {
+    res.status(404).json({ error: { code: "NOT_FOUND", message: "This team is not on your account" } });
+    return;
+  }
+  if (!opponent) {
+    res.status(400).json({ error: { code: "INVALID", message: "Opponent name is required" } });
+    return;
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(gameDate)) {
+    res.status(400).json({ error: { code: "INVALID", message: "Use a game date like 2026-01-15" } });
+    return;
+  }
+  const seasonId = await seasonIdFor(team.league_id, season);
+  if (!seasonId) {
+    res.status(400).json({ error: { code: "INVALID", message: "Pick a season before entering a box score" } });
+    return;
+  }
+
+  const teamScore = optionalCount(req.body?.teamScore, 250);
+  const opponentScore = optionalCount(req.body?.opponentScore, 250);
+  if (teamScore === undefined || opponentScore === undefined) {
+    res.status(400).json({ error: { code: "INVALID", message: "Scores need to be whole numbers" } });
+    return;
+  }
+  const homeAway = req.body?.homeAway === "away" ? "@ " : "vs ";
+  const result = teamScore != null && opponentScore != null
+    ? `${teamScore > opponentScore ? "W" : teamScore < opponentScore ? "L" : "T"} ${teamScore}-${opponentScore}`
+    : null;
+  const playoffs = req.body?.playoffs === true;
+  const lines = Array.isArray(req.body?.players) ? req.body.players : [];
+  const roster = await db.execute(sql`
+    SELECT player_id FROM player_season_stats
+    WHERE team_id = ${team.id} AND season_id = ${seasonId}
+  `);
+  const rosterIds = new Set((roster.rows as { player_id: number }[]).map((row) => row.player_id));
+  const gameKey = `${team.id}-${seasonId}-${gameDate}-${nameToSlug(opponent) || "opponent"}`;
+  const inputs = [];
+
+  for (const line of lines) {
+    const playerId = Number(line?.playerId);
+    if (!rosterIds.has(playerId)) {
+      res.status(400).json({ error: { code: "INVALID", message: "One of those players is not on this roster" } });
+      return;
+    }
+    const minutes = clean(line?.minutes, 8);
+    if (minutes && !/^\d{1,3}$/.test(minutes) && !/^\d{1,2}:\d{2}$/.test(minutes)) {
+      res.status(400).json({ error: { code: "INVALID", message: "Minutes should look like 32 or 32:10" } });
+      return;
+    }
+    const stats = {
+      points: optionalCount(line?.points, 150),
+      rebounds: optionalCount(line?.rebounds, 50),
+      assists: optionalCount(line?.assists, 50),
+      steals: optionalCount(line?.steals, 20),
+      blocks: optionalCount(line?.blocks, 20),
+      turnovers: optionalCount(line?.turnovers, 20),
+      fouls: optionalCount(line?.fouls, 10),
+      fgMade: optionalCount(line?.fgMade, 50),
+      fgAtt: optionalCount(line?.fgAtt, 60),
+      fg3Made: optionalCount(line?.fg3Made, 30),
+      fg3Att: optionalCount(line?.fg3Att, 40),
+      ftMade: optionalCount(line?.ftMade, 40),
+      ftAtt: optionalCount(line?.ftAtt, 50),
+    };
+    if (Object.values(stats).some((value) => value === undefined)) {
+      res.status(400).json({ error: { code: "INVALID", message: "Stats need to be whole numbers" } });
+      return;
+    }
+    const played = Boolean(minutes) || Object.values(stats).some((value) => value != null);
+    if (!played) continue;
+    inputs.push({
+      source: BOX_SOURCE,
+      externalId: `${gameKey}-${playerId}`,
+      playerId,
+      teamId: team.id,
+      leagueId: team.league_id,
+      seasonId,
+      gameDate,
+      opponent,
+      homeAway,
+      result,
+      minutes: minutes || null,
+      playoffs,
+      ...stats,
+    });
+  }
+
+  if (inputs.length === 0) {
+    res.status(400).json({ error: { code: "INVALID", message: "Enter stats for at least one player" } });
+    return;
+  }
+
+  await upsertPlayerGameLogs(inputs);
+  for (const input of inputs) {
+    await applyCoachSeasonLine(input.playerId, team.id, seasonId);
+  }
+  res.json({ ok: true, players: inputs.length });
 });
