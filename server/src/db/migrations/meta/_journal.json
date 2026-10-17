@@ -183,6 +183,13 @@
       "when": 1751817600000,
       "tag": "0029_claim_applied",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1751904000000,
+      "tag": "0030_claim_identity",
+      "breakpoints": true
     }
   ]
 }

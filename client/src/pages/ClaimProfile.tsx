@@ -236,6 +236,37 @@ export function ClaimPlayer() {
     );
   }
 
+  if (!email && playerRequest === "edit") {
+    const signup = `/login?mode=signup&next=${encodeURIComponent(nextPath)}`;
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-8">
+        <Link to={`/players/${playerId}`} className="font-mono text-xs uppercase tracking-wide text-primary">
+          Back to profile
+        </Link>
+        <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-tight">
+          Create a profile to submit a change
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Anyone can start a change request. Sending height, weight, position, or birth date needs an account.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            to={signup}
+            className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 font-display text-sm font-bold uppercase tracking-tight text-primary-foreground"
+          >
+            Create account
+          </Link>
+          <Link
+            to={`/login?next=${encodeURIComponent(nextPath)}`}
+            className="inline-flex h-12 items-center justify-center rounded-xl border border-border px-5 font-display text-sm font-bold uppercase tracking-tight"
+          >
+            Log in
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (!email) {
     return <Navigate to={`/login?next=${encodeURIComponent(nextPath)}`} replace />;
   }
@@ -258,6 +289,11 @@ export function ClaimPlayer() {
   const submit = async () => {
     const token = session?.access_token;
     if (!token) return;
+    if (playerRequest === "claim" && !photoFile) {
+      setMessage("Upload a photo of a government-issued ID.");
+      setState("error");
+      return;
+    }
     setState("sending");
     setMessage("");
     try {
@@ -267,21 +303,25 @@ export function ClaimPlayer() {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          kind: "player",
-          playerId,
-          proof: form.proof,
-          proposed: {
-            position: form.position,
-            height: form.height,
-            weight: form.weight,
-            hometown: form.hometown,
-            country: form.country,
-            birthDate: joinDate(birth.year, birth.month, birth.day),
-            jerseyNumber: form.jerseyNumber,
-            bio: form.bio,
-          },
-        }),
+        body: JSON.stringify(
+          playerRequest === "claim"
+            ? { kind: "identity", playerId, proof: form.proof }
+            : {
+                kind: "player",
+                playerId,
+                proof: form.proof,
+                proposed: {
+                  position: form.position,
+                  height: form.height,
+                  weight: form.weight,
+                  hometown: form.hometown,
+                  country: form.country,
+                  birthDate: joinDate(birth.year, birth.month, birth.day),
+                  jerseyNumber: form.jerseyNumber,
+                  bio: form.bio,
+                },
+              },
+        ),
       });
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
@@ -292,7 +332,7 @@ export function ClaimPlayer() {
       const saved = (await response.json()) as { id?: number };
       if (photoFile && saved.id) {
         const photo = await preparePhoto(photoFile);
-        const uploaded = await fetch(`/api/claims/${saved.id}/photo`, {
+        const uploaded = await fetch(playerRequest === "claim" ? `/api/claims/${saved.id}/id` : `/api/claims/${saved.id}/photo`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -301,7 +341,11 @@ export function ClaimPlayer() {
           body: photo,
         });
         if (!uploaded.ok) {
-          setMessage("The request was saved, but the photo did not upload. Submit again to retry the photo.");
+          setMessage(
+            playerRequest === "claim"
+              ? "The claim was saved, but the ID photo did not upload. Submit again with the photo."
+              : "The request was saved, but the photo did not upload. Submit again to retry the photo.",
+          );
           setState("error");
           return;
         }
@@ -317,21 +361,29 @@ export function ClaimPlayer() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <Link to={`/players/${playerId}?${playerRequest ?? "claim"}=player`} className="font-mono text-xs uppercase tracking-wide text-primary">
+      <Link
+        to={playerRequest === "edit" ? `/players/${playerId}` : `/players/${playerId}?claim=player`}
+        className="font-mono text-xs uppercase tracking-wide text-primary"
+      >
         Back to profile
       </Link>
       <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-tight">
-        {player?.name ?? "Claim player"}
+        {playerRequest === "claim" ? "Claim this player" : "Request a change"}
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Send the bio and information that should be checked. Stats stay off this form.
+        {player?.name ? `${player.name}. ` : ""}
+        {playerRequest === "claim"
+          ? "Upload a photo of a government-issued ID to claim this profile as yours. This does not change height, weight, or stats."
+          : "Send the height, weight, position, birth date, or bio that should be checked. Stats stay off this form."}
       </p>
 
       {state === "sent" ? (
         <section className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <p className="font-display text-2xl font-bold">Request sent</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            The bio changes are waiting for review. Approving them updates the profile. Stats stay unchanged.
+            {playerRequest === "claim"
+              ? "The ID is waiting for review. Approving the claim does not change the public profile."
+              : "The changes are waiting for review. Approving them updates the profile. Stats stay unchanged."}
           </p>
         </section>
       ) : playerQuery.isError ? (
@@ -344,81 +396,99 @@ export function ClaimPlayer() {
             void submit();
           }}
         >
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ScrollWheel label="Position" options={POSITION_OPTIONS} value={form.position} onChange={(value) => set("position", value)} />
-            <ScrollWheel label="Height" options={HEIGHT_OPTIONS} value={form.height} onChange={(value) => set("height", value)} />
-            <ScrollWheel label="Weight" options={WEIGHT_OPTIONS} value={form.weight} onChange={(value) => set("weight", value)} />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          {playerRequest === "claim" ? (
             <label className="block text-sm">
-              Hometown
-              <input className={fieldClassName()} value={form.hometown} onChange={(event) => set("hometown", event.target.value)} />
+              Government-issued ID
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                required
+                className="mt-1 block w-full text-sm"
+                onChange={(event) => {
+                  const file = event.target.files?.[0] ?? null;
+                  setPhotoFile(file);
+                  setPhotoPreview((current) => {
+                    if (current) URL.revokeObjectURL(current);
+                    return file ? URL.createObjectURL(file) : "";
+                  });
+                }}
+              />
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Photo of a passport, driver’s license, or other government ID. It is only shown on the admin review page.
+              </span>
             </label>
-            <label className="block text-sm">
-              Country
-              <input className={fieldClassName()} value={form.country} onChange={(event) => set("country", event.target.value)} />
-            </label>
-          </div>
-          <div>
-            <p className="text-sm">Birth date</p>
-            <div className="mt-1 grid grid-cols-3 gap-3">
-              <ScrollWheel
-                label="Month"
-                options={MONTH_OPTIONS}
-                value={birth.month}
-                onChange={(month) => setBirthPart("month", month)}
-              />
-              <ScrollWheel
-                label="Day"
-                options={DAY_OPTIONS}
-                value={birth.day}
-                onChange={(day) => setBirthPart("day", day)}
-              />
-              <ScrollWheel
-                label="Year"
-                options={YEAR_OPTIONS}
-                value={birth.year}
-                onChange={(year) => setBirthPart("year", year)}
-              />
-            </div>
-          </div>
-          <label className="block text-sm">
-            Jersey
-            <input className={fieldClassName()} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} />
-          </label>
-          <label className="block text-sm">
-            Bio
-            <textarea
-              className={`${fieldClassName()} min-h-28`}
-              placeholder="Awards, achievements, history, stories, and anything else worth knowing"
-              value={form.bio}
-              onChange={(event) => set("bio", event.target.value)}
-            />
-          </label>
-          <label className="block text-sm">
-            Photo
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="mt-1 block w-full text-sm"
-              onChange={(event) => {
-                const file = event.target.files?.[0] ?? null;
-                setPhotoFile(file);
-                setPhotoPreview((current) => {
-                  if (current) URL.revokeObjectURL(current);
-                  return file ? URL.createObjectURL(file) : "";
-                });
-              }}
-            />
-          </label>
+          ) : (
+            <>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <ScrollWheel label="Position" options={POSITION_OPTIONS} value={form.position} onChange={(value) => set("position", value)} />
+                <ScrollWheel label="Height" options={HEIGHT_OPTIONS} value={form.height} onChange={(value) => set("height", value)} />
+                <ScrollWheel label="Weight" options={WEIGHT_OPTIONS} value={form.weight} onChange={(value) => set("weight", value)} />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm">
+                  Hometown
+                  <input className={fieldClassName()} value={form.hometown} onChange={(event) => set("hometown", event.target.value)} />
+                </label>
+                <label className="block text-sm">
+                  Country
+                  <input className={fieldClassName()} value={form.country} onChange={(event) => set("country", event.target.value)} />
+                </label>
+              </div>
+              <div>
+                <p className="text-sm">Birth date</p>
+                <div className="mt-1 grid grid-cols-3 gap-3">
+                  <ScrollWheel label="Month" options={MONTH_OPTIONS} value={birth.month} onChange={(month) => setBirthPart("month", month)} />
+                  <ScrollWheel label="Day" options={DAY_OPTIONS} value={birth.day} onChange={(day) => setBirthPart("day", day)} />
+                  <ScrollWheel label="Year" options={YEAR_OPTIONS} value={birth.year} onChange={(year) => setBirthPart("year", year)} />
+                </div>
+              </div>
+              <label className="block text-sm">
+                Jersey
+                <input className={fieldClassName()} value={form.jerseyNumber} onChange={(event) => set("jerseyNumber", event.target.value)} />
+              </label>
+              <label className="block text-sm">
+                Bio
+                <textarea
+                  className={`${fieldClassName()} min-h-28`}
+                  placeholder="Awards, achievements, history, stories, and anything else worth knowing"
+                  value={form.bio}
+                  onChange={(event) => set("bio", event.target.value)}
+                />
+              </label>
+              <label className="block text-sm">
+                Photo
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="mt-1 block w-full text-sm"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    setPhotoFile(file);
+                    setPhotoPreview((current) => {
+                      if (current) URL.revokeObjectURL(current);
+                      return file ? URL.createObjectURL(file) : "";
+                    });
+                  }}
+                />
+              </label>
+            </>
+          )}
           {photoPreview ? (
-            <img src={photoPreview} alt="" className="h-32 w-32 rounded-xl object-cover" />
+            <img
+              src={photoPreview}
+              alt=""
+              className={playerRequest === "claim" ? "max-h-48 rounded-xl object-contain" : "h-32 w-32 rounded-xl object-cover"}
+            />
           ) : null}
           <label className="block text-sm">
-            Proof
+            {playerRequest === "claim" ? "Note" : "Proof"}
             <textarea
               className={`${fieldClassName()} min-h-28`}
-              placeholder="Link, team email, or how this can be checked"
+              placeholder={
+                playerRequest === "claim"
+                  ? "Optional. Say if you are the player, a parent, or a coach."
+                  : "Link, team email, or how this can be checked"
+              }
               value={form.proof}
               onChange={(event) => set("proof", event.target.value)}
             />
@@ -429,7 +499,7 @@ export function ClaimPlayer() {
             disabled={state === "sending"}
             className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 font-display text-sm font-bold uppercase tracking-tight text-primary-foreground disabled:opacity-60"
           >
-            {state === "sending" ? "Sending…" : "Submit for review"}
+            {state === "sending" ? "Sending…" : playerRequest === "claim" ? "Submit claim" : "Submit for review"}
           </button>
         </form>
       )}

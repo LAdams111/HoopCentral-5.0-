@@ -27,8 +27,8 @@ function cleanText(value: unknown, max: number): string {
   return value.trim().slice(0, max);
 }
 
-function cleanProposed(kind: "player" | "team", value: unknown): Record<string, string> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+function cleanProposed(kind: "player" | "team" | "identity", value: unknown): Record<string, string> {
+  if (kind === "identity" || !value || typeof value !== "object" || Array.isArray(value)) return {};
   const source = value as Record<string, unknown>;
   const keys = kind === "player" ? PLAYER_FIELDS : (["note"] as const);
   const proposed: Record<string, string> = {};
@@ -52,6 +52,7 @@ type ClaimRow = {
   proof: string;
   proposed: Record<string, string> | null;
   has_photo: boolean;
+  has_id: boolean;
   created_at: string;
 };
 
@@ -74,7 +75,8 @@ claimsRouter.get("/", async (req, res) => {
 
   const result = await db.execute(sql`
     SELECT id, user_email, kind, player_id, player_name, team_slug, team_name, league_slug,
-           status, proof, proposed, (photo IS NOT NULL) AS has_photo, created_at
+           status, proof, proposed, (photo IS NOT NULL) AS has_photo,
+           (id_document IS NOT NULL) AS has_id, created_at
     FROM claim_requests
     ORDER BY created_at DESC
     LIMIT 100
@@ -157,6 +159,19 @@ claimsRouter.patch("/:id", async (req, res) => {
     return;
   }
 
+  if (status === "approved") {
+    const current = await db.execute(sql`
+      SELECT kind, (id_document IS NOT NULL) AS has_id
+      FROM claim_requests
+      WHERE id = ${id}
+    `);
+    const row = current.rows[0] as { kind?: string; has_id?: boolean } | undefined;
+    if (row?.kind === "identity" && !row.has_id) {
+      res.status(400).json({ error: { code: "INVALID", message: "This claim needs an ID photo before it can be approved" } });
+      return;
+    }
+  }
+
   const updated = await db.execute(sql`
     UPDATE claim_requests
     SET status = ${status}
@@ -191,7 +206,7 @@ claimsRouter.post("/", async (req, res) => {
   }
 
   const kind = req.body?.kind;
-  if (kind !== "player" && kind !== "team") {
+  if (kind !== "player" && kind !== "team" && kind !== "identity") {
     res.status(400).json({ error: { code: "INVALID", message: "Choose a player or a team" } });
     return;
   }
@@ -205,7 +220,7 @@ claimsRouter.post("/", async (req, res) => {
   let teamName: string | null = null;
   let leagueSlug = "";
 
-  if (kind === "player") {
+  if (kind === "player" || kind === "identity") {
     playerId = Number(req.body?.playerId);
     if (!Number.isInteger(playerId) || playerId <= 0) {
       res.status(400).json({ error: { code: "INVALID", message: "Player is required" } });
@@ -264,7 +279,10 @@ claimsRouter.post("/", async (req, res) => {
       user_email = EXCLUDED.user_email,
       proof = EXCLUDED.proof,
       proposed = EXCLUDED.proposed,
-      status = 'pending'
+      status = 'pending',
+      applied_at = NULL,
+      id_document = CASE WHEN EXCLUDED.kind = 'identity' THEN NULL ELSE claim_requests.id_document END,
+      id_document_type = CASE WHEN EXCLUDED.kind = 'identity' THEN NULL ELSE claim_requests.id_document_type END
     RETURNING id, status
   `);
   const saved = inserted.rows[0] as { id: number; status: string } | undefined;
@@ -306,6 +324,65 @@ claimsRouter.post(
     res.json({ ok: true });
   },
 );
+
+claimsRouter.post(
+  "/:id/id",
+  express.raw({
+    limit: "2mb",
+    type: ["image/jpeg", "image/png", "image/webp", "application/octet-stream"],
+  }),
+  async (req, res) => {
+    const user = await getAuthUser(bearerToken(req.header("authorization")));
+    if (!user) {
+      res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Sign in required" } });
+      return;
+    }
+
+    const id = Number(req.params.id);
+    const bytes = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    const photoType = imageType(bytes);
+    if (!Number.isInteger(id) || id <= 0 || !photoType) {
+      res.status(400).json({ error: { code: "INVALID", message: "Use a JPG, PNG, or WebP photo of the ID" } });
+      return;
+    }
+
+    const updated = await pool.query(
+      `UPDATE claim_requests
+       SET id_document = $1, id_document_type = $2
+       WHERE id = $3 AND user_id = $4 AND kind = 'identity'
+       RETURNING id`,
+      [bytes, photoType, id, user.id],
+    );
+    if (!updated.rowCount) {
+      res.status(404).json({ error: { code: "NOT_FOUND", message: "Claim not found" } });
+      return;
+    }
+    res.json({ ok: true });
+  },
+);
+
+claimsRouter.get("/:id/id", async (req, res) => {
+  const user = await getAuthUser(bearerToken(req.header("authorization")));
+  if (!user?.isAdmin) {
+    res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Sign in required" } });
+    return;
+  }
+
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(404).end();
+    return;
+  }
+  const found = await pool.query(`SELECT id_document, id_document_type FROM claim_requests WHERE id = $1`, [id]);
+  const row = found.rows[0] as { id_document?: Buffer; id_document_type?: string } | undefined;
+  if (!row?.id_document) {
+    res.status(404).end();
+    return;
+  }
+  res.setHeader("Content-Type", row.id_document_type || "image/jpeg");
+  res.setHeader("Cache-Control", "private, no-store");
+  res.send(row.id_document);
+});
 
 claimsRouter.get("/:id/photo", async (req, res) => {
   const user = await getAuthUser(bearerToken(req.header("authorization")));

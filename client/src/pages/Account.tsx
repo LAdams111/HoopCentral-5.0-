@@ -111,41 +111,19 @@ export function Account() {
           </button>
         </section>
 
-        {role === "player" ? (
-          <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim</h2>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Search for your player page and claim it. Stats stay off the form.
-            </p>
-            <Link
-              to="/search?claim=player"
-              className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
-            >
-              Claim a player
-            </Link>
-          </section>
-        ) : (
-          <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Edit request</h2>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Search a player or team and submit the bio changes you want checked. Stats stay off the form.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/search?edit=player"
-                className="rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
-              >
-                Submit a player edit
-              </Link>
-              <Link
-                to="/search?edit=team"
-                className="rounded-xl border border-border px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-              >
-                Submit a team edit
-              </Link>
-            </div>
-          </section>
-        )}
+        <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim a player</h2>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Search for the player page and claim it as yours. A photo of a government-issued ID is required.
+            Height, weight, and other profile changes are requested from the bottom of the player page.
+          </p>
+          <Link
+            to="/search?claim=player"
+            className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
+          >
+            Claim a player
+          </Link>
+        </section>
 
         <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <h2 className="mb-4 font-display text-xl font-bold uppercase tracking-wide">Favorite players</h2>

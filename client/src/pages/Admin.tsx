@@ -37,15 +37,33 @@ type ClaimRequest = {
   proof: string | null;
   proposed: Record<string, string> | null;
   has_photo: boolean | null;
+  has_id: boolean | null;
 };
 
-function ClaimPhoto({ id, token }: { id: number; token: string }) {
+function requestLabel(kind: string): string {
+  if (kind === "identity") return "Player claim";
+  if (kind === "player") return "Change request";
+  if (kind === "team") return "Team request";
+  return kind;
+}
+
+function PrivateImage({
+  id,
+  token,
+  path,
+  className,
+}: {
+  id: number;
+  token: string;
+  path: "photo" | "id";
+  className: string;
+}) {
   const [src, setSrc] = useState("");
 
   useEffect(() => {
     let url = "";
     let cancelled = false;
-    void fetch(`/api/claims/${id}/photo`, {
+    void fetch(`/api/claims/${id}/${path}`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then(async (response) => {
       if (!response.ok || cancelled) return;
@@ -56,10 +74,10 @@ function ClaimPhoto({ id, token }: { id: number; token: string }) {
       cancelled = true;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [id, token]);
+  }, [id, token, path]);
 
   if (!src) return null;
-  return <img src={src} alt="" className="mt-3 h-40 w-40 rounded-xl object-cover" />;
+  return <img src={src} alt="" className={className} />;
 }
 
 export function Admin() {
@@ -88,6 +106,7 @@ export function Admin() {
     },
   });
   const [photoUsed, setPhotoUsed] = useState<number[]>([]);
+  const [actionError, setActionError] = useState("");
   const [view, setView] = useState<"pending" | "approved" | "denied">("pending");
   const showLoadError = isError && requests.length === 0;
   const pending = requests.filter((request) => request.status === "pending");
@@ -98,6 +117,7 @@ export function Admin() {
   const setStatus = async (id: number, status: "approved" | "denied") => {
     const token = session?.access_token;
     if (!token) return;
+    setActionError("");
     const response = await fetch(`/api/claims/${id}`, {
       method: "PATCH",
       headers: {
@@ -108,7 +128,10 @@ export function Admin() {
     });
     if (response.ok) {
       await queryClient.invalidateQueries({ queryKey: ["admin-claims"] });
+      return;
     }
+    const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
+    setActionError(body?.error?.message || "Could not update that request.");
   };
 
   const usePhoto = async (id: number) => {
@@ -231,11 +254,13 @@ export function Admin() {
                 </p>
                 <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
                   {view === "pending"
-                    ? "Bio changes and proof show up here. Stats are not part of a request."
+                    ? "Change requests and player claims show up here. Stats are not part of a request."
                     : "Finished requests stay in this list so the main page only shows what is still waiting."}
                 </p>
               </div>
             ) : (
+              <>
+              {actionError ? <p className="px-6 pt-4 text-sm text-destructive">{actionError}</p> : null}
               <ul className="divide-y divide-border">
                 {visible.map((request) => {
                   const changes = Object.entries(readProposed(request.proposed)).filter(
@@ -245,7 +270,7 @@ export function Admin() {
                     <li key={request.id} className="px-6 py-4">
                       <div className="flex items-start justify-between gap-4">
                         <span>
-                          {request.kind === "player" && request.player_id ? (
+                          {(request.kind === "player" || request.kind === "identity") && request.player_id ? (
                             <Link to={`/players/${request.player_id}`} className="block font-display text-lg font-bold hover:text-primary">
                               {request.player_name}
                             </Link>
@@ -255,7 +280,7 @@ export function Admin() {
                             </span>
                           )}
                           <span className="block text-xs text-muted-foreground">
-                            {request.kind} · {request.user_email ?? "Account"}
+                            {requestLabel(request.kind)} · {request.user_email ?? "Account"}
                           </span>
                         </span>
                         <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -263,12 +288,36 @@ export function Admin() {
                         </span>
                       </div>
                       <p className="mt-3 text-sm">
-                        <span className="font-medium">Proof. </span>
+                        <span className="font-medium">{request.kind === "identity" ? "Note. " : "Proof. "}</span>
                         {request.proof?.trim() ? request.proof : "None sent with this request."}
                       </p>
+                      {request.kind === "identity" ? (
+                        <div className="mt-3">
+                          <p className="text-sm">
+                            <span className="font-medium">Government ID. </span>
+                            {request.has_id ? "Only visible here." : "No ID photo was uploaded."}
+                          </p>
+                          {request.has_id && session?.access_token ? (
+                            <PrivateImage
+                              id={request.id}
+                              token={session.access_token}
+                              path="id"
+                              className="mt-3 max-h-64 rounded-xl border border-border object-contain"
+                            />
+                          ) : null}
+                          <p className="mt-2 text-xs text-muted-foreground">
+                            Approving this confirms the account. It does not change the public profile.
+                          </p>
+                        </div>
+                      ) : null}
                       {request.has_photo && session?.access_token ? (
                         <div className="mt-3">
-                          <ClaimPhoto id={request.id} token={session.access_token} />
+                          <PrivateImage
+                            id={request.id}
+                            token={session.access_token}
+                            path="photo"
+                            className="mt-3 h-40 w-40 rounded-xl object-cover"
+                          />
                           {request.kind === "player" && request.player_id ? (
                             <button
                               type="button"
@@ -290,7 +339,7 @@ export function Admin() {
                             </div>
                           ))}
                         </dl>
-                      ) : (
+                      ) : request.kind === "identity" ? null : (
                         <p className="mt-3 text-sm text-muted-foreground">No bio changes were included.</p>
                       )}
                       {request.status === "pending" ? (
@@ -315,6 +364,7 @@ export function Admin() {
                   );
                 })}
               </ul>
+              </>
             )}
           </section>
         </div>
