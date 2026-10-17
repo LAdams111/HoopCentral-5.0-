@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ClipboardList, ShieldCheck } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
@@ -88,8 +88,11 @@ export function Admin() {
     },
   });
   const [photoUsed, setPhotoUsed] = useState<number[]>([]);
+  const [view, setView] = useState<"pending" | "approved" | "denied">("pending");
   const pending = requests.filter((request) => request.status === "pending");
   const approved = requests.filter((request) => request.status === "approved");
+  const denied = requests.filter((request) => request.status === "denied");
+  const visible = view === "approved" ? approved : view === "denied" ? denied : pending;
 
   const setStatus = async (id: number, status: "approved" | "denied") => {
     const token = session?.access_token;
@@ -156,34 +159,59 @@ export function Admin() {
 
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setView("pending")}
+              className={`rounded-2xl border bg-card p-5 text-left shadow-sm ${view === "pending" ? "border-primary" : "border-border"}`}
+            >
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Pending</p>
               <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : pending.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">Claim requests</p>
-            </section>
-            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("approved")}
+              className={`rounded-2xl border bg-card p-5 text-left shadow-sm ${view === "approved" ? "border-primary" : "border-border"}`}
+            >
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Approved</p>
-              <p className="mt-2 font-display text-4xl font-bold">{approved.length}</p>
+              <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : approved.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">Marked checked</p>
-            </section>
-            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Access</p>
-              <p className="mt-2 flex items-center gap-2 font-display text-2xl font-bold">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-                Admin
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">Only this login</p>
-            </section>
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("denied")}
+              className={`rounded-2xl border bg-card p-5 text-left shadow-sm ${view === "denied" ? "border-primary" : "border-border"}`}
+            >
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Denied</p>
+              <p className="mt-2 font-display text-4xl font-bold">{isLoading || isError ? "—" : denied.length}</p>
+              <p className="mt-1 text-sm text-muted-foreground">Turned down</p>
+            </button>
           </div>
 
           <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <div className="flex items-center gap-3">
                 <ClipboardList className="h-5 w-5 text-primary" />
-                <h2 className="font-display text-2xl font-bold uppercase tracking-wide">Claim requests</h2>
+                <h2 className="font-display text-2xl font-bold uppercase tracking-wide">
+                  {view === "approved" ? "Approved" : view === "denied" ? "Denied" : "Claim requests"}
+                </h2>
               </div>
               <span className="rounded-full border border-border px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                {isLoading ? "Checking" : isError ? "Could not load" : pending.length === 0 ? "None waiting" : `${pending.length} waiting`}
+                {isLoading
+                  ? "Checking"
+                  : isError
+                    ? "Could not load"
+                    : view === "approved"
+                      ? approved.length === 0
+                        ? "None approved"
+                        : `${approved.length} approved`
+                      : view === "denied"
+                        ? denied.length === 0
+                          ? "None denied"
+                          : `${denied.length} denied`
+                        : pending.length === 0
+                          ? "None waiting"
+                          : `${pending.length} waiting`}
               </span>
             </div>
             {isLoading ? (
@@ -195,16 +223,20 @@ export function Admin() {
                   Refresh this page. A failed load no longer looks like an empty list.
                 </p>
               </div>
-            ) : requests.length === 0 ? (
+            ) : visible.length === 0 ? (
               <div className="px-6 py-16 text-center">
-                <p className="font-display text-2xl font-bold">No requests yet</p>
+                <p className="font-display text-2xl font-bold">
+                  {view === "approved" ? "No approved requests" : view === "denied" ? "No denied requests" : "No requests waiting"}
+                </p>
                 <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                  Bio changes and proof show up here. Stats are not part of a request.
+                  {view === "pending"
+                    ? "Bio changes and proof show up here. Stats are not part of a request."
+                    : "Finished requests stay in this list so the main page only shows what is still waiting."}
                 </p>
               </div>
             ) : (
               <ul className="divide-y divide-border">
-                {requests.map((request) => {
+                {visible.map((request) => {
                   const changes = Object.entries(readProposed(request.proposed)).filter(
                     ([key, value]) => FIELD_LABELS[key] && String(value).trim(),
                   );
