@@ -29,6 +29,10 @@ export type AuthResult =
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function sessionIsAdmin(session: Session | null): boolean {
+  return session?.user.app_metadata?.is_admin === true;
+}
+
 function accountRole(session: Session | null): LoginRole {
   const requested = session?.user.user_metadata?.role;
   if (
@@ -114,33 +118,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const token = session?.access_token;
-    if (!token) {
+    if (!session) {
       setIsAdmin(false);
       setAdminChecked(true);
       return;
     }
+    if (sessionIsAdmin(session)) setIsAdmin(true);
+    if (!client) return;
+
     let cancelled = false;
-    setAdminChecked(false);
-    void fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
-      .then(async (response) => {
-        if (!response.ok) return false;
-        const body = (await response.json()) as { isAdmin?: boolean };
-        return body.isAdmin === true;
-      })
-      .then((admin) => {
-        if (!cancelled) setIsAdmin(admin);
-      })
-      .catch(() => {
-        if (!cancelled) setIsAdmin(false);
-      })
-      .finally(() => {
-        if (!cancelled) setAdminChecked(true);
-      });
+    void (async () => {
+      const refreshed = await client.auth.refreshSession();
+      const next = refreshed.data.session ?? session;
+      const token = next.access_token;
+      let admin = sessionIsAdmin(next);
+      if (token) {
+        try {
+          const response = await fetch("/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.ok) {
+            const body = (await response.json()) as { isAdmin?: boolean };
+            admin = body.isAdmin === true || admin;
+          }
+        } catch {
+          /* keep the session flag */
+        }
+      }
+      if (!cancelled) {
+        setIsAdmin(admin);
+        setAdminChecked(true);
+      }
+    })();
     return () => {
       cancelled = true;
     };
-  }, [session?.access_token]);
+  }, [client, session?.user.id]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -149,7 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       email: session?.user.email ?? null,
       role: accountRole(session),
-      isAdmin,
+      isAdmin: isAdmin || sessionIsAdmin(session),
       adminChecked,
       async signUp({ email, password, role }) {
         if (!client) return { ok: false, message: "Sign-in is not available right now." };

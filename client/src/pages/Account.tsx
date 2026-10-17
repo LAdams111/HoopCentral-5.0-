@@ -2,6 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { getPlayer } from "@/lib/api";
+import { Admin } from "@/pages/Admin";
 import { useAuth, type LoginRole } from "@/lib/auth";
 import {
   readPlayerFavorites,
@@ -47,7 +48,7 @@ export function Account() {
     })),
   });
 
-  if (!ready || (email && !adminChecked)) {
+  if (!ready) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -59,8 +60,15 @@ export function Account() {
     return <Navigate to="/login" replace />;
   }
 
-  if (isAdmin) {
-    return <Navigate to="/admin" replace />;
+  if (isAdmin || !adminChecked) {
+    if (!adminChecked && !isAdmin) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      );
+    }
+    if (isAdmin) return <Admin />;
   }
 
   const players = favoritePlayers.map((player, index) => {

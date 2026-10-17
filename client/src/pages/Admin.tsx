@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth";
 export function Admin() {
   const { ready, email, isAdmin, adminChecked, signOut } = useAuth();
 
-  if (!ready || (email && !adminChecked)) {
+  if (!ready || (email && !isAdmin && !adminChecked)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
