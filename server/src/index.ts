@@ -9,6 +9,7 @@ import { authRouter } from "./routes/auth.js";
 import { adminEditsRouter } from "./routes/admin-edits.js";
 import { applyStoredApprovals, claimsRouter } from "./routes/claims.js";
 import { draftRouter } from "./routes/draft.js";
+import { favoritesRouter } from "./routes/favorites.js";
 import { leaguesRouter } from "./routes/leagues.js";
 import { devRouter } from "./routes/dev.js";
 import { ingestRouter } from "./routes/ingest.js";
@@ -71,6 +72,7 @@ app.get("/api/prospect-players", async (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/claims", claimsRouter);
+app.use("/api/favorites", favoritesRouter);
 app.use("/api/admin", adminEditsRouter);
 app.use("/api/leagues", leaguesRouter);
 app.use("/api/draft", draftRouter);

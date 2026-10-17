@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, ChevronDown, Flag } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +15,7 @@ import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { getTeamRecord, getTeamRoster, getTeamSeasons } from "@/lib/api";
 import { ClaimButton } from "@/components/claims/ClaimButton";
 import { useAuth } from "@/lib/auth";
-import { isTeamFavorite, subscribeFavorites, toggleTeamFavorite } from "@/lib/favorites";
+import { useFavorites } from "@/lib/favorites";
 
 function TeamRecordHeader({ record }: { record: { wins: number; losses: number } | null | undefined }) {
   if (record != null) {
@@ -82,7 +82,7 @@ export function Roster() {
   const location = useLocation();
   const { session, isAdmin } = useAuth();
   const userId = session?.user.id ?? null;
-  const [teamFavorited, setTeamFavorited] = useState(false);
+  const { teams: favoriteTeams, toggleTeam } = useFavorites();
   const decodedTeam = decodeURIComponent(team);
   const decodedSeason = decodeURIComponent(season);
   const seasonLabel = normalizeSeasonKey(decodedSeason);
@@ -155,16 +155,12 @@ export function Roster() {
   const teamSlug = roster?.team.slug ?? decodedTeam;
   const teamName = roster?.team.name ?? decodedTeam;
 
-  useEffect(() => {
-    if (!userId || !teamSlug) {
-      setTeamFavorited(false);
-      return;
-    }
-    const team = { slug: teamSlug, leagueSlug };
-    const refresh = () => setTeamFavorited(isTeamFavorite(userId, team));
-    refresh();
-    return subscribeFavorites(refresh);
-  }, [userId, teamSlug, leagueSlug]);
+  const teamFavorited = favoriteTeams.some((team) => {
+    if (team.slug !== teamSlug) return false;
+    if (!leagueSlug || !team.leagueSlug) return true;
+    const normalize = (value: string) => (value === "ncaa" ? "ncaa-m" : value);
+    return normalize(team.leagueSlug) === normalize(leagueSlug);
+  });
 
   const handleFavoriteTeam = () => {
     if (!userId) {
@@ -172,14 +168,12 @@ export function Roster() {
       navigate(`/login?mode=signup&next=${encodeURIComponent(next)}`);
       return;
     }
-    setTeamFavorited(
-      toggleTeamFavorite(userId, {
-        slug: teamSlug,
-        name: teamName,
-        leagueSlug,
-        abbreviation: roster?.team.abbreviation,
-      }),
-    );
+    void toggleTeam({
+      slug: teamSlug,
+      name: teamName,
+      leagueSlug,
+      abbreviation: roster?.team.abbreviation,
+    });
   };
   const teamDisplayName = displayTeamName(teamName, {
     leagueSlug,

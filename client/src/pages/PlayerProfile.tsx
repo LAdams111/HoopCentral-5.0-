@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Flag, Trophy } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ClaimButton } from "@/components/claims/ClaimButton";
 import { BackButton } from "@/components/ui/BackButton";
@@ -11,7 +11,7 @@ import { rosterPath, displayTeamName, teamLogoUrl } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { formatPositionLong } from "@/lib/position";
 import { useAuth } from "@/lib/auth";
-import { isPlayerFavorite, subscribeFavorites, togglePlayerFavorite } from "@/lib/favorites";
+import { useFavorites } from "@/lib/favorites";
 
 function calcAge(birthDate: string): number | null {
   const born = new Date(birthDate);
@@ -42,6 +42,7 @@ export function PlayerProfile() {
   const showClaim = searchParams.get("claim") === "player";
   const { session, isAdmin } = useAuth();
   const userId = session?.user.id ?? null;
+  const { players: favoritePlayers, togglePlayer } = useFavorites();
   const queryClient = useQueryClient();
 
   const { data: player, isLoading, error } = useQuery({
@@ -65,17 +66,7 @@ export function PlayerProfile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerId]);
 
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    if (!player || !userId) {
-      setIsFavorite(false);
-      return;
-    }
-    const refresh = () => setIsFavorite(isPlayerFavorite(userId, player.id));
-    refresh();
-    return subscribeFavorites(refresh);
-  }, [player, userId]);
+  const isFavorite = Boolean(player && favoritePlayers.some((item) => item.id === player.id));
 
   const handleFavorite = () => {
     if (!player) return;
@@ -84,12 +75,11 @@ export function PlayerProfile() {
       navigate(`/login?mode=signup&next=${encodeURIComponent(next)}`);
       return;
     }
-    const nowFav = togglePlayerFavorite(userId, {
+    void togglePlayer({
       id: player.id,
       name: player.name,
       headshotUrl: player.headshotUrl,
     });
-    setIsFavorite(nowFav);
   };
 
   const sortedStats = useMemo(

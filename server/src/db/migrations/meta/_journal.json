@@ -190,6 +190,13 @@
       "when": 1751904000000,
       "tag": "0030_claim_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1751990400000,
+      "tag": "0031_user_favorites",
+      "breakpoints": true
     }
   ]
 }

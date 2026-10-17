@@ -1,16 +1,9 @@
 import { useQueries } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { getPlayer } from "@/lib/api";
 import { Admin } from "@/pages/Admin";
 import { useAuth, type LoginRole } from "@/lib/auth";
-import {
-  readPlayerFavorites,
-  readTeamFavorites,
-  subscribeFavorites,
-  type FavoritePlayer,
-  type FavoriteTeam,
-} from "@/lib/favorites";
+import { useFavorites } from "@/lib/favorites";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 
 const ROLE_LABELS: Record<LoginRole, string> = {
@@ -22,24 +15,8 @@ const ROLE_LABELS: Record<LoginRole, string> = {
 };
 
 export function Account() {
-  const { ready, email, role, session, isAdmin, adminChecked, signOut } = useAuth();
-  const userId = session?.user.id ?? null;
-  const [favoritePlayers, setFavoritePlayers] = useState<FavoritePlayer[]>([]);
-  const [favoriteTeams, setFavoriteTeams] = useState<FavoriteTeam[]>([]);
-
-  useEffect(() => {
-    if (!userId) {
-      setFavoritePlayers([]);
-      setFavoriteTeams([]);
-      return;
-    }
-    const refresh = () => {
-      setFavoritePlayers(readPlayerFavorites(userId));
-      setFavoriteTeams(readTeamFavorites(userId));
-    };
-    refresh();
-    return subscribeFavorites(refresh);
-  }, [userId]);
+  const { ready, email, role, isAdmin, adminChecked, signOut } = useAuth();
+  const { players: favoritePlayers, teams: favoriteTeams, isLoading: storedFavoritesLoading } = useFavorites();
 
   const playerQueries = useQueries({
     queries: favoritePlayers.map((player) => ({
@@ -75,7 +52,7 @@ export function Account() {
     const loaded = playerQueries[index]?.data;
     return loaded ?? { ...player, team: "", position: "" };
   });
-  const favoritesLoading = playerQueries.some((query) => query.isLoading);
+  const favoritesLoading = storedFavoritesLoading || playerQueries.some((query) => query.isLoading);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background pb-24">

@@ -1,38 +1,13 @@
 import { useQueries } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Trophy, Users } from "lucide-react";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 import { getPlayer } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
-import {
-  readPlayerFavorites,
-  readTeamFavorites,
-  subscribeFavorites,
-  type FavoritePlayer,
-  type FavoriteTeam,
-} from "@/lib/favorites";
+import { useFavorites } from "@/lib/favorites";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 
 export function FavoritesStrip() {
-  const { session } = useAuth();
-  const userId = session?.user.id ?? null;
-  const [players, setPlayers] = useState<FavoritePlayer[]>([]);
-  const [teams, setTeams] = useState<FavoriteTeam[]>([]);
-
-  useEffect(() => {
-    if (!userId) {
-      setPlayers([]);
-      setTeams([]);
-      return;
-    }
-    const refresh = () => {
-      setPlayers(readPlayerFavorites(userId));
-      setTeams(readTeamFavorites(userId));
-    };
-    refresh();
-    return subscribeFavorites(refresh);
-  }, [userId]);
+  const { players, teams } = useFavorites();
 
   const playerQueries = useQueries({
     queries: players.map((player) => ({
