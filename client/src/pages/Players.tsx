@@ -210,6 +210,8 @@ function DraftClassView() {
 function DirectorySearchView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
+  const claim = searchParams.get("claim");
+  const claimMode = claim === "player" || claim === "team" ? claim : null;
   const [query, setQuery] = useState(urlQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(urlQuery);
 
@@ -246,7 +248,9 @@ function DirectorySearchView() {
     const trimmed = query.trim();
     if (trimmed.length < 2) return;
     setDebouncedQuery(trimmed);
-    setSearchParams({ q: trimmed });
+    const next = new URLSearchParams({ q: trimmed });
+    if (claimMode) next.set("claim", claimMode);
+    setSearchParams(next);
   };
 
   return (
@@ -255,10 +259,20 @@ function DirectorySearchView() {
         <div className="mb-6 flex flex-col items-start justify-between gap-3 md:mb-12 md:flex-row md:items-end md:gap-6">
           <div>
             <h1 className="mb-2 font-display text-4xl text-foreground md:text-6xl">
-              Player <span className="text-primary">Search</span>
+              {claimMode === "player" ? (
+                <>Claim a <span className="text-primary">Player</span></>
+              ) : claimMode === "team" ? (
+                <>Claim a <span className="text-primary">Team</span></>
+              ) : (
+                <>Player <span className="text-primary">Search</span></>
+              )}
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              Search players and teams across Hoop Central
+              {claimMode === "player"
+                ? "Search for the player, open the profile, then hit Claim."
+                : claimMode === "team"
+                  ? "Search for the team, open the page, then hit Claim."
+                  : "Search players and teams across Hoop Central"}
             </p>
           </div>
         </div>
@@ -290,16 +304,20 @@ function DirectorySearchView() {
           </div>
         ) : (
           <>
-            <TeamSearchResults teams={hasQuery ? teams : []} />
+            {claimMode !== "player" ? <TeamSearchResults teams={hasQuery ? teams : []} claim={claimMode === "team"} /> : null}
 
-            {showPlayers && (
+            {showPlayers && claimMode !== "team" && (
               <>
                 <p className="mb-6 font-mono text-xs uppercase tracking-wider text-muted-foreground">
                   {players.length} player{players.length !== 1 ? "s" : ""} found
                 </p>
                 <div className="grid grid-cols-3 gap-2 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-5">
                   {players.map((player) => (
-                    <PlayerCard key={player.id} player={player} />
+                    <PlayerCard
+                      key={player.id}
+                      player={player}
+                      to={claimMode === "player" ? `/players/${player.id}?claim=player` : undefined}
+                    />
                   ))}
                 </div>
               </>

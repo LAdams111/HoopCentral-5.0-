@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Flag, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { ClaimButton } from "@/components/claims/ClaimButton";
 import { BackButton } from "@/components/ui/BackButton";
 import { RecentSeasonPanel } from "@/components/player/RecentSeasonPanel";
 import { SeasonHistoryTable } from "@/components/player/SeasonHistoryTable";
@@ -37,6 +38,8 @@ export function PlayerProfile() {
   const playerId = Number(id);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const showClaim = searchParams.get("claim") === "player";
   const { session } = useAuth();
   const userId = session?.user.id ?? null;
   const queryClient = useQueryClient();
@@ -192,6 +195,7 @@ export function PlayerProfile() {
                 </div>
 
                 <div className="flex flex-col gap-3">
+                  {showClaim ? <ClaimButton payload={{ kind: "player", playerId: player.id }} /> : null}
                   <button
                     type="button"
                     onClick={handleFavorite}

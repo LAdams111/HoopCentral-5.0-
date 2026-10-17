@@ -24,12 +24,14 @@ function formatWeight(weight: string) {
 export function PlayerCard({
   player,
   compact = false,
+  to,
 }: {
   player: PlayerCardType;
   compact?: boolean;
+  to?: string;
 }) {
   return (
-    <Link to={`/players/${player.id}`} className="group block h-full">
+    <Link to={to ?? `/players/${player.id}`} className="group block h-full">
       <div className="relative flex min-h-full cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-card/80 hover:shadow-lg hover:shadow-primary/5">
         <div className="relative aspect-[4/5] flex-shrink-0 overflow-hidden bg-muted">
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />

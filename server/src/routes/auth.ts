@@ -16,6 +16,30 @@ function supabaseAuth() {
   });
 }
 
+export async function getAuthUser(token: string): Promise<{
+  id: string;
+  email: string | null;
+  role: string;
+  isAdmin: boolean;
+} | null> {
+  if (!token) return null;
+  const supabase = supabaseAuth();
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) return null;
+    const requested = data.user.user_metadata?.role;
+    return {
+      id: data.user.id,
+      email: data.user.email ?? null,
+      role: typeof requested === "string" && ACCOUNT_ROLES.has(requested) ? requested : "fan",
+      isAdmin: data.user.app_metadata?.is_admin === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export const authRouter = Router();
 
 authRouter.get("/config", (_req, res) => {
@@ -40,42 +64,20 @@ authRouter.get("/me", async (req, res) => {
     return;
   }
 
-  const supabase = supabaseAuth();
-  if (!supabase) {
-    res.status(503).json({
-      error: { code: "AUTH_NOT_CONFIGURED", message: "Sign-in is not configured" },
-    });
-    return;
-  }
-
-  let data: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"];
-  let error: Awaited<ReturnType<typeof supabase.auth.getUser>>["error"];
-  try {
-    ({ data, error } = await supabase.auth.getUser(token));
-  } catch {
-    res.status(503).json({
-      error: { code: "AUTH_UNAVAILABLE", message: "Sign-in is not available right now" },
-    });
-    return;
-  }
-  if (error || !data.user) {
+  const user = await getAuthUser(token);
+  if (!user) {
     res.status(401).json({
       error: { code: "UNAUTHORIZED", message: "Sign in required" },
     });
     return;
   }
 
-  const requested = data.user.user_metadata?.role;
-  const role = typeof requested === "string" && ACCOUNT_ROLES.has(requested) ? requested : "fan";
-  // app_metadata is server-only. A signup choice cannot grant this.
-  const isAdmin = data.user.app_metadata?.is_admin === true;
-
   res.json({
-    id: data.user.id,
-    email: data.user.email ?? null,
-    role,
+    id: user.id,
+    email: user.email,
+    role: user.role,
     // Choosing Coach at signup does not grant stat entry.
     coachAccess: false,
-    isAdmin,
+    isAdmin: user.isAdmin,
   });
 });

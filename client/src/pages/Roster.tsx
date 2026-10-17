@@ -13,6 +13,7 @@ import {
 } from "@/lib/constants";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 import { getTeamRecord, getTeamRoster, getTeamSeasons } from "@/lib/api";
+import { ClaimButton } from "@/components/claims/ClaimButton";
 import { useAuth } from "@/lib/auth";
 import { isTeamFavorite, subscribeFavorites, toggleTeamFavorite } from "@/lib/favorites";
 
@@ -140,12 +141,15 @@ export function Roster() {
 
   useEffect(() => {
     if (!roster?.team.slug || roster.team.slug === decodedTeam) return;
-    const params = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
+    const params = new URLSearchParams();
+    if (leagueSlug) params.set("league", leagueSlug);
+    if (new URLSearchParams(location.search).get("claim") === "team") params.set("claim", "team");
+    const query = params.toString();
     navigate(
-      `/roster/${encodeURIComponent(roster.team.slug)}/${encodeURIComponent(seasonLabel)}${params}`,
+      `/roster/${encodeURIComponent(roster.team.slug)}/${encodeURIComponent(seasonLabel)}${query ? `?${query}` : ""}`,
       { replace: true, state: location.state },
     );
-  }, [roster?.team.slug, decodedTeam, seasonLabel, leagueSlug, navigate, location.state]);
+  }, [roster?.team.slug, decodedTeam, seasonLabel, leagueSlug, navigate, location.state, location.search]);
 
   const teamSlug = roster?.team.slug ?? decodedTeam;
   const teamName = roster?.team.name ?? decodedTeam;
@@ -280,6 +284,18 @@ export function Roster() {
                   Team Roster
                 </p>
                 <TeamRecordHeader record={record} />
+                {new URLSearchParams(location.search).get("claim") === "team" && roster?.team.slug ? (
+                  <div className="mt-4 max-w-xs">
+                    <ClaimButton
+                      payload={{
+                        kind: "team",
+                        teamSlug: roster.team.slug,
+                        teamName,
+                        leagueSlug,
+                      }}
+                    />
+                  </div>
+                ) : null}
                 <button
                   type="button"
                   onClick={handleFavoriteTeam}
