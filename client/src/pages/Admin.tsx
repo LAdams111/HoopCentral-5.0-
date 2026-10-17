@@ -69,6 +69,7 @@ export function Admin() {
     queryKey: ["admin-claims", session?.access_token],
     enabled: Boolean(isAdmin && session?.access_token),
     refetchOnMount: "always",
+    refetchInterval: 5000,
     queryFn: async () => {
       const response = await fetch("/api/claims", {
         headers: { Authorization: `Bearer ${session?.access_token ?? ""}` },
