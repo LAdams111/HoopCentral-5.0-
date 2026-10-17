@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { pool } from "../db/index.js";
 import { profileViewLimiter } from "../middleware/public-rate-limit.js";
 import { findDraftPickForPlayer } from "../services/draft.service.js";
 import {
@@ -110,6 +111,31 @@ playersRouter.get("/:id/game-logs", async (req, res) => {
     res.status(500).json({
       error: { code: "INTERNAL_ERROR", message: "Failed to get game logs" },
     });
+  }
+});
+
+playersRouter.get("/:id/photo.jpg", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(404).end();
+    return;
+  }
+  try {
+    const found = await pool.query(
+      `SELECT photo, photo_type FROM player_photos WHERE player_id = $1`,
+      [id],
+    );
+    const row = found.rows[0] as { photo?: Buffer; photo_type?: string } | undefined;
+    if (!row?.photo) {
+      res.status(404).end();
+      return;
+    }
+    res.setHeader("Content-Type", row.photo_type || "image/jpeg");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(row.photo);
+  } catch (err) {
+    console.error(err);
+    res.status(404).end();
   }
 });
 

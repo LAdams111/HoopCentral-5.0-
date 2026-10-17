@@ -38,6 +38,24 @@ function fieldClassName() {
   return "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
 }
 
+async function preparePhoto(file: File): Promise<Blob> {
+  if (!file.type.startsWith("image/")) throw new Error("Use a JPG or PNG.");
+  if (file.size > 12 * 1024 * 1024) throw new Error("That photo is too large.");
+  const bitmap = await createImageBitmap(file);
+  const max = 900;
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not read that photo.");
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+  if (!blob) throw new Error("Could not read that photo.");
+  return blob;
+}
+
 export function ClaimPlayer() {
   const { id } = useParams();
   const [params] = useSearchParams();
@@ -52,6 +70,8 @@ export function ClaimPlayer() {
   });
   const [form, setForm] = useState<PlayerForm>(EMPTY_FORM);
   const [filled, setFilled] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -94,7 +114,7 @@ export function ClaimPlayer() {
 
   const submit = async () => {
     const token = session?.access_token;
-    if (!token || form.proof.trim().length < 8) return;
+    if (!token) return;
     setState("sending");
     setMessage("");
     try {
@@ -125,6 +145,23 @@ export function ClaimPlayer() {
         setMessage(body?.error?.message || "Could not send the request.");
         setState("error");
         return;
+      }
+      const saved = (await response.json()) as { id?: number };
+      if (photoFile && saved.id) {
+        const photo = await preparePhoto(photoFile);
+        const uploaded = await fetch(`/api/claims/${saved.id}/photo`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "image/jpeg",
+          },
+          body: photo,
+        });
+        if (!uploaded.ok) {
+          setMessage("The request was saved, but the photo did not upload. Submit again to retry the photo.");
+          setState("error");
+          return;
+        }
       }
       setState("sent");
     } catch {
@@ -200,12 +237,35 @@ export function ClaimPlayer() {
           </div>
           <label className="block text-sm">
             Bio
-            <textarea className={`${fieldClassName()} min-h-28`} value={form.bio} onChange={(event) => set("bio", event.target.value)} />
+            <textarea
+              className={`${fieldClassName()} min-h-28`}
+              placeholder="Awards, achievements, history, stories, and anything else worth knowing"
+              value={form.bio}
+              onChange={(event) => set("bio", event.target.value)}
+            />
           </label>
+          <label className="block text-sm">
+            Photo
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="mt-1 block w-full text-sm"
+              onChange={(event) => {
+                const file = event.target.files?.[0] ?? null;
+                setPhotoFile(file);
+                setPhotoPreview((current) => {
+                  if (current) URL.revokeObjectURL(current);
+                  return file ? URL.createObjectURL(file) : "";
+                });
+              }}
+            />
+          </label>
+          {photoPreview ? (
+            <img src={photoPreview} alt="" className="h-32 w-32 rounded-xl object-cover" />
+          ) : null}
           <label className="block text-sm">
             Proof
             <textarea
-              required
               className={`${fieldClassName()} min-h-28`}
               placeholder="Link, team email, or how this can be checked"
               value={form.proof}
@@ -215,7 +275,7 @@ export function ClaimPlayer() {
           {message ? <p className="text-sm text-destructive">{message}</p> : null}
           <button
             type="submit"
-            disabled={state === "sending" || form.proof.trim().length < 8}
+            disabled={state === "sending"}
             className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 font-display text-sm font-bold uppercase tracking-tight text-primary-foreground disabled:opacity-60"
           >
             {state === "sending" ? "Sending…" : "Submit for review"}
@@ -251,7 +311,7 @@ export function ClaimTeam() {
 
   const submit = async () => {
     const token = session?.access_token;
-    if (!token || proof.trim().length < 8) return;
+    if (!token) return;
     setState("sending");
     setMessage("");
     try {
@@ -311,7 +371,6 @@ export function ClaimTeam() {
           <label className="block text-sm">
             Proof
             <textarea
-              required
               className={`${fieldClassName()} min-h-28`}
               placeholder="Link, team email, or how this can be checked"
               value={proof}
@@ -321,7 +380,7 @@ export function ClaimTeam() {
           {message ? <p className="text-sm text-destructive">{message}</p> : null}
           <button
             type="submit"
-            disabled={state === "sending" || proof.trim().length < 8}
+            disabled={state === "sending"}
             className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 font-display text-sm font-bold uppercase tracking-tight text-primary-foreground disabled:opacity-60"
           >
             {state === "sending" ? "Sending…" : "Submit for review"}

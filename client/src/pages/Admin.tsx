@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ClipboardList, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 
@@ -35,7 +36,31 @@ type ClaimRequest = {
   status: string;
   proof: string | null;
   proposed: Record<string, string> | null;
+  has_photo: boolean | null;
 };
+
+function ClaimPhoto({ id, token }: { id: number; token: string }) {
+  const [src, setSrc] = useState("");
+
+  useEffect(() => {
+    let url = "";
+    let cancelled = false;
+    void fetch(`/api/claims/${id}/photo`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(async (response) => {
+      if (!response.ok || cancelled) return;
+      url = URL.createObjectURL(await response.blob());
+      if (!cancelled) setSrc(url);
+    });
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [id, token]);
+
+  if (!src) return null;
+  return <img src={src} alt="" className="mt-3 h-40 w-40 rounded-xl object-cover" />;
+}
 
 export function Admin() {
   const { ready, email, isAdmin, adminChecked, session, signOut } = useAuth();
@@ -54,6 +79,7 @@ export function Admin() {
       return body.requests ?? [];
     },
   });
+  const [photoUsed, setPhotoUsed] = useState<number[]>([]);
   const pending = requests.filter((request) => request.status === "pending");
   const approved = requests.filter((request) => request.status === "approved");
 
@@ -71,6 +97,16 @@ export function Admin() {
     if (response.ok) {
       await queryClient.invalidateQueries({ queryKey: ["admin-claims"] });
     }
+  };
+
+  const usePhoto = async (id: number) => {
+    const token = session?.access_token;
+    if (!token) return;
+    const response = await fetch(`/api/claims/${id}/use-photo`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (response.ok) setPhotoUsed((current) => (current.includes(id) ? current : [...current, id]));
   };
 
   if (!ready || (email && !isAdmin && !adminChecked)) {
@@ -189,6 +225,21 @@ export function Admin() {
                         <span className="font-medium">Proof. </span>
                         {request.proof?.trim() ? request.proof : "None sent with this request."}
                       </p>
+                      {request.has_photo && session?.access_token ? (
+                        <div className="mt-3">
+                          <ClaimPhoto id={request.id} token={session.access_token} />
+                          {request.kind === "player" && request.player_id ? (
+                            <button
+                              type="button"
+                              onClick={() => void usePhoto(request.id)}
+                              disabled={photoUsed.includes(request.id)}
+                              className="mt-3 rounded-xl border border-border px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-muted-foreground disabled:opacity-60"
+                            >
+                              {photoUsed.includes(request.id) ? "On the profile" : "Use as profile photo"}
+                            </button>
+                          ) : null}
+                        </div>
+                      ) : null}
                       {changes.length > 0 ? (
                         <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                           {changes.map(([key, value]) => (
