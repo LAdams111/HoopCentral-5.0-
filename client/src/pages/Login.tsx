@@ -49,7 +49,7 @@ function safeNextPath(value: string | null): string {
 export function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { ready, configError, email: signedInEmail, isAdmin, adminChecked, signIn, signUp } = useAuth();
+  const { ready, configError, email: signedInEmail, isAdmin, adminChecked, signIn, signUp, resendConfirmation } = useAuth();
   const role = useMemo(() => parseRole(searchParams.get("role")), [searchParams]);
   const mode = useMemo(() => parseMode(searchParams.get("mode")), [searchParams]);
   const [email, setEmail] = useState("");
@@ -58,6 +58,7 @@ export function Login() {
   const [notice, setNotice] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const isSignup = mode === "signup";
   const activeLabel = roleLabel(role);
@@ -109,6 +110,23 @@ export function Login() {
       return;
     }
     navigate(result.isAdmin ? "/admin" : nextPath, { replace: true });
+  };
+
+  const resendEmail = async () => {
+    setValidationError(null);
+    setNotice(null);
+    if (!email.trim()) {
+      setValidationError("Enter your email first.");
+      return;
+    }
+    setResending(true);
+    const result = await resendConfirmation(email);
+    setResending(false);
+    if (!result.ok) {
+      setValidationError(result.message);
+      return;
+    }
+    setNotice(result.message);
   };
 
   if (ready && signedInEmail) {
@@ -298,6 +316,16 @@ export function Login() {
             >
               {submitting ? "Please wait" : isSignup ? `Create ${activeLabel} account` : "Log in"}
             </button>
+            {!isSignup || notice ? (
+              <button
+                type="button"
+                disabled={!ready || resending}
+                onClick={() => void resendEmail()}
+                className="w-full text-sm font-medium text-primary underline-offset-2 hover:underline disabled:opacity-60"
+              >
+                {resending ? "Sending…" : "Resend confirmation email"}
+              </button>
+            ) : null}
           </form>
         </div>
       </div>

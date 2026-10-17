@@ -20,6 +20,7 @@ type AuthContextValue = {
   adminChecked: boolean;
   signUp: (input: { email: string; password: string; role: LoginRole }) => Promise<AuthResult>;
   signIn: (input: { email: string; password: string }) => Promise<AuthResult>;
+  resendConfirmation: (email: string) => Promise<{ ok: boolean; message: string }>;
   signOut: () => Promise<void>;
   refreshAccessToken: () => Promise<string | null>;
 };
@@ -197,6 +198,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch {
           return { ok: true, needsEmailConfirmation: false, isAdmin: false };
         }
+      },
+      async resendConfirmation(email) {
+        if (!client) return { ok: false, message: "Sign-in is not available right now." };
+        const trimmed = email.trim();
+        if (!trimmed) return { ok: false, message: "Enter your email first." };
+        const { error } = await client.auth.resend({
+          type: "signup",
+          email: trimmed,
+          options: { emailRedirectTo: `${window.location.origin}/login` },
+        });
+        if (error) return { ok: false, message: error.message };
+        return { ok: true, message: "Confirmation email sent. Check your inbox." };
       },
       async signOut() {
         if (!client) return;
