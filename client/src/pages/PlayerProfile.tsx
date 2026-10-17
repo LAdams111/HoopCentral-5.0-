@@ -40,7 +40,7 @@ export function PlayerProfile() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const showClaim = searchParams.get("claim") === "player";
-  const { session } = useAuth();
+  const { session, isAdmin } = useAuth();
   const userId = session?.user.id ?? null;
   const queryClient = useQueryClient();
 
@@ -192,6 +192,14 @@ export function PlayerProfile() {
                   <h1 className="font-display text-4xl font-bold leading-[0.85] tracking-tighter text-foreground md:text-8xl">
                     {player.name}
                   </h1>
+                  {isAdmin ? (
+                    <Link
+                      to={`/admin/edit/player/${player.id}`}
+                      className="mt-3 inline-flex h-8 items-center rounded-lg border border-primary/40 px-3 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary"
+                    >
+                      Edit
+                    </Link>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-col gap-3">

@@ -13,6 +13,7 @@ import { Roster } from "./pages/Roster";
 import { Account } from "./pages/Account";
 import { ClaimPlayer, ClaimTeam } from "./pages/ClaimProfile";
 import { Admin } from "./pages/Admin";
+import { AdminEditPlayer, AdminEditTeam } from "./pages/AdminEdit";
 import { Login } from "./pages/Login";
 import { Team } from "./pages/Team";
 
@@ -44,6 +45,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Account />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/edit/player/:id" element={<AdminEditPlayer />} />
+        <Route path="/admin/edit/team/:id" element={<AdminEditTeam />} />
         <Route path="/signup" element={<Navigate to="/login?mode=signup" replace />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/players" element={<Players />} />

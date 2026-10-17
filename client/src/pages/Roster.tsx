@@ -80,7 +80,7 @@ export function Roster() {
   const { team = "", season = "" } = useParams<{ team: string; season: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { session } = useAuth();
+  const { session, isAdmin } = useAuth();
   const userId = session?.user.id ?? null;
   const [teamFavorited, setTeamFavorited] = useState(false);
   const decodedTeam = decodeURIComponent(team);
@@ -280,6 +280,14 @@ export function Roster() {
                 >
                   {teamDisplayName}
                 </h1>
+                {isAdmin && roster?.team.id ? (
+                  <Link
+                    to={`/admin/edit/team/${roster.team.id}?slug=${encodeURIComponent(roster.team.slug)}&season=${encodeURIComponent(seasonLabel)}${leagueSlug ? `&league=${encodeURIComponent(leagueSlug)}` : ""}`}
+                    className="mt-3 inline-flex h-8 items-center rounded-lg border border-primary/40 px-3 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary"
+                  >
+                    Edit
+                  </Link>
+                ) : null}
                 <p className="font-mono text-xl uppercase tracking-widest text-muted-foreground">
                   Team Roster
                 </p>

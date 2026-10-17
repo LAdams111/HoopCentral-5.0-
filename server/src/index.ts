@@ -6,6 +6,7 @@ import { checkDatabaseConnection } from "./db/index.js";
 import { publicBrowseLimiter, publicCatalogLimiter } from "./middleware/public-rate-limit.js";
 import { securityHeaders, siteCors } from "./middleware/security.js";
 import { authRouter } from "./routes/auth.js";
+import { adminEditsRouter } from "./routes/admin-edits.js";
 import { applyStoredApprovals, claimsRouter } from "./routes/claims.js";
 import { draftRouter } from "./routes/draft.js";
 import { leaguesRouter } from "./routes/leagues.js";
@@ -70,6 +71,7 @@ app.get("/api/prospect-players", async (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/claims", claimsRouter);
+app.use("/api/admin", adminEditsRouter);
 app.use("/api/leagues", leaguesRouter);
 app.use("/api/draft", draftRouter);
 app.use("/api/players", playersRouter);
