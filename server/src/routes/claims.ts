@@ -27,8 +27,8 @@ function cleanText(value: unknown, max: number): string {
   return value.trim().slice(0, max);
 }
 
-function cleanProposed(kind: "player" | "team" | "identity", value: unknown): Record<string, string> {
-  if (kind === "identity" || !value || typeof value !== "object" || Array.isArray(value)) return {};
+function cleanProposed(kind: "player" | "team" | "identity" | "team-identity", value: unknown): Record<string, string> {
+  if (kind === "identity" || kind === "team-identity" || !value || typeof value !== "object" || Array.isArray(value)) return {};
   const source = value as Record<string, unknown>;
   const keys = kind === "player" ? PLAYER_FIELDS : (["note"] as const);
   const proposed: Record<string, string> = {};
@@ -166,7 +166,7 @@ claimsRouter.patch("/:id", async (req, res) => {
       WHERE id = ${id}
     `);
     const row = current.rows[0] as { kind?: string; has_id?: boolean } | undefined;
-    if (row?.kind === "identity" && !row.has_id) {
+    if ((row?.kind === "identity" || row?.kind === "team-identity") && !row.has_id) {
       res.status(400).json({ error: { code: "INVALID", message: "This claim needs an ID photo before it can be approved" } });
       return;
     }
@@ -206,7 +206,7 @@ claimsRouter.post("/", async (req, res) => {
   }
 
   const kind = req.body?.kind;
-  if (kind !== "player" && kind !== "team" && kind !== "identity") {
+  if (kind !== "player" && kind !== "team" && kind !== "identity" && kind !== "team-identity") {
     res.status(400).json({ error: { code: "INVALID", message: "Choose a player or a team" } });
     return;
   }
@@ -281,8 +281,8 @@ claimsRouter.post("/", async (req, res) => {
       proposed = EXCLUDED.proposed,
       status = 'pending',
       applied_at = NULL,
-      id_document = CASE WHEN EXCLUDED.kind = 'identity' THEN NULL ELSE claim_requests.id_document END,
-      id_document_type = CASE WHEN EXCLUDED.kind = 'identity' THEN NULL ELSE claim_requests.id_document_type END
+      id_document = CASE WHEN EXCLUDED.kind IN ('identity', 'team-identity') THEN NULL ELSE claim_requests.id_document END,
+      id_document_type = CASE WHEN EXCLUDED.kind IN ('identity', 'team-identity') THEN NULL ELSE claim_requests.id_document_type END
     RETURNING id, status
   `);
   const saved = inserted.rows[0] as { id: number; status: string } | undefined;
@@ -349,7 +349,7 @@ claimsRouter.post(
     const updated = await pool.query(
       `UPDATE claim_requests
        SET id_document = $1, id_document_type = $2
-       WHERE id = $3 AND user_id = $4 AND kind = 'identity'
+       WHERE id = $3 AND user_id = $4 AND kind IN ('identity', 'team-identity')
        RETURNING id`,
       [bytes, photoType, id, user.id],
     );

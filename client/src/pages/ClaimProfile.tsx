@@ -533,10 +533,12 @@ export function ClaimTeam() {
   const teamSlug = params.get("teamSlug") ?? "";
   const leagueSlug = params.get("leagueSlug") ?? "";
   const teamName = params.get("teamName") ?? teamSlug;
-  const allowed = (params.get("claim") === "team" || params.get("edit") === "team") && teamSlug.length > 0;
+  const isEdit = params.get("edit") === "team";
+  const allowed = (params.get("claim") === "team" || isEdit) && teamSlug.length > 0;
   const nextPath = `/claim/team?${params.toString()}`;
   const [note, setNote] = useState("");
-  const [proof, setProof] = useState("");
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const [idPreview, setIdPreview] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -550,9 +552,22 @@ export function ClaimTeam() {
   }
   if (!email) return <Navigate to={`/login?next=${encodeURIComponent(nextPath)}`} replace />;
 
+  const chooseId = (file: File | null) => {
+    setIdFile(file);
+    setIdPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return file ? URL.createObjectURL(file) : "";
+    });
+  };
+
   const submit = async () => {
     const token = session?.access_token;
     if (!token) return;
+    if (!isEdit && !idFile) {
+      setMessage("Upload a photo of a government-issued ID.");
+      setState("error");
+      return;
+    }
     setState("sending");
     setMessage("");
     try {
@@ -563,12 +578,10 @@ export function ClaimTeam() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          kind: "team",
+          kind: isEdit ? "team" : "team-identity",
           teamSlug,
-          teamName,
           leagueSlug,
-          proof,
-          proposed: { note },
+          proof: note,
         }),
       });
       if (!response.ok) {
@@ -576,6 +589,23 @@ export function ClaimTeam() {
         setMessage(body?.error?.message || "Could not send the request.");
         setState("error");
         return;
+      }
+      const saved = (await response.json()) as { id?: number };
+      if (!isEdit && idFile && saved.id) {
+        const photo = await preparePhoto(idFile);
+        const uploaded = await fetch(`/api/claims/${saved.id}/id`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "image/jpeg",
+          },
+          body: photo,
+        });
+        if (!uploaded.ok) {
+          setMessage("The claim was saved, but the ID photo did not upload. Submit again with the photo.");
+          setState("error");
+          return;
+        }
       }
       setState("sent");
     } catch {
@@ -586,15 +616,22 @@ export function ClaimTeam() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="font-display text-4xl font-bold uppercase tracking-tight">{teamName}</h1>
+      <h1 className="font-display text-4xl font-bold uppercase tracking-tight">
+        {isEdit ? "Request a team edit" : "Claim this team"}
+      </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Send a team information change and how it can be checked. Stats stay off this form.
+        {teamName}.{" "}
+        {isEdit
+          ? "Send the team note that should be checked. Stats stay off this form."
+          : "Upload a photo of a government-issued ID to claim this team as yours. This does not change the roster or stats."}
       </p>
       {state === "sent" ? (
         <section className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <p className="font-display text-2xl font-bold">Request sent</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            The note and proof are waiting for review. Team stats stay unchanged.
+            {isEdit
+              ? "The note is waiting for review. Team stats stay unchanged."
+              : "The ID is waiting for review. Approving the claim does not change the public team page."}
           </p>
         </section>
       ) : (
@@ -605,17 +642,22 @@ export function ClaimTeam() {
             void submit();
           }}
         >
+          {isEdit ? null : (
+            <PhotoPicker
+              label="Government-issued ID"
+              fileName={idFile?.name ?? ""}
+              hint="Photo of a passport, driver’s license, or other government ID. It is only shown on the admin review page."
+              onFile={chooseId}
+            />
+          )}
+          {idPreview ? <img src={idPreview} alt="" className="max-h-48 rounded-xl object-contain" /> : null}
           <label className="block text-sm">
-            What should change
-            <textarea className={`${fieldClassName()} min-h-28`} value={note} onChange={(event) => setNote(event.target.value)} />
-          </label>
-          <label className="block text-sm">
-            Proof
+            Note
             <textarea
               className={`${fieldClassName()} min-h-28`}
-              placeholder="Link, team email, or how this can be checked"
-              value={proof}
-              onChange={(event) => setProof(event.target.value)}
+              placeholder="Optional. Say how you are connected to this team."
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
             />
           </label>
           {message ? <p className="text-sm text-destructive">{message}</p> : null}
@@ -624,7 +666,7 @@ export function ClaimTeam() {
             disabled={state === "sending"}
             className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-5 font-display text-sm font-bold uppercase tracking-tight text-primary-foreground disabled:opacity-60"
           >
-            {state === "sending" ? "Sending…" : "Submit for review"}
+            {state === "sending" ? "Sending…" : isEdit ? "Submit for review" : "Submit claim"}
           </button>
         </form>
       )}

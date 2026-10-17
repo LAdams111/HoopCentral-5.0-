@@ -42,6 +42,7 @@ type ClaimRequest = {
 
 function requestLabel(kind: string): string {
   if (kind === "identity") return "Player claim";
+  if (kind === "team-identity") return "Team claim";
   if (kind === "player") return "Change request";
   if (kind === "team") return "Team request";
   return kind;
@@ -288,10 +289,10 @@ export function Admin() {
                         </span>
                       </div>
                       <p className="mt-3 text-sm">
-                        <span className="font-medium">{request.kind === "identity" ? "Note. " : "Proof. "}</span>
+                        <span className="font-medium">{request.kind === "identity" || request.kind === "team-identity" ? "Note. " : "Proof. "}</span>
                         {request.proof?.trim() ? request.proof : "None sent with this request."}
                       </p>
-                      {request.kind === "identity" ? (
+                      {request.kind === "identity" || request.kind === "team-identity" ? (
                         <div className="mt-3">
                           <p className="text-sm">
                             <span className="font-medium">Government ID. </span>
@@ -339,7 +340,7 @@ export function Admin() {
                             </div>
                           ))}
                         </dl>
-                      ) : request.kind === "identity" ? null : (
+                      ) : request.kind === "identity" || request.kind === "team-identity" ? null : (
                         <p className="mt-3 text-sm text-muted-foreground">No bio changes were included.</p>
                       )}
                       {request.status === "pending" ? (

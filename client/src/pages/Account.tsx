@@ -125,6 +125,21 @@ export function Account() {
           </Link>
         </section>
 
+        {role === "coach" ? (
+          <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim a team</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Search for the team page and claim it as yours. A photo of a government-issued ID is required.
+            </p>
+            <Link
+              to="/search?claim=team"
+              className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
+            >
+              Claim a team
+            </Link>
+          </section>
+        ) : null}
+
         <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <h2 className="mb-4 font-display text-xl font-bold uppercase tracking-wide">Favorite players</h2>
           {favoritesLoading ? (

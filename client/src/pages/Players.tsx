@@ -282,7 +282,7 @@ function DirectorySearchView() {
                   : requestKind === "player"
                     ? "Search for the player, open the profile, then hit Claim and upload a government ID."
                     : requestKind === "team"
-                      ? "Search for the team, open the page, then hit Claim."
+                      ? "Search for the team, open the page, then hit Claim and upload a government ID."
                       : "Search players and teams across Hoop Central"}
             </p>
           </div>

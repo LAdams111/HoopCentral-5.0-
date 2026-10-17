@@ -349,7 +349,7 @@ function toSearchLeagueInfo(league: typeof leagues.$inferSelect): TeamLeagueInfo
 }
 
 async function isTeamSearchableLeague(league: typeof leagues.$inferSelect): Promise<boolean> {
-  if (league.slug === LEGACY_NCAA_MENS_SLUG) return true;
+  if (league.slug === LEGACY_NCAA_MENS_SLUG || league.slug === "sample-league") return true;
   return isLeagueIdPublic(league.id);
 }
 
