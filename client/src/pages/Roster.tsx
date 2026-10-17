@@ -144,6 +144,7 @@ export function Roster() {
     const params = new URLSearchParams();
     if (leagueSlug) params.set("league", leagueSlug);
     if (new URLSearchParams(location.search).get("claim") === "team") params.set("claim", "team");
+    if (new URLSearchParams(location.search).get("edit") === "team") params.set("edit", "team");
     const query = params.toString();
     navigate(
       `/roster/${encodeURIComponent(roster.team.slug)}/${encodeURIComponent(seasonLabel)}${query ? `?${query}` : ""}`,
@@ -292,10 +293,13 @@ export function Roster() {
                   Team Roster
                 </p>
                 <TeamRecordHeader record={record} />
-                {new URLSearchParams(location.search).get("claim") === "team" && roster?.team.slug ? (
+                {(new URLSearchParams(location.search).get("claim") === "team" ||
+                  new URLSearchParams(location.search).get("edit") === "team") &&
+                roster?.team.slug ? (
                   <div className="mt-4 max-w-xs">
                     <ClaimButton
-                      to={`/claim/team?claim=team&teamSlug=${encodeURIComponent(roster.team.slug)}&leagueSlug=${encodeURIComponent(leagueSlug ?? "")}&teamName=${encodeURIComponent(teamName)}`}
+                      label={new URLSearchParams(location.search).get("edit") === "team" ? "Submit edit" : "Claim"}
+                      to={`/claim/team?${new URLSearchParams(location.search).get("edit") === "team" ? "edit" : "claim"}=team&teamSlug=${encodeURIComponent(roster.team.slug)}&leagueSlug=${encodeURIComponent(leagueSlug ?? "")}&teamName=${encodeURIComponent(teamName)}`}
                     />
                   </div>
                 ) : null}

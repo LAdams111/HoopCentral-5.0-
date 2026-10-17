@@ -190,8 +190,9 @@ export function ClaimPlayer() {
   const [params] = useSearchParams();
   const { ready, email, session } = useAuth();
   const playerId = Number(id);
-  const allowed = params.get("claim") === "player" && Number.isInteger(playerId) && playerId > 0;
-  const nextPath = `/players/${playerId}/claim?claim=player`;
+  const playerRequest = params.get("edit") === "player" ? "edit" : params.get("claim") === "player" ? "claim" : null;
+  const allowed = playerRequest !== null && Number.isInteger(playerId) && playerId > 0;
+  const nextPath = `/players/${playerId}/claim?${playerRequest ?? "claim"}=player`;
   const playerQuery = useQuery({
     queryKey: ["claim-player", playerId],
     enabled: allowed,
@@ -316,7 +317,7 @@ export function ClaimPlayer() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <Link to={`/players/${playerId}?claim=player`} className="font-mono text-xs uppercase tracking-wide text-primary">
+      <Link to={`/players/${playerId}?${playerRequest ?? "claim"}=player`} className="font-mono text-xs uppercase tracking-wide text-primary">
         Back to profile
       </Link>
       <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-tight">
@@ -442,7 +443,7 @@ export function ClaimTeam() {
   const teamSlug = params.get("teamSlug") ?? "";
   const leagueSlug = params.get("leagueSlug") ?? "";
   const teamName = params.get("teamName") ?? teamSlug;
-  const allowed = params.get("claim") === "team" && teamSlug.length > 0;
+  const allowed = (params.get("claim") === "team" || params.get("edit") === "team") && teamSlug.length > 0;
   const nextPath = `/claim/team?${params.toString()}`;
   const [note, setNote] = useState("");
   const [proof, setProof] = useState("");

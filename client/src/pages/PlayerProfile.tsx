@@ -40,6 +40,7 @@ export function PlayerProfile() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const showClaim = searchParams.get("claim") === "player";
+  const showEdit = searchParams.get("edit") === "player";
   const { session, isAdmin } = useAuth();
   const userId = session?.user.id ?? null;
   const queryClient = useQueryClient();
@@ -203,7 +204,12 @@ export function PlayerProfile() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  {showClaim ? <ClaimButton to={`/players/${player.id}/claim?claim=player`} /> : null}
+                  {showClaim || showEdit ? (
+                    <ClaimButton
+                      label={showEdit ? "Submit edit" : "Claim"}
+                      to={`/players/${player.id}/claim?${showEdit ? "edit" : "claim"}=player`}
+                    />
+                  ) : null}
                   <button
                     type="button"
                     onClick={handleFavorite}

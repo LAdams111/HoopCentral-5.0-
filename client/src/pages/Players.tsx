@@ -210,8 +210,10 @@ function DraftClassView() {
 function DirectorySearchView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
+  const edit = searchParams.get("edit");
   const claim = searchParams.get("claim");
-  const claimMode = claim === "player" || claim === "team" ? claim : null;
+  const requestKind = edit === "player" || edit === "team" ? edit : claim === "player" || claim === "team" ? claim : null;
+  const requestPurpose = edit === "player" || edit === "team" ? "edit" : requestKind ? "claim" : null;
   const [query, setQuery] = useState(urlQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(urlQuery);
 
@@ -249,7 +251,8 @@ function DirectorySearchView() {
     if (trimmed.length < 2) return;
     setDebouncedQuery(trimmed);
     const next = new URLSearchParams({ q: trimmed });
-    if (claimMode) next.set("claim", claimMode);
+    if (requestKind && requestPurpose === "edit") next.set("edit", requestKind);
+    if (requestKind && requestPurpose === "claim") next.set("claim", requestKind);
     setSearchParams(next);
   };
 
@@ -259,20 +262,28 @@ function DirectorySearchView() {
         <div className="mb-6 flex flex-col items-start justify-between gap-3 md:mb-12 md:flex-row md:items-end md:gap-6">
           <div>
             <h1 className="mb-2 font-display text-4xl text-foreground md:text-6xl">
-              {claimMode === "player" ? (
+              {requestPurpose === "edit" && requestKind === "player" ? (
+                <>Submit a player <span className="text-primary">edit</span></>
+              ) : requestPurpose === "edit" && requestKind === "team" ? (
+                <>Submit a team <span className="text-primary">edit</span></>
+              ) : requestKind === "player" ? (
                 <>Claim a <span className="text-primary">Player</span></>
-              ) : claimMode === "team" ? (
+              ) : requestKind === "team" ? (
                 <>Claim a <span className="text-primary">Team</span></>
               ) : (
                 <>Player <span className="text-primary">Search</span></>
               )}
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              {claimMode === "player"
-                ? "Search for the player, open the profile, then hit Claim."
-                : claimMode === "team"
-                  ? "Search for the team, open the page, then hit Claim."
-                  : "Search players and teams across Hoop Central"}
+              {requestPurpose === "edit" && requestKind === "player"
+                ? "Search for the player, open the profile, then submit the edit."
+                : requestPurpose === "edit" && requestKind === "team"
+                  ? "Search for the team, open the page, then submit the edit."
+                  : requestKind === "player"
+                    ? "Search for the player, open the profile, then hit Claim."
+                    : requestKind === "team"
+                      ? "Search for the team, open the page, then hit Claim."
+                      : "Search players and teams across Hoop Central"}
             </p>
           </div>
         </div>
@@ -304,9 +315,15 @@ function DirectorySearchView() {
           </div>
         ) : (
           <>
-            {claimMode !== "player" ? <TeamSearchResults teams={hasQuery ? teams : []} claim={claimMode === "team"} /> : null}
+            {requestKind !== "player" ? (
+              <TeamSearchResults
+                teams={hasQuery ? teams : []}
+                claim={requestPurpose === "claim" && requestKind === "team"}
+                edit={requestPurpose === "edit" && requestKind === "team"}
+              />
+            ) : null}
 
-            {showPlayers && claimMode !== "team" && (
+            {showPlayers && requestKind !== "team" && (
               <>
                 <p className="mb-6 font-mono text-xs uppercase tracking-wider text-muted-foreground">
                   {players.length} player{players.length !== 1 ? "s" : ""} found
@@ -316,7 +333,11 @@ function DirectorySearchView() {
                     <PlayerCard
                       key={player.id}
                       player={player}
-                      to={claimMode === "player" ? `/players/${player.id}?claim=player` : undefined}
+                      to={
+                        requestKind === "player"
+                          ? `/players/${player.id}?${requestPurpose === "edit" ? "edit" : "claim"}=player`
+                          : undefined
+                      }
                     />
                   ))}
                 </div>

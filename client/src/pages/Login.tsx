@@ -21,6 +21,7 @@ const GENERAL_ROLE: { id: LoginRole; label: string; description: string } = {
 
 function parseRole(value: string | null): LoginRole {
   if (
+    value === "player" ||
     value === "parent" ||
     value === "coach" ||
     value === "scout" ||
@@ -28,7 +29,7 @@ function parseRole(value: string | null): LoginRole {
   ) {
     return value;
   }
-  return "player";
+  return "fan";
 }
 
 function parseMode(value: string | null): AuthMode {
@@ -166,9 +167,13 @@ export function Login() {
             </button>
           </div>
 
+          {isSignup ? (
           <div className="space-y-3 border-b border-border p-4">
             <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-              Basketball role
+              This account is for
+            </p>
+            <p className="text-xs text-muted-foreground">
+              This is saved with the account. Later logins on any device open this same profile.
             </p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {SPECIALIZED_ROLES.map((item) => {
@@ -210,6 +215,7 @@ export function Login() {
               </span>
             </button>
           </div>
+          ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6 pb-6">
             <div>
@@ -290,11 +296,7 @@ export function Login() {
               disabled={!ready || submitting}
               className="hover-elevate w-full rounded-xl bg-primary py-3 font-display text-sm font-bold uppercase tracking-wide text-primary-foreground disabled:opacity-60"
             >
-              {submitting
-                ? "Please wait"
-                : isSignup
-                  ? `Create ${activeLabel} account`
-                  : `Log in as ${activeLabel}`}
+              {submitting ? "Please wait" : isSignup ? `Create ${activeLabel} account` : "Log in"}
             </button>
           </form>
         </div>

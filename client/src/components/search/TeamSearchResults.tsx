@@ -9,10 +9,12 @@ export function TeamSearchResults({
   teams,
   compact = false,
   claim = false,
+  edit = false,
 }: {
   teams: TeamSummary[];
   compact?: boolean;
   claim?: boolean;
+  edit?: boolean;
 }) {
   if (teams.length === 0) return null;
 
@@ -35,7 +37,11 @@ export function TeamSearchResults({
           return (
             <Link
               key={`${team.league.slug}-${team.id}`}
-              to={claim ? `${teamRosterPath(team)}${teamRosterPath(team).includes("?") ? "&" : "?"}claim=team` : teamRosterPath(team)}
+              to={
+                claim || edit
+                  ? `${teamRosterPath(team)}${teamRosterPath(team).includes("?") ? "&" : "?"}${edit ? "edit" : "claim"}=team`
+                  : teamRosterPath(team)
+              }
               className="hover-elevate flex items-center gap-3 rounded-xl border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-primary/40"
             >
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
