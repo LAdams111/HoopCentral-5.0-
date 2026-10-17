@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 import { getCurrentSeasonYear, rosterPath, seasonYearToLabel } from "@/lib/constants";
 import { getTeam } from "@/lib/api";
 
 export function Team() {
   const { slug = "" } = useParams<{ slug: string }>();
+  const location = useLocation();
 
   const { data: team, isLoading, error } = useQuery({
     queryKey: ["team", slug],
@@ -41,9 +42,17 @@ export function Team() {
     team.latestSeasonLabel ??
     seasonYearToLabel(getCurrentSeasonYear());
 
+  const current = new URLSearchParams(location.search);
+  const destination = new URLSearchParams();
+  const leagueSlug = team.league.slug === "ncaa" ? "ncaa-m" : team.league.slug;
+  if (leagueSlug) destination.set("league", leagueSlug);
+  if (current.get("claim") === "team") destination.set("claim", "team");
+  if (current.get("edit") === "team") destination.set("edit", "team");
+  const query = destination.toString();
+
   return (
     <Navigate
-      to={rosterPath(team.slug, season, team.league.slug === "ncaa" ? "ncaa-m" : team.league.slug)}
+      to={`${rosterPath(team.slug, season)}${query ? `?${query}` : ""}`}
       replace
     />
   );

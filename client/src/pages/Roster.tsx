@@ -17,6 +17,16 @@ import { ClaimButton } from "@/components/claims/ClaimButton";
 import { useAuth } from "@/lib/auth";
 import { useFavorites } from "@/lib/favorites";
 
+function rosterSearch(leagueSlug: string | undefined, search: string): string {
+  const params = new URLSearchParams();
+  if (leagueSlug) params.set("league", leagueSlug);
+  const current = new URLSearchParams(search);
+  if (current.get("claim") === "team") params.set("claim", "team");
+  if (current.get("edit") === "team") params.set("edit", "team");
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
 function TeamRecordHeader({ record }: { record: { wins: number; losses: number } | null | undefined }) {
   if (record != null) {
     return (
@@ -104,23 +114,21 @@ export function Roster() {
   useEffect(() => {
     if (teamSeasonsFromApi.length === 0) return;
     if (teamSeasonsFromApi.includes(seasonLabel)) return;
-    const leagueQuery = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
     const fallback = [...teamSeasonsFromApi].sort((a, b) => b.localeCompare(a))[0];
     if (!fallback) return;
     navigate(
-      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(fallback)}${leagueQuery}`,
+      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(fallback)}${rosterSearch(leagueSlug, location.search)}`,
       { replace: true },
     );
-  }, [teamSeasonsFromApi, seasonLabel, decodedTeam, leagueSlug, navigate]);
+  }, [teamSeasonsFromApi, seasonLabel, decodedTeam, leagueSlug, navigate, location.search]);
 
   useEffect(() => {
     if (!team || !season || decodedSeason === seasonLabel) return;
-    const leagueQuery = leagueSlug ? `?league=${encodeURIComponent(leagueSlug)}` : "";
     navigate(
-      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(seasonLabel)}${leagueQuery}`,
+      `/roster/${encodeURIComponent(decodedTeam)}/${encodeURIComponent(seasonLabel)}${rosterSearch(leagueSlug, location.search)}`,
       { replace: true },
     );
-  }, [team, season, decodedTeam, decodedSeason, seasonLabel, leagueSlug, navigate]);
+  }, [team, season, decodedTeam, decodedSeason, seasonLabel, leagueSlug, navigate, location.search]);
 
   const {
     data: roster,
@@ -141,13 +149,8 @@ export function Roster() {
 
   useEffect(() => {
     if (!roster?.team.slug || roster.team.slug === decodedTeam) return;
-    const params = new URLSearchParams();
-    if (leagueSlug) params.set("league", leagueSlug);
-    if (new URLSearchParams(location.search).get("claim") === "team") params.set("claim", "team");
-    if (new URLSearchParams(location.search).get("edit") === "team") params.set("edit", "team");
-    const query = params.toString();
     navigate(
-      `/roster/${encodeURIComponent(roster.team.slug)}/${encodeURIComponent(seasonLabel)}${query ? `?${query}` : ""}`,
+      `/roster/${encodeURIComponent(roster.team.slug)}/${encodeURIComponent(seasonLabel)}${rosterSearch(leagueSlug, location.search)}`,
       { replace: true, state: location.state },
     );
   }, [roster?.team.slug, decodedTeam, seasonLabel, leagueSlug, navigate, location.state, location.search]);
@@ -283,20 +286,20 @@ export function Roster() {
                     Edit
                   </Link>
                 ) : null}
-                <p className="font-mono text-xl uppercase tracking-widest text-muted-foreground">
-                  Team Roster
-                </p>
-                <TeamRecordHeader record={record} />
                 {(new URLSearchParams(location.search).get("claim") === "team" ||
                   new URLSearchParams(location.search).get("edit") === "team") &&
                 roster?.team.slug ? (
                   <div className="mt-4 max-w-xs">
                     <ClaimButton
                       label={new URLSearchParams(location.search).get("edit") === "team" ? "Submit edit" : "Claim"}
-                      to={`/claim/team?${new URLSearchParams(location.search).get("edit") === "team" ? "edit" : "claim"}=team&teamSlug=${encodeURIComponent(roster.team.slug)}&leagueSlug=${encodeURIComponent(leagueSlug ?? "")}&teamName=${encodeURIComponent(teamName)}`}
+                      to={`/claim/team?${new URLSearchParams(location.search).get("edit") === "team" ? "edit" : "claim"}=team&teamSlug=${encodeURIComponent(roster.team.slug)}&leagueSlug=${encodeURIComponent(leagueSlug ?? "")}&teamName=${encodeURIComponent(roster.team.name || teamName)}`}
                     />
                   </div>
                 ) : null}
+                <p className="mt-4 font-mono text-xl uppercase tracking-widest text-muted-foreground">
+                  Team Roster
+                </p>
+                <TeamRecordHeader record={record} />
                 <button
                   type="button"
                   onClick={handleFavoriteTeam}
