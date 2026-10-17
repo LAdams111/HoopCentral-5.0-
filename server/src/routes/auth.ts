@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { Router } from "express";
+import WebSocket from "ws";
 
 const ACCOUNT_ROLES = new Set(["player", "parent", "coach", "scout", "fan"]);
 
@@ -7,6 +8,9 @@ function supabaseAuth() {
   const url = process.env.SUPABASE_URL?.trim() ?? "";
   const secret = process.env.SUPABASE_SECRET_KEY?.trim() ?? "";
   if (!url || !secret) return null;
+  if (typeof globalThis.WebSocket === "undefined") {
+    globalThis.WebSocket = WebSocket as unknown as typeof globalThis.WebSocket;
+  }
   return createClient(url, secret, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -44,7 +48,16 @@ authRouter.get("/me", async (req, res) => {
     return;
   }
 
-  const { data, error } = await supabase.auth.getUser(token);
+  let data: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"];
+  let error: Awaited<ReturnType<typeof supabase.auth.getUser>>["error"];
+  try {
+    ({ data, error } = await supabase.auth.getUser(token));
+  } catch {
+    res.status(503).json({
+      error: { code: "AUTH_UNAVAILABLE", message: "Sign-in is not available right now" },
+    });
+    return;
+  }
   if (error || !data.user) {
     res.status(401).json({
       error: { code: "UNAUTHORIZED", message: "Sign in required" },
