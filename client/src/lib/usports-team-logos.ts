@@ -3,58 +3,55 @@ export const USPORTS_LEAGUE_LOGO =
   "https://upload.wikimedia.org/wikipedia/commons/3/34/U_Sports_Logo.svg";
 
 const CANONICAL_LOGOS: Record<string, string> = {
-  "acadia-university": "https://acadiaathletics.ca/images/setup/Primary_Logo_-_1x.png",
-  "university-of-alberta": "https://bearsandpandas.ca/images/logos/site/site.png",
-  "algoma-university": "https://algomathunderbirds.ca/images/logos/site/site.png",
-  "bishop-s-university": "https://gaiters.ca/images/logos/site/site.png",
-  "brandon-university": "https://gobobcats.ca/images/logos/site/site.png",
-  "brock-university": "https://gobadgers.ca/images/logos/site/site.png",
-  "university-of-calgary": "https://godinos.com/images/logos/site/site.png",
-  "cape-breton-university":
-    "https://gocapersgo.ca/images/setup2023/sitelogos/CBUA2000_Lockup_Capers-Charging.png",
-  "carleton-university": "https://goravens.ca/images/logos/site/site.svg",
-  "concordia-university": "https://stingers.ca/apple-icon-180x180.png",
-  "dalhousie-university": "https://daltigers.ca/images/logos/site/site.svg",
-  "university-of-guelph": "https://gryphons.ca/images/logos/site/site.png",
-  "lakehead-university": "https://thunderwolves.ca/images/logos/site/site.svg",
-  "laurentian-university": "https://luvoyageurs.com/images/logos/site/site.svg",
-  "wilfrid-laurier-university": "https://laurierathletics.com/images/logos/site/site.png",
-  "universite-laval":
-    "https://rougeetor.ulaval.ca/wp-content/themes/rougeetor/img/common/logo-rouge-et-or-universite-laval-print.png",
-  "university-of-lethbridge": "https://gohorns.ca/images/logos/site/site.png",
-  "macewan-university": "https://www.macewangriffins.ca/images/logos/site/site.svg",
-  "university-of-manitoba": "https://gobisons.ca/images/logos/site/site.png",
-  "mcgill-university": "https://mcgillathletics.ca/images/logos/site/site.png",
-  "mcmaster-university": "https://marauders.ca/images/logos/site/site.png",
-  "memorial-university-of-newfoundland": "https://goseahawks.ca/images/logos/site/site.svg",
-  "mount-royal-university": "https://mrucougars.com/images/logos/site/site.png",
-  "nipissing-university": "https://nulakers.ca/images/logos/site/site.png",
-  "ontario-tech-university": "https://goridgebacks.com/images/logos/site/site.svg",
-  "university-of-ottawa": "https://teams.geegees.ca/images/logos/site/site.svg",
-  "queen-s-university": "https://gogaelsgo.com/images/logos/site/site.png",
-  "university-of-regina": "https://cougarsandrams.com/images/logos/site/site.png",
-  "saint-mary-s-university": "https://smuhuskies.ca/images/logos/site/site.svg",
-  "university-of-saskatchewan": "https://huskies.usask.ca/images/logos/site/site.png",
-  "st-francis-xavier-university": "https://goxgo.ca/images/logos/site/site.svg",
-  "thompson-rivers-university": "https://gowolfpack.ca/images/logos/site/site.png",
-  "university-of-toronto": "https://varsityblues.ca/images/logos/site/site.png",
-  "toronto-metropolitan-university": "https://tmubold.ca/images/logos/site/site.png",
-  "trinity-western-university":
-    "https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/gospartans.ca/images/logos/site/site.png",
-  "university-of-british-columbia": "https://gothunderbirds.ca/images/logos/site/site.png",
-  "ubc-okanagan": "https://goheat.ca/images/logos/site/site.png",
-  "university-of-the-fraser-valley":
-    "https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/fraservalley.sidearmsports.com/images/logos/site/site.png",
-  "university-of-new-brunswick": "https://goredsgo.ca/images/logos/site/site.svg",
+  "acadia-university": "/logos/usports/acadia-university.png",
+  "university-of-alberta": "/logos/usports/university-of-alberta.webp",
+  "algoma-university": "/logos/usports/algoma-university.webp",
+  "bishop-s-university": "/logos/usports/bishop-s-university.webp",
+  "brandon-university": "/logos/usports/brandon-university.webp",
+  "brock-university": "/logos/usports/brock-university.webp",
+  "university-of-calgary": "/logos/usports/university-of-calgary.webp",
+  "cape-breton-university": "/logos/usports/cape-breton-university.png",
+  "carleton-university": "/logos/usports/carleton-university.png",
+  "concordia-university": "/logos/usports/concordia-university.png",
+  "dalhousie-university": "/logos/usports/dalhousie-university.png",
+  "university-of-guelph": "/logos/usports/university-of-guelph.webp",
+  "lakehead-university": "/logos/usports/lakehead-university.png",
+  "laurentian-university": "/logos/usports/laurentian-university.png",
+  "wilfrid-laurier-university": "/logos/usports/wilfrid-laurier-university.webp",
+  "universite-laval": "/logos/usports/universite-laval.png",
+  "university-of-lethbridge": "/logos/usports/university-of-lethbridge.webp",
+  "macewan-university": "/logos/usports/macewan-university.png",
+  "university-of-manitoba": "/logos/usports/university-of-manitoba.webp",
+  "mcgill-university": "/logos/usports/mcgill-university.webp",
+  "mcmaster-university": "/logos/usports/mcmaster-university.webp",
+  "memorial-university-of-newfoundland": "/logos/usports/memorial-university-of-newfoundland.png",
+  "mount-royal-university": "/logos/usports/mount-royal-university.webp",
+  "nipissing-university": "/logos/usports/nipissing-university.webp",
+  "ontario-tech-university": "/logos/usports/ontario-tech-university.png",
+  "university-of-ottawa": "/logos/usports/university-of-ottawa.png",
+  "queen-s-university": "/logos/usports/queen-s-university.webp",
+  "university-of-regina": "/logos/usports/university-of-regina.webp",
+  "saint-mary-s-university": "/logos/usports/saint-mary-s-university.png",
+  "university-of-saskatchewan": "/logos/usports/university-of-saskatchewan.webp",
+  "st-francis-xavier-university": "/logos/usports/st-francis-xavier-university.png",
+  "thompson-rivers-university": "/logos/usports/thompson-rivers-university.webp",
+  "university-of-toronto": "/logos/usports/university-of-toronto.webp",
+  "toronto-metropolitan-university": "/logos/usports/toronto-metropolitan-university.webp",
+  "trinity-western-university": "/logos/usports/trinity-western-university.png",
+  "university-of-british-columbia": "/logos/usports/university-of-british-columbia.webp",
+  "ubc-okanagan": "/logos/usports/ubc-okanagan.webp",
+  "university-of-the-fraser-valley": "/logos/usports/university-of-the-fraser-valley.png",
+  "university-of-new-brunswick": "/logos/usports/university-of-new-brunswick.png",
   "university-of-northern-british-columbia":
-    "https://unbctimberwolves.com/images/logos/site/site.png",
-  "university-of-prince-edward-island": "https://gopanthersgo.ca/images/logos/site/site.svg",
-  "university-of-victoria": "https://govikesgo.com/images/logos/site/site.png",
-  "university-of-waterloo": "https://athletics.uwaterloo.ca/images/logos/site/site.png",
-  "western-university": "https://westernmustangs.ca/images/logos/site/site.png",
-  "university-of-windsor": "https://golancers.ca/images/logos/site/site.png",
-  "university-of-winnipeg": "https://wesmen.ca/images/logos/site/site.png",
-  "york-university": "https://yorkulions.ca/images/logos/site/site.png",
+    "/logos/usports/university-of-northern-british-columbia.webp",
+  "university-of-prince-edward-island": "/logos/usports/university-of-prince-edward-island.png",
+  "universite-du-quebec-a-montreal": "/logos/usports/universite-du-quebec-a-montreal.png",
+  "university-of-victoria": "/logos/usports/university-of-victoria.webp",
+  "university-of-waterloo": "/logos/usports/university-of-waterloo.webp",
+  "western-university": "/logos/usports/western-university.webp",
+  "university-of-windsor": "/logos/usports/university-of-windsor.webp",
+  "university-of-winnipeg": "/logos/usports/university-of-winnipeg.webp",
+  "york-university": "/logos/usports/york-university.webp",
 };
 
 const ALIAS_TO_CANONICAL: Record<string, string> = {
@@ -109,6 +106,31 @@ const ALIAS_TO_CANONICAL: Record<string, string> = {
   windsor: "university-of-windsor",
   winnipeg: "university-of-winnipeg",
   york: "york-university",
+  "cape-breton-h": "cape-breton-university",
+  "cape-breton-highlanders": "cape-breton-university",
+  "concordia-university-college": "concordia-university",
+  "lethbridge-university": "university-of-lethbridge",
+  "laurier-university": "wilfrid-laurier-university",
+  "manitoba-university": "university-of-manitoba",
+  "memorial-university": "memorial-university-of-newfoundland",
+  "lakehaed-university": "lakehead-university",
+  "mc-gill-university": "mcgill-university",
+  queens: "queen-s-university",
+  "universite-de-quebec-a-montreal": "universite-du-quebec-a-montreal",
+  "university-of-british-columbia-okanagan": "ubc-okanagan",
+  "university-of-the-fraser-vally": "university-of-the-fraser-valley",
+  "mount-royal-cougars": "mount-royal-university",
+  "ryerson-college": "toronto-metropolitan-university",
+  ryerson: "toronto-metropolitan-university",
+  "saint-marys": "saint-mary-s-university",
+  "saint-marys-university": "saint-mary-s-university",
+  "st-mary-s-university": "saint-mary-s-university",
+  "toronto-metropolitan": "toronto-metropolitan-university",
+  stfx: "st-francis-xavier-university",
+  "dalhousie-tigers": "dalhousie-university",
+  "ubc-okanagan-heat": "ubc-okanagan",
+  "university-of-laval": "universite-laval",
+  "university-of-western-ontario": "western-university",
 };
 
 function nameToSlug(name: string): string {
@@ -120,19 +142,27 @@ function nameToSlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
+const CANONICAL_SLUGS_BY_LENGTH = Object.keys(CANONICAL_LOGOS).sort((a, b) => b.length - a.length);
+
+function resolveCanonicalSlug(value: string): string | undefined {
+  const key = nameToSlug(value);
+  if (!key) return undefined;
+  if (CANONICAL_LOGOS[key]) return key;
+  const alias = ALIAS_TO_CANONICAL[key];
+  if (alias && CANONICAL_LOGOS[alias]) return alias;
+  for (const canonical of CANONICAL_SLUGS_BY_LENGTH) {
+    if (key.startsWith(`${canonical}-`) || key.endsWith(`-${canonical}`)) return canonical;
+  }
+  return undefined;
+}
+
 export function usportsTeamLogoUrl(options?: {
   slug?: string;
   teamName?: string;
 }): string | undefined {
-  const raw = options?.slug?.trim().toLowerCase();
-  if (raw) {
-    const canonical = ALIAS_TO_CANONICAL[raw] ?? raw;
-    if (CANONICAL_LOGOS[canonical]) return CANONICAL_LOGOS[canonical];
-  }
-  if (options?.teamName) {
-    const fromName = nameToSlug(options.teamName);
-    const canonical = ALIAS_TO_CANONICAL[fromName] ?? fromName;
-    if (CANONICAL_LOGOS[canonical]) return CANONICAL_LOGOS[canonical];
-  }
+  const fromSlug = options?.slug ? resolveCanonicalSlug(options.slug) : undefined;
+  if (fromSlug) return CANONICAL_LOGOS[fromSlug];
+  const fromName = options?.teamName ? resolveCanonicalSlug(options.teamName) : undefined;
+  if (fromName) return CANONICAL_LOGOS[fromName];
   return undefined;
 }
