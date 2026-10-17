@@ -117,8 +117,8 @@ async function applyPlayerClaim(playerId: number, proposed: Record<string, strin
       jersey_number = COALESCE(${jersey}, jersey_number),
       birth_date = COALESCE(${birthDate}::date, birth_date),
       extended_profile = CASE
-        WHEN ${bio} = '' THEN extended_profile
-        ELSE COALESCE(extended_profile, '{}'::jsonb) || jsonb_build_object('bio', ${bio})
+        WHEN ${bio}::text = '' THEN extended_profile
+        ELSE COALESCE(extended_profile, '{}'::jsonb) || jsonb_build_object('bio', ${bio}::text)
       END,
       updated_at = now()
     WHERE id = ${playerId}
