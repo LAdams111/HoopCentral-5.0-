@@ -173,7 +173,10 @@ function Dashboard({
     <>
       <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">{data.team.leagueName}</p>
       <div className="mt-1 flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-display text-4xl font-bold uppercase tracking-tight md:text-6xl">{data.team.name}</h1>
+        <h1 className="font-display text-4xl font-bold uppercase tracking-tight md:text-6xl">
+          {data.team.name}
+          {data.season ? <span className="ml-3 text-2xl text-muted-foreground md:text-4xl">{data.season}</span> : null}
+        </h1>
         <Link to={publicRoster} className="font-mono text-xs uppercase tracking-wide text-primary">
           View public page
         </Link>
@@ -486,7 +489,7 @@ function AddPlayer({
             <p className="mt-4 text-sm text-muted-foreground">No players found with that name.</p>
           ) : null}
           {matches ? (
-            <button type="button" onClick={() => setCreating(true)} className="mt-4 font-mono text-xs uppercase tracking-wide text-primary">
+            <button type="button" onClick={() => setCreating(true)} className="mt-4 rounded-xl border border-primary/40 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary">
               {matches.length > 0 ? "None of these. Create a new player" : "Create a new player"}
             </button>
           ) : null}
