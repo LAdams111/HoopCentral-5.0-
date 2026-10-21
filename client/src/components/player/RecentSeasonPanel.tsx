@@ -2,11 +2,24 @@ import { useQuery } from "@tanstack/react-query";
 import { Activity, Target, Trophy } from "lucide-react";
 import { useMemo } from "react";
 import { getPlayerGameLogs, type PlayerGameLogEntry, type PlayerStat } from "@/lib/api";
-import { StatTrendChart, gameLogStatSeries } from "./StatTrendChart";
+import { StatTrendChart, gameLogStatSeries, type ChartPoint } from "./StatTrendChart";
 
 function seasonGames(games: PlayerGameLogEntry[]): PlayerGameLogEntry[] {
   const regular = games.filter((game) => !game.playoffs);
   return regular.length > 0 ? regular : games;
+}
+
+function seasonAverageSeries(stats: PlayerStat[], stat: "pts_per_g" | "ast_per_g"): ChartPoint[] {
+  return [...stats]
+    .sort((a, b) => a.season.localeCompare(b.season))
+    .map((row) => {
+      const value = Number(row[stat]);
+      return {
+        label: row.season.slice(2),
+        value: Number.isFinite(value) ? value : 0,
+        detail: [row.season, row.team].filter(Boolean).join(" · "),
+      };
+    });
 }
 
 export function RecentSeasonPanel({
@@ -53,10 +66,12 @@ export function RecentSeasonPanel({
   const usingSecondary = primaryEmpty && seasonGames(secondaryLogs.data?.games ?? []).length > 0;
   const games = usingSecondary ? seasonGames(secondaryLogs.data?.games ?? []) : primaryGames;
   const chartSeason = (usingSecondary ? secondary?.season : primary?.season) ?? recent?.season ?? null;
-  const points = gameLogStatSeries(games, "pts");
-  const assists = gameLogStatSeries(games, "ast");
-  const chartLabel = chartSeason ?? "—";
   const chartLoading = primaryLogs.isLoading || (primaryEmpty && secondaryLogs.isLoading);
+  const usingSeasonAverages = !chartLoading && games.length === 0 && stats.length > 0;
+  const points = games.length > 0 ? gameLogStatSeries(games, "pts") : usingSeasonAverages ? seasonAverageSeries(stats, "pts_per_g") : [];
+  const assists = games.length > 0 ? gameLogStatSeries(games, "ast") : usingSeasonAverages ? seasonAverageSeries(stats, "ast_per_g") : [];
+  const chartLabel = usingSeasonAverages ? "Career" : chartSeason ?? "—";
+  const pointLabel = usingSeasonAverages ? "Each season" : "Each game";
 
   if (!recent) {
     return (
@@ -122,6 +137,7 @@ export function RecentSeasonPanel({
             color="hsl(var(--primary))"
             data={points}
             loading={chartLoading}
+            pointLabel={pointLabel}
           />
           <StatTrendChart
             title="Assists"
@@ -129,6 +145,7 @@ export function RecentSeasonPanel({
             color="hsl(var(--accent))"
             data={assists}
             loading={chartLoading}
+            pointLabel={pointLabel}
           />
         </div>
       </div>

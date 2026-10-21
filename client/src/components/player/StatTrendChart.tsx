@@ -20,12 +20,14 @@ export function StatTrendChart({
   color,
   data,
   loading = false,
+  pointLabel = "Each game",
 }: {
   title: string;
   season: string;
   color: string;
   data: ChartPoint[];
   loading?: boolean;
+  pointLabel?: string;
 }) {
   const gradientId = `gradient-${title.replace(/\s/g, "-").toLowerCase()}`;
 
@@ -41,7 +43,7 @@ export function StatTrendChart({
             style={{ backgroundColor: color }}
           />
           <span className="font-mono text-[9px] text-muted-foreground md:text-xs">
-            {season} · Each game
+            {season} · {pointLabel}
           </span>
         </div>
       </div>
