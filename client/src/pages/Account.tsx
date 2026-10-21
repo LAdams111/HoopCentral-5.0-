@@ -14,6 +14,90 @@ type ClaimedPlayer = {
   team: string;
 };
 
+type ClaimGame = {
+  date: string | null;
+  opponent: string;
+  homeAway: string;
+  result: string | null;
+  minutes: string | null;
+  points: number | null;
+  rebounds: number | null;
+  assists: number | null;
+};
+
+type ClaimDashboardPlayer = ClaimedPlayer & {
+  hometown: string;
+  height: string;
+  weight: string;
+  profileViews: number;
+  weeklyViews: number;
+  games: ClaimGame[];
+};
+
+function gameStat(value: number | null): string {
+  if (value == null) return "—";
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+function gameDate(value: string | null): string {
+  if (!value) return "Date not listed";
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function ClaimDashboard({ player }: { player: ClaimDashboardPlayer }) {
+  const details = [player.team, player.position, player.height, player.weight, player.hometown].filter(Boolean);
+  return (
+    <article className="mb-4 rounded-xl border border-border p-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <Link to={`/players/${player.id}`} className="flex min-w-0 items-center gap-3 transition-colors hover:text-primary">
+          <img
+            src={resolvePlayerHeadshot(player.headshotUrl)}
+            alt=""
+            className="h-16 w-16 rounded-full object-cover object-top"
+            onError={onHeadshotError}
+          />
+          <span>
+            <span className="block font-display text-2xl font-bold leading-none">{player.name}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">{details.join(" · ") || "Claimed player"}</span>
+          </span>
+        </Link>
+        <div className="rounded-xl border border-primary/30 px-4 py-3 text-right">
+          <p className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">Views this week</p>
+          <p className="font-display text-3xl font-bold leading-none text-primary">{player.weeklyViews.toLocaleString()}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{player.profileViews.toLocaleString()} all time</p>
+        </div>
+      </div>
+      <h3 className="mb-2 mt-5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">Last 5 games</h3>
+      {player.games.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No games on this profile yet.</p>
+      ) : (
+        <ul className="divide-y divide-border">
+          {player.games.map((game, index) => (
+            <li key={`${game.date ?? "game"}-${index}`} className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-sm">
+              <span>
+                <span className="font-medium">{gameDate(game.date)}</span>
+                <span className="text-muted-foreground"> {`${game.homeAway}${game.opponent}`.trim()}</span>
+                {game.result ? <span className="text-muted-foreground"> · {game.result}</span> : null}
+              </span>
+              <span className="font-mono text-xs text-muted-foreground">
+                {gameStat(game.points)} PTS · {gameStat(game.rebounds)} REB · {gameStat(game.assists)} AST
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link
+        to={`/players/${player.id}/claim?edit=player`}
+        className="mt-4 inline-flex rounded-xl border border-primary/40 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary"
+      >
+        Request an edit
+      </Link>
+    </article>
+  );
+}
+
 const ROLE_LABELS: Record<LoginRole, string> = {
   player: "Player",
   parent: "Parent",
@@ -34,6 +118,19 @@ export function Account() {
       });
       if (!response.ok) return { players: [] as ClaimedPlayer[], pending: 0 };
       return (await response.json()) as { players: ClaimedPlayer[]; pending: number };
+    },
+  });
+  const showClaimDashboard = (role === "player" || role === "parent") && Boolean(claimedPlayers.data?.players.length);
+  const claimDashboard = useQuery({
+    queryKey: ["claim-dashboard", session?.user.id],
+    enabled: showClaimDashboard && Boolean(session?.access_token),
+    queryFn: async () => {
+      const response = await fetch("/api/claims/mine/dashboard", {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ""}` },
+        cache: "no-store",
+      });
+      if (!response.ok) return { players: [] as ClaimDashboardPlayer[] };
+      return (await response.json()) as { players: ClaimDashboardPlayer[] };
     },
   });
   const claimedTeams = useQuery({
@@ -120,51 +217,75 @@ export function Account() {
           </button>
         </section>
 
-        <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim a player</h2>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Search for the player page and claim it as yours. A photo of a government-issued ID is required.
-            Once it is approved, that player stays on this profile. Only this account can see it here.
-          </p>
-          {claimedPlayers.data?.players.length ? (
-            <ul className="mb-4 divide-y divide-border">
-              {claimedPlayers.data.players.map((player) => (
-                <li key={player.id}>
-                  <Link
-                    to={`/players/${player.id}`}
-                    className="flex items-center gap-3 py-3 transition-colors hover:text-primary"
-                  >
-                    <img
-                      src={resolvePlayerHeadshot(player.headshotUrl)}
-                      alt=""
-                      className="h-12 w-12 rounded-full object-cover object-top"
-                      onError={onHeadshotError}
-                    />
-                    <span>
-                      <span className="block font-display text-lg font-bold leading-tight">{player.name}</span>
-                      <span className="block text-xs text-muted-foreground">
-                        {[player.team, player.position].filter(Boolean).join(" · ") || "Claimed player"}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {claimedPlayers.data?.pending ? (
+        {(role === "player" || role === "parent") && claimedPlayers.isLoading ? (
+          <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <p className="text-sm text-muted-foreground">Loading your player…</p>
+          </section>
+        ) : showClaimDashboard ? (
+          <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Your player</h2>
             <p className="mb-4 text-sm text-muted-foreground">
-              {claimedPlayers.data.pending === 1
-                ? "1 player claim is waiting for approval."
-                : `${claimedPlayers.data.pending} player claims are waiting for approval.`}
+              This stays on this account. Weekly views count page visits from the last seven days.
             </p>
-          ) : null}
-          <Link
-            to="/search?claim=player"
-            className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
-          >
-            Claim a player
-          </Link>
-        </section>
+            {claimDashboard.isLoading ? <p className="text-sm text-muted-foreground">Loading your player…</p> : null}
+            {claimDashboard.data?.players.map((player) => <ClaimDashboard key={player.id} player={player} />)}
+            {claimedPlayers.data?.pending ? (
+              <p className="mb-4 text-sm text-muted-foreground">
+                {claimedPlayers.data.pending === 1
+                  ? "1 player claim is waiting for approval."
+                  : `${claimedPlayers.data.pending} player claims are waiting for approval.`}
+              </p>
+            ) : null}
+          </section>
+        ) : (
+          <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim a player</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Search for the player page and claim it as yours. A photo of a government-issued ID is required.
+              Once it is approved, that player stays on this profile. Only this account can see it here.
+            </p>
+            {role === "coach" || role === "scout" || role === "fan" ? (
+              claimedPlayers.data?.players.length ? (
+                <ul className="mb-4 divide-y divide-border">
+                  {claimedPlayers.data.players.map((player) => (
+                    <li key={player.id}>
+                      <Link
+                        to={`/players/${player.id}`}
+                        className="flex items-center gap-3 py-3 transition-colors hover:text-primary"
+                      >
+                        <img
+                          src={resolvePlayerHeadshot(player.headshotUrl)}
+                          alt=""
+                          className="h-12 w-12 rounded-full object-cover object-top"
+                          onError={onHeadshotError}
+                        />
+                        <span>
+                          <span className="block font-display text-lg font-bold leading-tight">{player.name}</span>
+                          <span className="block text-xs text-muted-foreground">
+                            {[player.team, player.position].filter(Boolean).join(" · ") || "Claimed player"}
+                          </span>
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null
+            ) : null}
+            {claimedPlayers.data?.pending ? (
+              <p className="mb-4 text-sm text-muted-foreground">
+                {claimedPlayers.data.pending === 1
+                  ? "1 player claim is waiting for approval."
+                  : `${claimedPlayers.data.pending} player claims are waiting for approval.`}
+              </p>
+            ) : null}
+            <Link
+              to="/search?claim=player"
+              className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
+            >
+              Claim a player
+            </Link>
+          </section>
+        )}
 
         {role === "coach" ? (
           <section className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">

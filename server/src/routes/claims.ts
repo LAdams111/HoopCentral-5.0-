@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import express, { Router } from "express";
 import { db, pool } from "../db/index.js";
 import { parseBirthDate, parseClaimPosition, parseHeightCm, parseWeightKg } from "../utils/claim-measurements.js";
+import { cmToFeetInches, kgToLbs } from "../utils/format.js";
 import { getAuthUser } from "./auth.js";
 
 export const claimsRouter = Router();
@@ -127,6 +128,107 @@ claimsRouter.get("/mine", async (req, res) => {
       })),
     pending: rows.filter((row) => row.status === "pending").length,
   });
+});
+
+function countValue(value: unknown): number {
+  const count = Number(value);
+  return Number.isFinite(count) ? count : 0;
+}
+
+function statValue(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const stat = Number(value);
+  return Number.isFinite(stat) ? stat : null;
+}
+
+claimsRouter.get("/mine/dashboard", async (req, res) => {
+  const user = await getAuthUser(bearerToken(req.header("authorization")));
+  if (!user) {
+    res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Sign in required" } });
+    return;
+  }
+
+  const claimed = await db.execute(sql`
+    SELECT p.id,
+           COALESCE(p.display_name, c.player_name, 'Player') AS name,
+           COALESCE(p.position, '') AS position,
+           COALESCE(p.headshot_url, '') AS headshot_url,
+           COALESCE(t.name, '') AS team,
+           COALESCE(p.hometown, '') AS hometown,
+           p.height_cm,
+           p.weight_kg,
+           p.profile_views
+    FROM claim_requests c
+    JOIN players p ON p.id = c.player_id
+    LEFT JOIN teams t ON t.id = p.current_team_id
+    WHERE c.user_id = ${user.id}
+      AND c.kind = 'identity'
+      AND c.status = 'approved'
+      AND c.player_id > 0
+    ORDER BY c.created_at DESC
+  `);
+
+  const players = [];
+  for (const row of claimed.rows as {
+    id: number;
+    name: string;
+    position: string;
+    headshot_url: string;
+    team: string;
+    hometown: string;
+    height_cm: number | null;
+    weight_kg: number | null;
+    profile_views: number;
+  }[]) {
+    const weekly = await db.execute(sql`
+      SELECT COALESCE(SUM(views), 0)::int AS views
+      FROM profile_view_days
+      WHERE player_id = ${row.id}
+        AND view_date >= current_date - interval '6 days'
+    `);
+    const games = await db.execute(sql`
+      SELECT game_date, opponent, home_away, result, minutes, points, rebounds, assists
+      FROM player_game_logs
+      WHERE player_id = ${row.id}
+      ORDER BY game_date DESC NULLS LAST, id DESC
+      LIMIT 5
+    `);
+    const height = cmToFeetInches(row.height_cm);
+    const weight = kgToLbs(row.weight_kg);
+    players.push({
+      id: row.id,
+      name: row.name,
+      position: row.position,
+      headshotUrl: row.headshot_url,
+      team: row.team,
+      hometown: row.hometown,
+      height: height === "—" ? "" : height,
+      weight: weight === "—" ? "" : weight,
+      profileViews: countValue(row.profile_views),
+      weeklyViews: countValue((weekly.rows[0] as { views?: number } | undefined)?.views),
+      games: (games.rows as {
+        game_date: string | null;
+        opponent: string;
+        home_away: string | null;
+        result: string | null;
+        minutes: string | null;
+        points: unknown;
+        rebounds: unknown;
+        assists: unknown;
+      }[]).map((game) => ({
+        date: game.game_date,
+        opponent: game.opponent,
+        homeAway: game.home_away ?? "",
+        result: game.result,
+        minutes: game.minutes,
+        points: statValue(game.points),
+        rebounds: statValue(game.rebounds),
+        assists: statValue(game.assists),
+      })),
+    });
+  }
+
+  res.json({ players });
 });
 
 function proposedRecord(value: unknown): Record<string, string> {

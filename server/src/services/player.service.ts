@@ -655,13 +655,21 @@ export async function getPlayerById(
 }
 
 export async function incrementProfileViews(id: number): Promise<void> {
-  await db
+  const updated = await db
     .update(players)
     .set({
       profileViews: sql`${players.profileViews} + 1`,
       updatedAt: new Date(),
     })
-    .where(eq(players.id, id));
+    .where(eq(players.id, id))
+    .returning({ id: players.id });
+  if (!updated.length) return;
+  await db.execute(sql`
+    INSERT INTO profile_view_days (player_id, view_date, views)
+    VALUES (${id}, current_date, 1)
+    ON CONFLICT (player_id, view_date)
+    DO UPDATE SET views = profile_view_days.views + 1
+  `);
 }
 
 /** Add 1–6 synthetic views per player once per calendar day (UTC). Idempotent. */
