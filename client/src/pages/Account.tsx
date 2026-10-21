@@ -6,6 +6,14 @@ import { useAuth, type LoginRole } from "@/lib/auth";
 import { useFavorites } from "@/lib/favorites";
 import { onHeadshotError, resolvePlayerHeadshot } from "@/lib/headshot";
 
+type ClaimedPlayer = {
+  id: number;
+  name: string;
+  position: string;
+  headshotUrl: string;
+  team: string;
+};
+
 const ROLE_LABELS: Record<LoginRole, string> = {
   player: "Player",
   parent: "Parent",
@@ -16,6 +24,18 @@ const ROLE_LABELS: Record<LoginRole, string> = {
 
 export function Account() {
   const { ready, email, role, session, isAdmin, adminChecked, signOut } = useAuth();
+  const claimedPlayers = useQuery({
+    queryKey: ["claimed-players", session?.user.id],
+    enabled: Boolean(session?.access_token),
+    queryFn: async () => {
+      const response = await fetch("/api/claims/mine", {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ""}` },
+        cache: "no-store",
+      });
+      if (!response.ok) return { players: [] as ClaimedPlayer[], pending: 0 };
+      return (await response.json()) as { players: ClaimedPlayer[]; pending: number };
+    },
+  });
   const claimedTeams = useQuery({
     queryKey: ["coach-teams", session?.user.id],
     enabled: role === "coach" && Boolean(session?.access_token),
@@ -104,8 +124,40 @@ export function Account() {
           <h2 className="mb-2 font-display text-xl font-bold uppercase tracking-wide">Claim a player</h2>
           <p className="mb-4 text-sm text-muted-foreground">
             Search for the player page and claim it as yours. A photo of a government-issued ID is required.
-            Height, weight, and other profile changes are requested from the bottom of the player page.
+            Once it is approved, that player stays on this profile. Only this account can see it here.
           </p>
+          {claimedPlayers.data?.players.length ? (
+            <ul className="mb-4 divide-y divide-border">
+              {claimedPlayers.data.players.map((player) => (
+                <li key={player.id}>
+                  <Link
+                    to={`/players/${player.id}`}
+                    className="flex items-center gap-3 py-3 transition-colors hover:text-primary"
+                  >
+                    <img
+                      src={resolvePlayerHeadshot(player.headshotUrl)}
+                      alt=""
+                      className="h-12 w-12 rounded-full object-cover object-top"
+                      onError={onHeadshotError}
+                    />
+                    <span>
+                      <span className="block font-display text-lg font-bold leading-tight">{player.name}</span>
+                      <span className="block text-xs text-muted-foreground">
+                        {[player.team, player.position].filter(Boolean).join(" · ") || "Claimed player"}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {claimedPlayers.data?.pending ? (
+            <p className="mb-4 text-sm text-muted-foreground">
+              {claimedPlayers.data.pending === 1
+                ? "1 player claim is waiting for approval."
+                : `${claimedPlayers.data.pending} player claims are waiting for approval.`}
+            </p>
+          ) : null}
           <Link
             to="/search?claim=player"
             className="inline-flex rounded-xl border border-primary/40 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"

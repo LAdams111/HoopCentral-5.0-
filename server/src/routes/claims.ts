@@ -84,6 +84,51 @@ claimsRouter.get("/", async (req, res) => {
   res.json({ requests: result.rows as ClaimRow[] });
 });
 
+claimsRouter.get("/mine", async (req, res) => {
+  const user = await getAuthUser(bearerToken(req.header("authorization")));
+  if (!user) {
+    res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Sign in required" } });
+    return;
+  }
+
+  const result = await db.execute(sql`
+    SELECT c.player_id AS id,
+           COALESCE(p.display_name, c.player_name, 'Player') AS name,
+           COALESCE(p.position, '') AS position,
+           COALESCE(p.headshot_url, '') AS headshot_url,
+           COALESCE(t.name, '') AS team,
+           c.status
+    FROM claim_requests c
+    LEFT JOIN players p ON p.id = c.player_id AND c.player_id > 0
+    LEFT JOIN teams t ON t.id = p.current_team_id
+    WHERE c.user_id = ${user.id}
+      AND c.kind = 'identity'
+      AND c.status IN ('approved', 'pending')
+      AND c.player_id > 0
+    ORDER BY c.created_at DESC
+  `);
+  const rows = result.rows as {
+    id: number;
+    name: string;
+    position: string;
+    headshot_url: string;
+    team: string;
+    status: string;
+  }[];
+  res.json({
+    players: rows
+      .filter((row) => row.status === "approved")
+      .map((row) => ({
+        id: row.id,
+        name: row.name,
+        position: row.position,
+        headshotUrl: row.headshot_url,
+        team: row.team,
+      })),
+    pending: rows.filter((row) => row.status === "pending").length,
+  });
+});
+
 function proposedRecord(value: unknown): Record<string, string> {
   try {
     const source = typeof value === "string" ? JSON.parse(value) : value;
