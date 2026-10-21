@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { BackButton } from "@/components/ui/BackButton";
 import { getPlayer } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
@@ -281,9 +282,7 @@ export function ClaimPlayer() {
     const signup = `/login?mode=signup&next=${encodeURIComponent(nextPath)}`;
     return (
       <div className="mx-auto max-w-2xl px-6 py-8">
-        <Link to={`/players/${playerId}`} className="font-mono text-xs uppercase tracking-wide text-primary">
-          Back to profile
-        </Link>
+        <BackButton fallback={`/players/${playerId}`} label="Back" />
         <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-tight">
           Create a profile to submit a change
         </h1>
@@ -410,12 +409,10 @@ export function ClaimPlayer() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <Link
-        to={playerRequest === "edit" ? `/players/${playerId}` : `/players/${playerId}?claim=player`}
-        className="font-mono text-xs uppercase tracking-wide text-primary"
-      >
-        Back to profile
-      </Link>
+      <BackButton
+        fallback={playerRequest === "edit" ? `/players/${playerId}` : `/players/${playerId}?claim=player`}
+        label="Back"
+      />
       <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-tight">
         {playerRequest === "claim" ? "Claim this player" : "Request an edit"}
       </h1>
