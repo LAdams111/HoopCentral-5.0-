@@ -672,7 +672,7 @@ export async function incrementProfileViews(id: number): Promise<void> {
   `);
 }
 
-/** Add 1–6 synthetic views per player once per calendar day (UTC). Idempotent. */
+/** Add 1–6 views per player once per calendar day (UTC). Same records as a real visit. Idempotent. */
 export async function runDailySyntheticProfileViews(): Promise<{
   updated: number;
   skipped: boolean;
@@ -689,14 +689,21 @@ export async function runDailySyntheticProfileViews(): Promise<{
   }
 
   const bumped = await db.execute<{ count: number }>(sql`
-    WITH updated AS (
+    WITH bumped AS (
       UPDATE players
       SET
         profile_views = profile_views + (1 + (abs(hashtext(concat(id::text, current_date::text))) % 6)),
         updated_at = NOW()
-      RETURNING id
+      RETURNING id, (1 + (abs(hashtext(concat(id::text, current_date::text))) % 6)) AS added
+    ),
+    days AS (
+      INSERT INTO profile_view_days (player_id, view_date, views)
+      SELECT id, current_date, added FROM bumped
+      ON CONFLICT (player_id, view_date)
+      DO UPDATE SET views = profile_view_days.views + EXCLUDED.views
+      RETURNING player_id
     )
-    SELECT count(*)::int AS count FROM updated
+    SELECT count(*)::int AS count FROM days
   `);
 
   const updated = bumped.rows[0]?.count ?? 0;

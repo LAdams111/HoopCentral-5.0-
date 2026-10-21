@@ -204,6 +204,13 @@
       "when": 1752076800000,
       "tag": "0032_profile_view_days",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1752163200000,
+      "tag": "0033_profile_view_daily_runs",
+      "breakpoints": true
     }
   ]
 }

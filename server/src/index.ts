@@ -104,7 +104,7 @@ app.listen(PORT, "0.0.0.0", () => {
         .then((result) => {
           if (!result.skipped && result.updated > 0) {
             console.log(
-              `Daily synthetic profile views: added 1–6 views for ${result.updated.toLocaleString()} players`,
+              `Daily profile views: added 1–6 views for ${result.updated.toLocaleString()} players`,
             );
           }
         })
