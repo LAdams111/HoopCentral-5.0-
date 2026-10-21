@@ -11,7 +11,7 @@ function seasonGames(games: PlayerGameLogEntry[]): PlayerGameLogEntry[] {
 }
 
 function isCenter(position: string | null | undefined): boolean {
-  return formatPosition(position).split("/")[0] === "C";
+  return formatPosition(position).split("/").includes("C");
 }
 
 function seasonAverageSeries(stats: PlayerStat[], stat: "pts_per_g" | "ast_per_g" | "trb_per_g"): ChartPoint[] {
