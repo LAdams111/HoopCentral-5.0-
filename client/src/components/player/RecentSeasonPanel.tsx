@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Activity, Target, Trophy } from "lucide-react";
+import { useMemo } from "react";
 import { getPlayerGameLogs, type PlayerGameLogEntry, type PlayerStat } from "@/lib/api";
 import { StatTrendChart, gameLogStatSeries } from "./StatTrendChart";
 
@@ -20,28 +21,42 @@ export function RecentSeasonPanel({
   gameLogSeasonLeagues?: { season: string; leagueSlug: string }[];
 }) {
   const recent = stats[0];
-  const logSeasons = new Set(gameLogSeasons ?? []);
-  const logKeys = new Set(
-    (gameLogSeasonLeagues ?? []).map((row) => `${row.season}|${row.leagueSlug}`),
-  );
-  const chartSeason = recent?.season ?? null;
-  const chartLeague = recent?.leagueSlug;
-  const chartHasLog = recent
-    ? logKeys.size > 0
-      ? logKeys.has(`${recent.season}|${recent.leagueSlug}`)
-      : logSeasons.has(recent.season)
-    : false;
+  const chartTargets = useMemo(() => {
+    const pairs = [...(gameLogSeasonLeagues ?? [])].sort((a, b) => {
+      const bySeason = b.season.localeCompare(a.season);
+      if (bySeason !== 0) return bySeason;
+      if (recent?.leagueSlug && a.leagueSlug === recent.leagueSlug) return -1;
+      if (recent?.leagueSlug && b.leagueSlug === recent.leagueSlug) return 1;
+      return a.leagueSlug.localeCompare(b.leagueSlug);
+    });
+    if (pairs.length > 0) return pairs;
+    return [...(gameLogSeasons ?? [])]
+      .sort((a, b) => b.localeCompare(a))
+      .map((season) => ({ season, leagueSlug: recent?.leagueSlug ?? "" }));
+  }, [gameLogSeasonLeagues, gameLogSeasons, recent?.leagueSlug]);
+  const primary = chartTargets[0];
+  const secondary = chartTargets[1];
 
-  const logsQuery = useQuery({
-    queryKey: ["player-game-logs", playerId, chartSeason, chartLeague],
-    queryFn: () => getPlayerGameLogs(playerId!, chartSeason!, chartLeague),
-    enabled: Boolean(playerId && chartSeason && chartHasLog),
+  const primaryLogs = useQuery({
+    queryKey: ["player-game-logs", playerId, primary?.season, primary?.leagueSlug],
+    queryFn: () => getPlayerGameLogs(playerId!, primary!.season, primary!.leagueSlug || undefined),
+    enabled: Boolean(playerId && primary),
+  });
+  const primaryGames = seasonGames(primaryLogs.data?.games ?? []);
+  const primaryEmpty = primaryLogs.isSuccess && primaryGames.length === 0;
+  const secondaryLogs = useQuery({
+    queryKey: ["player-game-logs", playerId, secondary?.season, secondary?.leagueSlug],
+    queryFn: () => getPlayerGameLogs(playerId!, secondary!.season, secondary!.leagueSlug || undefined),
+    enabled: Boolean(playerId && secondary && primaryEmpty),
   });
 
-  const games = seasonGames(logsQuery.data?.games ?? []);
+  const usingSecondary = primaryEmpty && seasonGames(secondaryLogs.data?.games ?? []).length > 0;
+  const games = usingSecondary ? seasonGames(secondaryLogs.data?.games ?? []) : primaryGames;
+  const chartSeason = (usingSecondary ? secondary?.season : primary?.season) ?? recent?.season ?? null;
   const points = gameLogStatSeries(games, "pts");
   const assists = gameLogStatSeries(games, "ast");
   const chartLabel = chartSeason ?? "—";
+  const chartLoading = primaryLogs.isLoading || (primaryEmpty && secondaryLogs.isLoading);
 
   if (!recent) {
     return (
@@ -106,14 +121,14 @@ export function RecentSeasonPanel({
             season={chartLabel}
             color="hsl(var(--primary))"
             data={points}
-            loading={logsQuery.isLoading}
+            loading={chartLoading}
           />
           <StatTrendChart
             title="Assists"
             season={chartLabel}
             color="hsl(var(--accent))"
             data={assists}
-            loading={logsQuery.isLoading}
+            loading={chartLoading}
           />
         </div>
       </div>
