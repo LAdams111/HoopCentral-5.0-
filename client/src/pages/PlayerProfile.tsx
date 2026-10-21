@@ -42,6 +42,19 @@ export function PlayerProfile() {
   const showClaim = searchParams.get("claim") === "player";
   const { session, isAdmin } = useAuth();
   const userId = session?.user.id ?? null;
+  const claimedPlayers = useQuery({
+    queryKey: ["claimed-players", userId],
+    enabled: Boolean(session?.access_token),
+    queryFn: async () => {
+      const response = await fetch("/api/claims/mine", {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ""}` },
+        cache: "no-store",
+      });
+      if (!response.ok) return { players: [] as { id: number }[] };
+      return (await response.json()) as { players: { id: number }[] };
+    },
+  });
+  const ownsPlayer = claimedPlayers.data?.players.some((claimed) => Number(claimed.id) === playerId) ?? false;
   const { players: favoritePlayers, togglePlayer } = useFavorites();
   const queryClient = useQueryClient();
 
@@ -193,7 +206,11 @@ export function PlayerProfile() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  {showClaim ? <ClaimButton to={`/players/${player.id}/claim?claim=player`} /> : null}
+                  {ownsPlayer ? (
+                    <ClaimButton to={`/players/${player.id}/claim?edit=player`} label="Request an edit" />
+                  ) : showClaim ? (
+                    <ClaimButton to={`/players/${player.id}/claim?claim=player`} />
+                  ) : null}
                   <button
                     type="button"
                     onClick={handleFavorite}
