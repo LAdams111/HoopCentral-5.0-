@@ -149,8 +149,8 @@ function formatGameDate(iso: string | null): string {
 
 /** One point per game, in the order the logs were played. */
 export function gameLogStatSeries(
-  games: Array<{ date: string | null; opponent: string; pts: number | null; ast: number | null }>,
-  stat: "pts" | "ast",
+  games: Array<{ date: string | null; opponent: string; pts: number | null; ast: number | null; reb: number | null }>,
+  stat: "pts" | "ast" | "reb",
 ): ChartPoint[] {
   return games.map((game, index) => {
     const detail = [formatGameDate(game.date), game.opponent].filter(Boolean).join(" · ");

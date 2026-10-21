@@ -331,6 +331,7 @@ export function PlayerProfile() {
           <RecentSeasonPanel
             stats={sortedStats}
             playerId={player.id}
+            position={player.position}
             gameLogSeasons={player.gameLogSeasons}
             gameLogSeasonLeagues={player.gameLogSeasonLeagues}
           />

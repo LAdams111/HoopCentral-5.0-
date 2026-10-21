@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Activity, Target, Trophy } from "lucide-react";
 import { useMemo } from "react";
 import { getPlayerGameLogs, type PlayerGameLogEntry, type PlayerStat } from "@/lib/api";
+import { formatPosition } from "@/lib/position";
 import { StatTrendChart, gameLogStatSeries, type ChartPoint } from "./StatTrendChart";
 
 function seasonGames(games: PlayerGameLogEntry[]): PlayerGameLogEntry[] {
@@ -9,7 +10,11 @@ function seasonGames(games: PlayerGameLogEntry[]): PlayerGameLogEntry[] {
   return regular.length > 0 ? regular : games;
 }
 
-function seasonAverageSeries(stats: PlayerStat[], stat: "pts_per_g" | "ast_per_g"): ChartPoint[] {
+function isCenter(position: string | null | undefined): boolean {
+  return formatPosition(position).split("/")[0] === "C";
+}
+
+function seasonAverageSeries(stats: PlayerStat[], stat: "pts_per_g" | "ast_per_g" | "trb_per_g"): ChartPoint[] {
   return [...stats]
     .sort((a, b) => a.season.localeCompare(b.season))
     .map((row) => {
@@ -25,11 +30,13 @@ function seasonAverageSeries(stats: PlayerStat[], stat: "pts_per_g" | "ast_per_g
 export function RecentSeasonPanel({
   stats,
   playerId,
+  position,
   gameLogSeasons,
   gameLogSeasonLeagues,
 }: {
   stats: PlayerStat[];
   playerId?: number;
+  position?: string | null;
   gameLogSeasons?: string[];
   gameLogSeasonLeagues?: { season: string; leagueSlug: string }[];
 }) {
@@ -68,8 +75,14 @@ export function RecentSeasonPanel({
   const chartSeason = (usingSecondary ? secondary?.season : primary?.season) ?? recent?.season ?? null;
   const chartLoading = primaryLogs.isLoading || (primaryEmpty && secondaryLogs.isLoading);
   const usingSeasonAverages = !chartLoading && games.length === 0 && stats.length > 0;
+  const center = isCenter(position);
+  const secondTitle = center ? "Rebounds" : "Assists";
   const points = games.length > 0 ? gameLogStatSeries(games, "pts") : usingSeasonAverages ? seasonAverageSeries(stats, "pts_per_g") : [];
-  const assists = games.length > 0 ? gameLogStatSeries(games, "ast") : usingSeasonAverages ? seasonAverageSeries(stats, "ast_per_g") : [];
+  const secondSeries = games.length > 0
+    ? gameLogStatSeries(games, center ? "reb" : "ast")
+    : usingSeasonAverages
+      ? seasonAverageSeries(stats, center ? "trb_per_g" : "ast_per_g")
+      : [];
   const chartLabel = usingSeasonAverages ? "Career" : chartSeason ?? "—";
   const pointLabel = usingSeasonAverages ? "Each season" : "Each game";
 
@@ -89,7 +102,7 @@ export function RecentSeasonPanel({
         <div className="lg:col-span-2">
           <div className="grid grid-cols-2 gap-2 md:gap-6">
             <StatTrendChart title="Points" season="—" color="hsl(var(--primary))" data={[]} />
-            <StatTrendChart title="Assists" season="—" color="hsl(var(--accent))" data={[]} />
+            <StatTrendChart title={secondTitle} season="—" color="hsl(var(--accent))" data={[]} />
           </div>
         </div>
       </div>
@@ -140,10 +153,10 @@ export function RecentSeasonPanel({
             pointLabel={pointLabel}
           />
           <StatTrendChart
-            title="Assists"
+            title={secondTitle}
             season={chartLabel}
             color="hsl(var(--accent))"
-            data={assists}
+            data={secondSeries}
             loading={chartLoading}
             pointLabel={pointLabel}
           />
